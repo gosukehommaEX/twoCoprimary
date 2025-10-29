@@ -65,10 +65,23 @@ continuity correction (equation 5 in Sozu et al. 2010).
 \strong{Arcsine with Continuity Correction (ASc):} Arcsine method with continuity
 correction (equation 7 in Sozu et al. 2010).
 
-The correlation between test statistics for the two endpoints is calculated as:
+The correlation between test statistics for the two endpoints depends on the method:
+
+\strong{For AN and ANc methods:}
 \deqn{\rho_{nml} = \frac{\sum_{j=1}^{2} \rho_j \sqrt{\nu_{j1}\nu_{j2}}/n_j}
       {se_1 \times se_2}}
 where \eqn{\nu_{jk} = p_{jk}(1-p_{jk})}.
+
+\strong{For AS method:}
+\deqn{\rho_{arc} = \frac{n_2 \rho_1 + n_1 \rho_2}{n_1 + n_2}}
+This is the weighted average of the correlations from both groups.
+
+\strong{For ASc method:}
+\deqn{\rho_{arc,c} = \frac{1}{se_1 \times se_2}
+      \left(\frac{\rho_1 \sqrt{\nu_{11}\nu_{12}}}{4n_1\sqrt{\nu_{11,c}\nu_{12,c}}} +
+      \frac{\rho_2 \sqrt{\nu_{21}\nu_{22}}}{4n_2\sqrt{\nu_{21,c}\nu_{22,c}}}\right)}
+where \eqn{\nu_{jk,c} = (p_{jk} + c_j)(1 - p_{jk} - c_j)},
+\eqn{c_1 = -1/(2n_1)}, and \eqn{c_2 = 1/(2n_2)}.
 }
 \examples{
 # Power calculation using asymptotic normal method
