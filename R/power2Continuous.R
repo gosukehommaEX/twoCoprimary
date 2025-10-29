@@ -12,8 +12,8 @@
 #' @param rho Common correlation between the two outcomes
 #' @param alpha One-sided significance level (typically 0.025 or 0.05)
 #' @param known_var Logical value indicating whether variance is known (TRUE) or
-#'   unknown (FALSE). If TRUE, power is calculated under known variance assumption;
-#'   otherwise, Monte Carlo simulation is used for unknown variance
+#'   unknown (FALSE). If TRUE, power is calculated analytically; otherwise,
+#'   Monte Carlo simulation is used for unknown variance
 #' @param nMC Number of Monte Carlo simulations when known_var = FALSE (default is 10000)
 #'
 #' @return A data frame with the following columns:
@@ -41,7 +41,11 @@
 #' standard normal distribution.
 #'
 #' For unknown variance, Monte Carlo simulation is used with Wishart-distributed
-#' variance-covariance matrices to account for variance estimation uncertainty.
+#' variance-covariance matrices to account for variance estimation uncertainty,
+#' following equation (6) in Sozu et al. (2011):
+#' \deqn{\text{Power} = E_W\left[\Phi_2(-c_1^*\sqrt{w_{11}}, -c_2^*\sqrt{w_{22}} | \rho)\right]}
+#' where \eqn{c_k^* = t_{\alpha,\nu}\sqrt{\frac{1}{\nu}} - \frac{Z_k}{\sqrt{w_{kk}}}} and
+#' \eqn{W} follows a Wishart distribution with \eqn{\nu = n_1 + n_2 - 2} degrees of freedom.
 #'
 #' @references
 #' Sozu, T., Sugimoto, T., & Hamasaki, T. (2011). Sample size determination in
@@ -49,37 +53,47 @@
 #' \emph{Journal of Biopharmaceutical Statistics}, 21(4), 650-668.
 #'
 #' @examples
+#' # Example parameters for comparison across methods
+#' n1_ex <- 100
+#' n2_ex <- 100
+#' delta1_ex <- 0.5
+#' delta2_ex <- 0.5
+#' sd1_ex <- 1
+#' sd2_ex <- 1
+#' rho_ex <- 0.3
+#' alpha_ex <- 0.025
+#'
 #' # Power calculation with known variance
 #' power2Continuous(
-#'   n1 = 490,
-#'   n2 = 490,
-#'   delta1 = 0.2,
-#'   delta2 = 0.2,
-#'   sd1 = 1,
-#'   sd2 = 1,
-#'   rho = 0.5,
-#'   alpha = 0.025,
+#'   n1 = n1_ex,
+#'   n2 = n2_ex,
+#'   delta1 = delta1_ex,
+#'   delta2 = delta2_ex,
+#'   sd1 = sd1_ex,
+#'   sd2 = sd2_ex,
+#'   rho = rho_ex,
+#'   alpha = alpha_ex,
 #'   known_var = TRUE
 #' )
 #'
-#' # Power calculation with unknown variance (fewer simulations for quick example)
 #' \donttest{
+#' # Power calculation with unknown variance (Monte Carlo)
 #' power2Continuous(
-#'   n1 = 100,
-#'   n2 = 100,
-#'   delta1 = 0.5,
-#'   delta2 = 0.5,
-#'   sd1 = 1,
-#'   sd2 = 1,
-#'   rho = 0.3,
-#'   alpha = 0.025,
+#'   n1 = n1_ex,
+#'   n2 = n2_ex,
+#'   delta1 = delta1_ex,
+#'   delta2 = delta2_ex,
+#'   sd1 = sd1_ex,
+#'   sd2 = sd2_ex,
+#'   rho = rho_ex,
+#'   alpha = alpha_ex,
 #'   known_var = FALSE,
-#'   nMC = 1000
+#'   nMC = 10000
 #' )
 #' }
 #'
 #' @export
-#' @importFrom mvtnorm pmvnorm
+#' @importFrom mvtnorm pmvnorm GenzBretz
 #' @importFrom stats pnorm pt qt rWishart
 power2Continuous <- function(n1, n2, delta1, delta2, sd1, sd2, rho, alpha,
                              known_var = TRUE, nMC = 1e+4) {
@@ -98,7 +112,6 @@ power2Continuous <- function(n1, n2, delta1, delta2, sd1, sd2, rho, alpha,
     power2 <- pnorm(-qnorm(1 - alpha) + Z2)
 
     # Calculate power for co-primary endpoints using bivariate normal distribution
-    # This corresponds to equation (6) in Sozu et al. (2011)
     powerCoprimary <- pmvnorm(
       lower = c(-Inf, -Inf),
       upper = c(-qnorm(1 - alpha) + Z1, -qnorm(1 - alpha) + Z2),
@@ -116,10 +129,10 @@ power2Continuous <- function(n1, n2, delta1, delta2, sd1, sd2, rho, alpha,
     power1 <- 1 - pt(qt(1 - alpha, nu), df = nu, ncp = Z1)
     power2 <- 1 - pt(qt(1 - alpha, nu), df = nu, ncp = Z2)
 
-    # Calculate power for co-primary endpoints using Monte Carlo simulation
-    # Generate variance-covariance matrices from Wishart distribution
+    # Define variance-covariance matrix
     Sigma <- matrix(c(sd1 ^ 2, rho * sd1 * sd2, rho * sd1 * sd2, sd2 ^ 2), nrow = 2)
 
+    # Monte Carlo approach following Sozu et al. (2011) equation (6)
     # Generate Wishart random matrices
     Ws <- rWishart(nMC, df = nu, Sigma = Sigma)
 
@@ -135,7 +148,8 @@ power2Continuous <- function(n1, n2, delta1, delta2, sd1, sd2, rho, alpha,
       # Calculate probability for this iteration
       probs[i] <- pmvnorm(
         upper = -ci,
-        sigma = Sigma,
+        mean = c(0, 0),
+        corr = matrix(c(1, rho, rho, 1), ncol = 2),
         algorithm = GenzBretz(maxpts = 25000, abseps = 0.001, releps = 0)
       )[[1]]
     }
