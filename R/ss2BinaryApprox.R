@@ -36,13 +36,25 @@
 #' This function uses the linear extrapolation approach to find the required
 #' sample size iteratively:
 #'
-#' \strong{Step 1:} Initialize with sample sizes from single endpoint formulas
+#' \strong{Step 1:} Initialize with sample sizes from single endpoint formulas.
+#' The initial values use the same testing method specified in the Test argument
+#' to ensure consistency. Two initial values are calculated:
+#' \itemize{
+#'   \item n2_0: Based on target power 1 - β
+#'   \item n2_1: Based on adjusted power 1 - √(1-β) to provide a bracket
+#' }
 #'
 #' \strong{Step 2-4:} Iteratively refine using linear extrapolation until convergence:
 #' \deqn{n_2^{new} = \frac{n_2^{(0)}(power^{(1)} - (1-\beta)) - n_2^{(1)}(power^{(0)} - (1-\beta))}
 #'       {power^{(1)} - power^{(0)}}}
 #'
 #' The algorithm converges when \eqn{n_2^{(1)} = n_2^{(0)}}.
+#'
+#' \strong{Note on Fisher's Exact Test:}
+#' Fisher's exact test is not supported in this function because the saw-tooth
+#' nature of exact power makes linear extrapolation inappropriate. For Fisher's
+#' exact test with co-primary endpoints, use \code{\link{ss2BinaryExact}} instead,
+#' or use this method for mixed endpoints via ss2Mixed (forthcoming).
 #'
 #' @references
 #' Hamasaki, T., Sugimoto, T., Evans, S. R., & Sozu, T. (2013). Sample size
@@ -82,16 +94,41 @@
 #'   Test = 'AS'
 #' )
 #'
+#' # With continuity correction
+#' ss2BinaryApprox(
+#'   p11 = 0.55,
+#'   p12 = 0.45,
+#'   p21 = 0.35,
+#'   p22 = 0.25,
+#'   rho1 = 0.6,
+#'   rho2 = 0.6,
+#'   r = 1,
+#'   alpha = 0.025,
+#'   beta = 0.1,
+#'   Test = 'ANc'
+#' )
+#'
 #' @export
 ss2BinaryApprox <- function(p11, p12, p21, p22, rho1, rho2, r, alpha, beta, Test) {
 
+  # Input validation
+  if (!Test %in% c("AN", "ANc", "AS", "ASc")) {
+    stop("Test must be one of: AN, ANc, AS, ASc. For Fisher's exact test, use ss2BinaryExact().")
+  }
+
   # Step 1: Initialize sample sizes using single endpoint formulas
-  # Use the maximum sample size from both endpoints
-  n2_0 <- max(ss1BinaryApprox(c(p11, p12), c(p21, p22), r, alpha, beta)[["n2"]])
+  # IMPORTANT: Use the same Test method for initial values to ensure consistency
+  # Calculate sample size for each endpoint separately, then take the maximum
+  n2_endpoint1 <- ss1BinaryApprox(p11, p21, r, alpha, beta, Test = Test)[["n2"]]
+  n2_endpoint2 <- ss1BinaryApprox(p12, p22, r, alpha, beta, Test = Test)[["n2"]]
+  n2_0 <- max(n2_endpoint1, n2_endpoint2)
 
   # For the second initial value, use adjusted target power
   # This provides a bracket for the linear extrapolation
-  n2_1 <- max(ss1BinaryApprox(c(p11, p12), c(p21, p22), r, alpha, 1 - (1 - beta) ^ (1/2))[["n2"]])
+  # The adjusted power 1 - √(1-β) is typically higher than 1 - β
+  n2_endpoint1_adj <- ss1BinaryApprox(p11, p21, r, alpha, 1 - (1 - beta) ^ (1/2), Test = Test)[["n2"]]
+  n2_endpoint2_adj <- ss1BinaryApprox(p12, p22, r, alpha, 1 - (1 - beta) ^ (1/2), Test = Test)[["n2"]]
+  n2_1 <- max(n2_endpoint1_adj, n2_endpoint2_adj)
 
   # Step 2-4: Iterative refinement using linear extrapolation
   while (n2_1 - n2_0 != 0) {
