@@ -423,7 +423,8 @@ power2Mixed <- function(n1, n2, delta, sd, p1, p2, rho, alpha, Test, nMC = 10000
     upper = c(c_cont, c_bin),
     mean = c(0, 0),
     corr = matrix(c(1, gamma, gamma, 1), ncol = 2),
-    algorithm = GenzBretz(maxpts = 25000, abseps = 0.001, releps = 0)
+    algorithm = GenzBretz(maxpts = 25000, abseps = 0.001, releps = 0),
+    seed = 1
   )[[1]]
 
   # Return results as a data frame

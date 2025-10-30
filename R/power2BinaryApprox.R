@@ -150,7 +150,8 @@ power2BinaryApprox <- function(n1, n2, p11, p12, p21, p22, rho1, rho2, alpha, Te
         upper = (delta_k - se_k0 * qnorm(1 - alpha)) / se_k,
         mean = c(0, 0),
         corr = matrix(c(1, rho_nml, rho_nml, 1), ncol = 2),
-        algorithm = GenzBretz(maxpts = 25000, abseps = 0.001, releps = 0)
+        algorithm = GenzBretz(maxpts = 25000, abseps = 0.001, releps = 0),
+        seed = 1
       )[[1]]
 
     } else if (Test == "ANc") {
@@ -169,7 +170,8 @@ power2BinaryApprox <- function(n1, n2, p11, p12, p21, p22, rho1, rho2, alpha, Te
         upper = (delta_k - se_k0 * qnorm(1 - alpha) - ycc) / se_k,
         mean = c(0, 0),
         corr = matrix(c(1, rho_nml, rho_nml, 1), ncol = 2),
-        algorithm = GenzBretz(maxpts = 25000, abseps = 0.001, releps = 0)
+        algorithm = GenzBretz(maxpts = 25000, abseps = 0.001, releps = 0),
+        seed = 1
       )[[1]]
     }
 
@@ -197,7 +199,8 @@ power2BinaryApprox <- function(n1, n2, p11, p12, p21, p22, rho1, rho2, alpha, Te
         upper = delta_k / se - qnorm(1 - alpha),
         mean = c(0, 0),
         corr = matrix(c(1, rho_arc, rho_arc, 1), ncol = 2),
-        algorithm = GenzBretz(maxpts = 25000, abseps = 0.001, releps = 0)
+        algorithm = GenzBretz(maxpts = 25000, abseps = 0.001, releps = 0),
+        seed = 1
       )[[1]]
 
     } else if (Test == "ASc") {
@@ -234,7 +237,8 @@ power2BinaryApprox <- function(n1, n2, p11, p12, p21, p22, rho1, rho2, alpha, Te
         upper = (delta_k - se * qnorm(1 - alpha)) / se_k,
         mean = c(0, 0),
         corr = matrix(c(1, rho_arc_c, rho_arc_c, 1), ncol = 2),
-        algorithm = GenzBretz(maxpts = 25000, abseps = 0.001, releps = 0)
+        algorithm = GenzBretz(maxpts = 25000, abseps = 0.001, releps = 0),
+        seed = 1
       )[[1]]
     }
   }

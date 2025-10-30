@@ -117,7 +117,8 @@ power2Continuous <- function(n1, n2, delta1, delta2, sd1, sd2, rho, alpha,
       upper = c(-qnorm(1 - alpha) + Z1, -qnorm(1 - alpha) + Z2),
       mean = c(0, 0),
       corr = matrix(c(1, rho, rho, 1), ncol = 2),
-      algorithm = GenzBretz(maxpts = 25000, abseps = 0.001, releps = 0)
+      algorithm = GenzBretz(maxpts = 25000, abseps = 0.001, releps = 0),
+      seed = 1
     )[[1]]
 
   } else {
@@ -150,7 +151,8 @@ power2Continuous <- function(n1, n2, delta1, delta2, sd1, sd2, rho, alpha,
         upper = -ci,
         mean = c(0, 0),
         corr = matrix(c(1, rho, rho, 1), ncol = 2),
-        algorithm = GenzBretz(maxpts = 25000, abseps = 0.001, releps = 0)
+        algorithm = GenzBretz(maxpts = 25000, abseps = 0.001, releps = 0),
+        seed = 1
       )[[1]]
     }
 
