@@ -62,7 +62,7 @@
 #'
 #' @examples
 #' # Sample size calculation with known variance
-#' ss2ContinuousApprox(
+#' ss2Continuous(
 #'   delta1 = 0.2,
 #'   delta2 = 0.2,
 #'   sd1 = 1,
@@ -75,7 +75,7 @@
 #' )
 #'
 #' # Sample size calculation with unequal allocation
-#' ss2ContinuousApprox(
+#' ss2Continuous(
 #'   delta1 = 0.3,
 #'   delta2 = 0.25,
 #'   sd1 = 1,
@@ -89,7 +89,7 @@
 #'
 #' \donttest{
 #' # Sample size calculation with unknown variance
-#' ss2ContinuousApprox(
+#' ss2Continuous(
 #'   delta1 = 0.5,
 #'   delta2 = 0.4,
 #'   sd1 = 1,
@@ -105,7 +105,7 @@
 #'
 #' @export
 #' @importFrom stats qnorm
-ss2ContinuousApprox <- function(delta1, delta2, sd1, sd2, rho, r, alpha, beta,
+ss2Continuous <- function(delta1, delta2, sd1, sd2, rho, r, alpha, beta,
                                 known_var = TRUE, nMC = 1e+4) {
 
   # Input validation
