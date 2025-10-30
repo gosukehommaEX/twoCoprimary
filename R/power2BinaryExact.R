@@ -114,8 +114,8 @@ power2BinaryExact <- function(n1, n2, p11, p12, p21, p22, rho1, rho2, alpha, Tes
 
   # Calculate power for individual endpoints using binomial distribution
   # For endpoint k, we sum over all outcomes where the null is rejected
-  power1 <- sum(dbinom(0:n1, n1, p11) * pbinom(rowSums(RR) - 1, n2, p21, lower.tail = FALSE))
-  power2 <- sum(dbinom(0:n1, n1, p12) * pbinom(rowSums(RR) - 1, n2, p22, lower.tail = FALSE))
+  power1 <- sum(dbinom(0:n1, n1, p11) * pbinom(rowSums(RR) - 1, n2, p21))
+  power2 <- sum(dbinom(0:n1, n1, p12) * pbinom(rowSums(RR) - 1, n2, p22))
 
   # Calculate probability mass functions of bivariate binomial distribution for each group
   # pmass1[i+1, j+1] = P(Y_{1,1} = i, Y_{1,2} = j) for group 1
