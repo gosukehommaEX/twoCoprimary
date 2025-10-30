@@ -54,8 +54,8 @@ ss1BinaryApprox <- function(p1, p2, r, alpha, beta) {
   # Calculate the required sample size for group 2 using asymptotic normal approximation
   n2 <- ceiling(
     (1 + 1 / r) / (delta ^ 2) *
-      (qnorm(alpha) * sqrt(p * (1 - p)) +
-         qnorm(beta) * sqrt((p1 * (1 - p1) / r + p2 * (1 - p2)) / (1 + 1 / r))) ^ 2
+      (qnorm(1 - alpha) * sqrt(p * (1 - p)) +
+         qnorm(1 - beta) * sqrt((p1 * (1 - p1) / r + p2 * (1 - p2)) / (1 + 1 / r))) ^ 2
   )
 
   # Calculate the required sample size for group 1
