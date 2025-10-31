@@ -53,88 +53,68 @@
 #' \emph{Journal of Biopharmaceutical Statistics}, 21(4), 650-668.
 #'
 #' @examples
-#' # Example 1: Known variance with rho = 0.5 (from Sozu et al. 2011)
-#' power2Continuous(
-#'   n1 = 417,
-#'   n2 = 417,
-#'   delta1 = 0.2,
-#'   delta2 = 0.25,
-#'   sd1 = 1,
-#'   sd2 = 1,
-#'   rho = 0.5,
-#'   alpha = 0.025,
-#'   known_var = TRUE
-#' )
+#' # Example parameters for comparison across methods
+#' n1_ex <- 100
+#' n2_ex <- 100
+#' delta1_ex <- 0.5
+#' delta2_ex <- 0.5
+#' sd1_ex <- 1
+#' sd2_ex <- 1
+#' rho_ex <- 0.3
+#' alpha_ex <- 0.025
 #'
-#' # Example 2: Known variance with zero correlation
+#' # Power calculation with known variance
 #' power2Continuous(
-#'   n1 = 350,
-#'   n2 = 350,
-#'   delta1 = 0.2,
-#'   delta2 = 0.2,
-#'   sd1 = 1,
-#'   sd2 = 1,
-#'   rho = 0,
-#'   alpha = 0.025,
-#'   known_var = TRUE
-#' )
-#'
-#' # Example 3: Unequal allocation
-#' power2Continuous(
-#'   n1 = 200,
-#'   n2 = 100,
-#'   delta1 = 0.3,
-#'   delta2 = 0.25,
-#'   sd1 = 1,
-#'   sd2 = 1,
-#'   rho = 0.3,
-#'   alpha = 0.025,
+#'   n1 = n1_ex,
+#'   n2 = n2_ex,
+#'   delta1 = delta1_ex,
+#'   delta2 = delta2_ex,
+#'   sd1 = sd1_ex,
+#'   sd2 = sd2_ex,
+#'   rho = rho_ex,
+#'   alpha = alpha_ex,
 #'   known_var = TRUE
 #' )
 #'
 #' \donttest{
-#' # Example 4: Unknown variance (Monte Carlo simulation)
-#' set.seed(12345)
+#' # Power calculation with unknown variance (Monte Carlo)
 #' power2Continuous(
-#'   n1 = 150,
-#'   n2 = 150,
-#'   delta1 = 0.5,
-#'   delta2 = 0.4,
-#'   sd1 = 1,
-#'   sd2 = 1,
-#'   rho = 0.4,
-#'   alpha = 0.025,
+#'   n1 = n1_ex,
+#'   n2 = n2_ex,
+#'   delta1 = delta1_ex,
+#'   delta2 = delta2_ex,
+#'   sd1 = sd1_ex,
+#'   sd2 = sd2_ex,
+#'   rho = rho_ex,
+#'   alpha = alpha_ex,
 #'   known_var = FALSE,
 #'   nMC = 10000
 #' )
 #' }
 #'
 #' @export
-#' @importFrom stats qnorm pnorm qt pt rWishart
 #' @importFrom mvtnorm pmvnorm GenzBretz
+#' @importFrom stats pnorm pt qt rWishart
 power2Continuous <- function(n1, n2, delta1, delta2, sd1, sd2, rho, alpha,
                              known_var = TRUE, nMC = 1e+4) {
 
-  # Calculate the kappa (allocation ratio)
-  kappa <- n1 / n2
+  # Calculate test statistics for each endpoint
+  Z1 <- delta1 / (sd1 * sqrt(1 / n1 + 1 / n2))
+  Z2 <- delta2 / (sd2 * sqrt(1 / n1 + 1 / n2))
 
   if (known_var) {
-    # ===== KNOWN VARIANCE =====
-    # Calculate Z-statistics under alternative hypothesis
-    Z1 <- delta1 / (sd1 * sqrt(1 / n1 + 1 / n2))
-    Z2 <- delta2 / (sd2 * sqrt(1 / n1 + 1 / n2))
 
-    # Critical value for one-sided test
-    z_alpha <- qnorm(1 - alpha)
+    # Set nMC to NA for known variance case
+    nMC <- NA
 
-    # Power for individual endpoints
-    power1 <- pnorm(-z_alpha + Z1)
-    power2 <- pnorm(-z_alpha + Z2)
+    # Calculate power for individual endpoints using normal distribution
+    power1 <- pnorm(-qnorm(1 - alpha) + Z1)
+    power2 <- pnorm(-qnorm(1 - alpha) + Z2)
 
-    # Power for co-primary endpoints using bivariate normal distribution
+    # Calculate power for co-primary endpoints using bivariate normal distribution
     powerCoprimary <- pmvnorm(
       lower = c(-Inf, -Inf),
-      upper = c(-z_alpha + Z1, -z_alpha + Z2),
+      upper = c(-qnorm(1 - alpha) + Z1, -qnorm(1 - alpha) + Z2),
       mean = c(0, 0),
       corr = matrix(c(1, rho, rho, 1), ncol = 2),
       algorithm = GenzBretz(maxpts = 25000, abseps = 0.001, releps = 0),
@@ -142,49 +122,42 @@ power2Continuous <- function(n1, n2, delta1, delta2, sd1, sd2, rho, alpha,
     )[[1]]
 
   } else {
-    # ===== UNKNOWN VARIANCE: Use Monte Carlo simulation =====
-    # Degrees of freedom
+
+    # Calculate degrees of freedom for unknown variance case
     nu <- n1 + n2 - 2
 
-    # Critical value for t-distribution
-    t_alpha <- qt(1 - alpha, nu)
+    # Calculate power for individual endpoints using t-distribution
+    power1 <- 1 - pt(qt(1 - alpha, nu), df = nu, ncp = Z1)
+    power2 <- 1 - pt(qt(1 - alpha, nu), df = nu, ncp = Z2)
 
-    # Calculate Z-statistics (same as known variance case)
-    Z1 <- delta1 / (sd1 * sqrt(1 / n1 + 1 / n2))
-    Z2 <- delta2 / (sd2 * sqrt(1 / n1 + 1 / n2))
+    # Define variance-covariance matrix
+    Sigma <- matrix(c(sd1 ^ 2, rho * sd1 * sd2, rho * sd1 * sd2, sd2 ^ 2), nrow = 2)
 
-    # Generate Wishart matrices
-    # Identity matrix scaled by nu
-    Sigma <- matrix(c(1, rho, rho, 1), ncol = 2)
-    W <- rWishart(nMC, df = nu, Sigma = Sigma * nu)
+    # Monte Carlo approach following Sozu et al. (2011) equation (6)
+    # Generate Wishart random matrices
+    Ws <- rWishart(nMC, df = nu, Sigma = Sigma)
 
-    # Calculate power using Monte Carlo simulation (equation 6 in Sozu et al. 2011)
-    # For each Monte Carlo sample, calculate the adjusted critical values
-    c1_star <- sapply(1:nMC, function(i) {
-      w11 <- W[1, 1, i]
-      t_alpha * sqrt(1 / nu) - Z1 / sqrt(w11)
-    })
+    # Calculate power by averaging over simulated variance-covariance matrices
+    probs <- numeric(nMC)
+    for (i in 1:nMC) {
+      # Extract diagonal elements (variances) from the i-th Wishart matrix
+      Wi <- diag(Ws[, , i])
 
-    c2_star <- sapply(1:nMC, function(i) {
-      w22 <- W[2, 2, i]
-      t_alpha * sqrt(1 / nu) - Z2 / sqrt(w22)
-    })
+      # Calculate critical values adjusted by estimated variances
+      ci <- qt(1 - alpha, df = nu) * sqrt(Wi / nu) - c(Z1, Z2)
 
-    # Power for individual endpoints
-    power1 <- mean(pt(c1_star, nu))
-    power2 <- mean(pt(c2_star, nu))
-
-    # Power for co-primary endpoints
-    # Use pmvnorm for each Monte Carlo sample and average
-    powerCoprimary <- mean(sapply(1:nMC, function(i) {
-      pmvnorm(
-        lower = c(-Inf, -Inf),
-        upper = c(c1_star[i], c2_star[i]),
+      # Calculate probability for this iteration
+      probs[i] <- pmvnorm(
+        upper = -ci,
         mean = c(0, 0),
         corr = matrix(c(1, rho, rho, 1), ncol = 2),
-        algorithm = GenzBretz(maxpts = 25000, abseps = 0.001, releps = 0)
+        algorithm = GenzBretz(maxpts = 25000, abseps = 0.001, releps = 0),
+        seed = 1
       )[[1]]
-    }))
+    }
+
+    # Average over all Monte Carlo iterations
+    powerCoprimary <- mean(probs)
   }
 
   # Return results as a data frame

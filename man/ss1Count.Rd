@@ -37,14 +37,14 @@ A data frame with the following columns:
 \description{
 Calculates the required sample size for a two-arm superiority trial with a
 single overdispersed count endpoint following a negative binomial distribution,
-as described in Zhu and Lakkis (2014).
+as described in Homma and Yoshida (2024).
 }
 \details{
 The test statistic for the negative binomial rate ratio is:
 \deqn{Z_1 = \frac{\hat{\beta}_1}{\sqrt{Var(\hat{\beta}_1)}}}
 where \eqn{\hat{\beta}_1 = \log(\bar{Y}_1) - \log(\bar{Y}_0)} and the variance is:
 \deqn{Var(\hat{\beta}_1) = \frac{1}{n_0}\left[\frac{1}{t}\left(\frac{1}{r_0} +
-      \frac{1}{r \times r_1}\right) + \frac{1+r}{\nu \times r}\right]}
+      \frac{1}{\r r_1}\right) + \frac{1+\r}{\nu\r}\right]}
 
 This is equation (8) in Homma and Yoshida (2024).
 }
@@ -63,9 +63,6 @@ ss1Count(r0 = 2.0, r1 = 1.5, nu = 3.0, t = 1, r = 1,
 
 }
 \references{
-Zhu, H., & Lakkis, H. (2014). Sample size calculation for comparing two negative
-binomial rates. \emph{Statistics in Medicine}, 33(3), 376-387.
-
 Homma, G., & Yoshida, T. (2024). Sample size calculation in clinical trials
 with two co-primary endpoints including overdispersed count and continuous
 outcomes. \emph{Pharmaceutical Statistics}, 23(1), 46-59.

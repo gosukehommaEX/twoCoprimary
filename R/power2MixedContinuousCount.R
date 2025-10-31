@@ -48,16 +48,16 @@
 #' outcomes. \emph{Pharmaceutical Statistics}, 23(1), 46-59.
 #'
 #' @examples
-#' # Example 1: Power calculation with moderate correlation (Table 1 in Homma and Yoshida 2024)
+#' # Power calculation with moderate correlation
 #' power2MixedContinuousCount(
-#'   n0 = 599, n1 = 1198,
-#'   r0 = 1.25, r1 = 1.0, nu = 1, t = 1,
+#'   n0 = 300, n1 = 300,
+#'   r0 = 1.25, r1 = 1.0, nu = 0.8, t = 1,
 #'   mu0 = 0, mu1 = -50, sigma = 250,
-#'   rho0 = 0.8, rho1 = 0.8,
+#'   rho0 = 0.5, rho1 = 0.5,
 #'   alpha = 0.025
 #' )
 #'
-#' # Example 2: Power calculation with no correlation
+#' # Power calculation with no correlation
 #' power2MixedContinuousCount(
 #'   n0 = 350, n1 = 350,
 #'   r0 = 1.5, r1 = 1.0, nu = 1.0, t = 1,
@@ -66,7 +66,7 @@
 #'   alpha = 0.025
 #' )
 #'
-#' # Example 3: Unbalanced design
+#' # Unbalanced design
 #' power2MixedContinuousCount(
 #'   n0 = 200, n1 = 400,
 #'   r0 = 1.25, r1 = 1.0, nu = 1.0, t = 1,

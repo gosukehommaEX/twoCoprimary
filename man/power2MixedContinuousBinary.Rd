@@ -80,7 +80,7 @@ derived from a latent continuous variable via dichotomization at a threshold poi
 
 \strong{Biserial Correlation Model:}
 The binary endpoint is assumed to arise from dichotomizing a latent continuous
-variable at a threshold. The correlation parameter rho represents the biserial
+variable at a threshold. The correlation parameter ρ (rho) represents the biserial
 correlation between the observed continuous endpoint and this latent continuous
 variable underlying the binary endpoint.
 
@@ -88,33 +88,33 @@ variable underlying the binary endpoint.
 \itemize{
 \item The latent variable underlying the binary endpoint follows a bivariate normal
 distribution with the continuous endpoint
-\item For group i with response probability pi, the latent variable has mean mui = Phi^(-1)(pi)
+\item For group i with response probability πᵢ, the latent variable has mean μᵢ = Φ⁻¹(πᵢ)
 and variance 1
-\item The dichotomization threshold is set at 0, so P(X >= 0) = Phi(mui) = pi
+\item The dichotomization threshold is set at 0, so P(X ≥ 0) = Φ(μᵢ) = πᵢ
 \item This is equivalent to using varying cutoff points with fixed means, and is the
 standard approach in biserial correlation models
 }
 
 \strong{Note on Table 2 in Supporting Information:}
 There is a typographical error in the original paper's Table 2 for Arcsine(CC)
-method. The second term in the numerator should use piCk'*thetaCk' instead of piTk'*thetaTk'.
+method. The second term in the numerator should use πCk'θCk' instead of πTk'θTk'.
 This implementation uses the corrected formula.
 
 \strong{Understanding Key Quantities:}
 \itemize{
-\item rho: Biserial correlation between the continuous endpoint and the latent
+\item ρ (rho): Biserial correlation between the continuous endpoint and the latent
 continuous variable underlying the binary endpoint (before dichotomization)
-\item gamma: Correlation between the test statistics of the two endpoints
+\item γ (gamma): Correlation between the test statistics of the two endpoints
 (after dichotomization and standardization)
-\item xi: Standard normal density at the dichotomization threshold, calculated as
-xi = phi(Phi^(-1)(1-pi)) where pi is the response probability
-\item c\emph{1/c}2: Ratio of standardized critical values for the two endpoints. When
-c\emph{1/c}2 ≈ 1, the individual powers of the two endpoints are approximately equal
+\item ξ: Standard normal density at the dichotomization threshold, calculated as
+ξ = φ(Φ⁻¹(1-π)) where π is the response probability
+\item c\emph{₁/c}₂: Ratio of standardized critical values for the two endpoints. When
+c\emph{₁/c}₂ ≈ 1, the individual powers of the two endpoints are approximately equal
 }
 }
 \examples{
 # Example 1: Reproduce Table 2 from Sozu et al. (2012)
-# mTSS (continuous) and ACR50 (binary) with correlation rho = 0.0
+# mTSS (continuous) and ACR50 (binary) with correlation ρ = 0.0
 power2MixedContinuousBinary(
   n1 = 346,
   n2 = 346,
@@ -127,7 +127,7 @@ power2MixedContinuousBinary(
   Test = "AN"
 )
 
-# Example 2: Same setting with correlation rho = 0.8
+# Example 2: Same setting with correlation ρ = 0.8
 power2MixedContinuousBinary(
   n1 = 323,
   n2 = 323,

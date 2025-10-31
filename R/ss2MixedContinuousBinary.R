@@ -40,7 +40,8 @@
 #'
 #' @details
 #' This function implements the sample size calculation for mixed continuous-binary
-#' co-primary endpoints following the methodology in Sozu et al. (2012).
+#' co-primary endpoints following the methodology in Sozu et al. (2012) and the
+#' iterative algorithm from Hamasaki et al. (2013) extended to mixed endpoints.
 #'
 #' **Endpoint Types:**
 #' \itemize{
@@ -50,34 +51,47 @@
 #'
 #' **Biserial Correlation Model:**
 #' The binary endpoint is assumed to arise from dichotomizing a latent continuous
-#' variable at a threshold. The correlation parameter rho represents the biserial
+#' variable at a threshold. The correlation parameter ρ (rho) represents the biserial
 #' correlation between the observed continuous endpoint and this latent continuous
 #' variable underlying the binary endpoint.
 #'
 #' **Algorithm:**
 #'
-#' For methods AN, ANc, AS, and ASc, linear extrapolation algorithm is used:
+#' \strong{Step 1:} Initialize with sample sizes from single endpoint formulas.
+#' The initial value is the maximum of:
+#' \itemize{
+#'   \item Sample size for continuous endpoint (from ss1Continuous)
+#'   \item Sample size for binary endpoint (from ss1BinaryApprox with Test method)
+#' }
+#' Two initial values are calculated:
+#' \itemize{
+#'   \item n2_0: Based on target power 1 - β
+#'   \item n2_1: Based on adjusted power 1 - √(1-β) to provide a bracket
+#' }
 #'
-#' \strong{Step 1:} Initialize with sample sizes from single endpoint formulas
-#'
-#' \strong{Step 2-4:} Iteratively refine using linear extrapolation:
+#' \strong{Step 2-4:} Iteratively refine using linear extrapolation until convergence:
 #' \deqn{n_2^{new} = \frac{n_2^{(0)}(power^{(1)} - (1-\beta)) - n_2^{(1)}(power^{(0)} - (1-\beta))}
 #'       {power^{(1)} - power^{(0)}}}
 #'
 #' The algorithm converges when \eqn{n_2^{(1)} = n_2^{(0)}}.
 #'
-#' For Fisher's exact test, sequential search is used instead, as Monte Carlo
-#' simulation has random variation that can prevent reliable convergence with
-#' linear extrapolation.
+#' **For Fisher's Exact Test:**
+#' When Test = "Fisher", Monte Carlo simulation is used in the power calculation.
+#' Due to random variation in Monte Carlo estimates, sequential search (incrementing
+#' sample size by 1) is used instead of linear extrapolation for more stable convergence.
 #'
 #' @references
 #' Sozu, T., Sugimoto, T., & Hamasaki, T. (2012). Sample size determination in
 #' clinical trials with multiple co-primary endpoints including mixed continuous
 #' and binary variables. \emph{Biometrical Journal}, 54(5), 716-729.
 #'
+#' Hamasaki, T., Sugimoto, T., Evans, S. R., & Sozu, T. (2013). Sample size
+#' determination for clinical trials with co-primary outcomes: exponential event
+#' times. \emph{Pharmaceutical Statistics}, 12(1), 28-34.
+#'
 #' @examples
 #' # Example 1: Based on PREMIER study (Table 2 in Sozu et al. 2012)
-#' # mTSS (continuous) and ACR50 (binary) with rho = 0.5
+#' # mTSS (continuous) and ACR50 (binary) with ρ = 0.5
 #' ss2MixedContinuousBinary(
 #'   delta = 4.4,
 #'   sd = 19.0,
@@ -183,17 +197,15 @@ ss2MixedContinuousBinary <- function(delta, sd, p1, p2, rho, r, alpha, beta, Tes
     # Monte Carlo simulation has random variation, so linear extrapolation
     # may not converge reliably. Instead, use sequential search.
 
-    # Helper function for continuous endpoint
-    ss1Continuous <- function(delta, sd, r, alpha, beta) {
-      z_alpha <- qnorm(1 - alpha)
-      z_beta <- qnorm(1 - beta)
-      n2 <- ceiling(((z_alpha + z_beta) * sd / delta) ^ 2 * (1 + 1 / r))
-      return(n2)
-    }
-
     # Step 1: Initialize with sample size from single endpoint formulas
-    n2_cont <- ss1Continuous(delta, sd, r, alpha, beta)
+    # Calculate sample size for continuous endpoint
+    n2_cont <- ss1Continuous(delta, sd, r, alpha, beta)[["n2"]]
+
+    # Calculate sample size for binary endpoint
+    # For Fisher's test, use AN method for initial estimate
     n2_bin <- ss1BinaryApprox(p1, p2, r, alpha, beta, Test = "AN")[["n2"]]
+
+    # Use the maximum as initial value
     n2 <- max(n2_cont, n2_bin)
     n1 <- ceiling(r * n2)
 
@@ -211,32 +223,28 @@ ss2MixedContinuousBinary <- function(delta, sd, p1, p2, rho, r, alpha, beta, Tes
     n <- n1 + n2
 
   } else {
-    # ===== AN, ANc, AS, ASc METHODS: Use linear extrapolation =====
-
-    # Helper function for continuous endpoint
-    ss1Continuous <- function(delta, sd, r, alpha, beta) {
-      z_alpha <- qnorm(1 - alpha)
-      z_beta <- qnorm(1 - beta)
-      n2 <- ceiling(((z_alpha + z_beta) * sd / delta) ^ 2 * (1 + 1 / r))
-      return(n2)
-    }
+    # ===== ASYMPTOTIC METHODS: Use linear extrapolation =====
 
     # Step 1: Initialize sample sizes using single endpoint formulas
-    n2_cont <- ss1Continuous(delta, sd, r, alpha, beta)
+    # Calculate sample size for continuous endpoint
+    n2_cont <- ss1Continuous(delta, sd, r, alpha, beta)[["n2"]]
+
+    # Calculate sample size for binary endpoint using the same Test method
     n2_bin <- ss1BinaryApprox(p1, p2, r, alpha, beta, Test = Test)[["n2"]]
+
+    # Use the maximum as initial value for target power
     n2_0 <- max(n2_cont, n2_bin)
 
     # For the second initial value, use adjusted target power
-    n2_cont_adj <- ss1Continuous(delta, sd, r, alpha, 1 - (1 - beta) ^ (1/2))
-    n2_bin_adj <- ss1BinaryApprox(p1, p2, r, alpha, 1 - (1 - beta) ^ (1/2), Test = Test)[["n2"]]
+    # This provides a bracket for the linear extrapolation
+    beta_adj <- 1 - (1 - beta) ^ (1/2)
+
+    n2_cont_adj <- ss1Continuous(delta, sd, r, alpha, beta_adj)[["n2"]]
+    n2_bin_adj <- ss1BinaryApprox(p1, p2, r, alpha, beta_adj, Test = Test)[["n2"]]
     n2_1 <- max(n2_cont_adj, n2_bin_adj)
 
     # Step 2-4: Iterative refinement using linear extrapolation
-    max_iter <- 100
-    iter <- 0
-
-    while (n2_1 - n2_0 != 0 && iter < max_iter) {
-      iter <- iter + 1
+    while (n2_1 - n2_0 != 0) {
 
       # Calculate sample sizes for group 1
       n1_0 <- ceiling(r * n2_0)
@@ -254,10 +262,6 @@ ss2MixedContinuousBinary <- function(delta, sd, p1, p2, rho, r, alpha, beta, Tes
       # Update values for next iteration
       n2_1 <- n2_0
       n2_0 <- ceiling(n2_updated)
-    }
-
-    if (iter >= max_iter) {
-      warning("Maximum iterations reached. Results may not have converged.")
     }
 
     # Final sample sizes

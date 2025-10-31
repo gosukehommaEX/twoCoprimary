@@ -2,7 +2,7 @@
 % Please edit documentation in R/ss2Continuous.R
 \name{ss2Continuous}
 \alias{ss2Continuous}
-\title{Sample Size Calculation for Two Co-Primary Continuous Endpoints}
+\title{Sample Size Calculation for Two Co-Primary Continuous Endpoints (Approximate)}
 \usage{
 ss2Continuous(
   delta1,
@@ -18,9 +18,9 @@ ss2Continuous(
 )
 }
 \arguments{
-\item{delta1}{Mean difference for the first endpoint (group 1 - group 2)}
+\item{delta1}{Mean difference for the first endpoint}
 
-\item{delta2}{Mean difference for the second endpoint (group 1 - group 2)}
+\item{delta2}{Mean difference for the second endpoint}
 
 \item{sd1}{Common standard deviation for the first endpoint}
 
@@ -28,25 +28,23 @@ ss2Continuous(
 
 \item{rho}{Common correlation between the two outcomes}
 
-\item{r}{Allocation ratio n1/n2 where n1 is sample size for group 1}
+\item{r}{Allocation ratio of group 1 to group 2 (group 1:group 2 = r:1, where r > 0)}
 
 \item{alpha}{One-sided significance level (typically 0.025 or 0.05)}
 
-\item{beta}{Type II error rate (typically 0.1 or 0.2). Power = 1 - beta}
+\item{beta}{Target type II error rate (typically 0.1 or 0.2)}
 
 \item{known_var}{Logical value indicating whether variance is known (TRUE) or
-unknown (FALSE). If TRUE, linear extrapolation is used; if FALSE, sequential
-search is used for sample size determination}
+unknown (FALSE). If TRUE, power is calculated analytically using linear
+extrapolation; if FALSE, Monte Carlo simulation with sequential search is used}
 
 \item{nMC}{Number of Monte Carlo simulations when known_var = FALSE (default is 10000)}
 }
 \value{
 A data frame with the following columns:
-\item{delta1}{Mean difference for endpoint 1}
-\item{delta2}{Mean difference for endpoint 2}
-\item{sd1}{Standard deviation for endpoint 1}
-\item{sd2}{Standard deviation for endpoint 2}
-\item{rho}{Correlation between endpoints}
+\item{delta1, delta2}{Mean differences}
+\item{sd1, sd2}{Standard deviations}
+\item{rho}{Correlation}
 \item{r}{Allocation ratio}
 \item{alpha}{One-sided significance level}
 \item{beta}{Type II error rate}
@@ -57,29 +55,30 @@ A data frame with the following columns:
 \item{n}{Total sample size (n1 + n2)}
 }
 \description{
-Determines the sample size for a two-arm superiority trial with two co-primary
-continuous endpoints, to achieve a specified power at a given significance level.
+Calculates the required sample size for a two-arm superiority trial with two
+co-primary continuous endpoints using linear extrapolation approach (for known
+variance) or sequential search (for unknown variance), as described in
+Hamasaki et al. (2013) and Sozu et al. (2011).
 }
 \details{
-This function uses two different approaches depending on the variance assumption:
+This function uses different algorithms depending on the variance assumption:
 
-\strong{Known Variance:} Uses linear extrapolation algorithm for efficient sample size
-determination. The algorithm iteratively refines the sample size estimate:
+\strong{For known variance (known_var = TRUE):}
+Uses a linear extrapolation algorithm (Hamasaki et al. 2013) to efficiently
+determine the required sample size.
+\enumerate{
+\item Initialize two sample sizes: \eqn{n_{2,0}} using target power \eqn{1-\beta}
+and \eqn{n_{2,1}} using adjusted power \eqn{1-\sqrt{1-\beta}}
+\item Calculate power at both sample sizes
+\item Use linear extrapolation to estimate sample size achieving target power:
+\deqn{n_{2,new} = \frac{n_{2,0}(power_{n_{2,1}} - (1-\beta)) - n_{2,1}(power_{n_{2,0}} - (1-\beta))}{power_{n_{2,1}} - power_{n_{2,0}}}}
+\item Update values and repeat until convergence
+}
 
-\strong{Step 1:} Initialize with sample sizes from single endpoint formulas
-
-\strong{Step 2:} Set upper bound using adjusted power
-
-\strong{Step 3-4:} Iteratively refine using linear extrapolation:
-\deqn{n_2^{new} = \frac{n_2^{(0)}(power^{(1)} - (1-\beta)) - n_2^{(1)}(power^{(0)} - (1-\beta))}
-      {power^{(1)} - power^{(0)}}}
-
-The algorithm converges when \eqn{n_2^{(1)} = n_2^{(0)}}.
-
-\strong{Unknown Variance:} Uses sequential search, as Monte Carlo simulation has random
-variation that can prevent reliable convergence with linear extrapolation.
-This approach is more stable for Monte Carlo simulation where power estimates have
-random variation.
+\strong{For unknown variance (known_var = FALSE):}
+Uses sequential search starting from initial sample size, incrementing by 1 until
+target power is achieved. This approach is more stable for Monte Carlo simulation
+where power estimates have random variation.
 
 For known variance, the standardized test statistics are:
 \deqn{Z_k = \frac{\delta_k}{\sigma_k \sqrt{1/n_1 + 1/n_2}}}
@@ -88,7 +87,7 @@ freedom are used, and power is calculated using Monte Carlo simulation following
 Sozu et al. (2011).
 }
 \examples{
-# Example 1: Known variance with rho = 0.5 (Table 1 in Sozu et al. 2011)
+# Sample size calculation with known variance
 ss2Continuous(
   delta1 = 0.2,
   delta2 = 0.2,
@@ -97,11 +96,11 @@ ss2Continuous(
   rho = 0.5,
   r = 1,
   alpha = 0.025,
-  beta = 0.2,
+  beta = 0.1,
   known_var = TRUE
 )
 
-# Example 2: Known variance with unequal allocation
+# Sample size calculation with unequal allocation
 ss2Continuous(
   delta1 = 0.3,
   delta2 = 0.25,
@@ -115,7 +114,7 @@ ss2Continuous(
 )
 
 \donttest{
-# Example 3: Unknown variance (uses sequential search)
+# Sample size calculation with unknown variance (uses sequential search)
 ss2Continuous(
   delta1 = 0.5,
   delta2 = 0.4,
@@ -132,6 +131,10 @@ ss2Continuous(
 
 }
 \references{
+Hamasaki, T., Sugimoto, T., Evans, S. R., & Sozu, T. (2013). Sample size
+determination for clinical trials with co-primary outcomes: Exponential event
+times. \emph{Pharmaceutical Statistics}, 12(1), 28-34.
+
 Sozu, T., Sugimoto, T., & Hamasaki, T. (2011). Sample size determination in
 superiority clinical trials with multiple co-primary correlated endpoints.
 \emph{Journal of Biopharmaceutical Statistics}, 21(4), 650-668.

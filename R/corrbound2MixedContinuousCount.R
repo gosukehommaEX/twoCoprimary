@@ -1,11 +1,10 @@
-#' Calculate Correlation Bounds for Mixed Count and Continuous Outcomes
+#' Calculate Correlation Bounds Between Count and Continuous Outcomes
 #'
 #' Computes the lower and upper bounds of the correlation coefficient between
-#' a negative binomial count outcome and a continuous outcome, using the
-#' Frechet-Hoeffding bounds as described in Homma and Yoshida (2024).
+#' an overdispersed count outcome (negative binomial) and a continuous outcome
+#' using Frechet-Hoeffding bounds, as described in Homma and Yoshida (2024).
 #'
-#' @param lambda Expected number of events (lambda = r * t, where r is the rate
-#'   and t is the follow-up time)
+#' @param lambda Expected number of events for the count outcome (lambda = rate * time)
 #' @param nu Dispersion parameter for the negative binomial distribution (nu > 0)
 #' @param mu Mean of the continuous outcome
 #' @param sd Standard deviation of the continuous outcome
@@ -16,15 +15,13 @@
 #'   \item{U_bound}{Upper bound of the correlation}
 #'
 #' @details
-#' For a negative binomial count outcome Y1 ~ NB(lambda, nu) and a continuous
-#' outcome Y2 ~ N(mu, sd^2), the correlation coefficient rho is bounded using
-#' the Frechet-Hoeffding bounds on copulas:
-#'
-#' **Lower bound (Frechet-Hoeffding lower bound):**
-#' \deqn{H^-(u, v) = \max(u + v - 1, 0)}
-#'
-#' **Upper bound (Frechet-Hoeffding upper bound):**
-#' \deqn{H^+(u, v) = \min(u, v)}
+#' For a count outcome Y1 ~ NB(lambda, nu) and a continuous outcome Y2 ~ N(mu, sd^2),
+#' the correlation coefficient rho is bounded by Frechet-Hoeffding bounds:
+#' \deqn{L(\rho) = \frac{\int [H^-(F_1(y_1), F_2(y_2)) - F_1(y_1)F_2(y_2)] dy_2}
+#'       {\sd_{Y_1} \times \sd_{Y_2}}}
+#' \deqn{U(\rho) = \frac{\int [H^+(F_1(y_1), F_2(y_2)) - F_1(y_1)F_2(y_2)] dy_2}
+#'       {\sd_{Y_1} \times \sd_{Y_2}}}
+#' where H^- and H^+ are the lower and upper Frechet-Hoeffding bounds, respectively.
 #'
 #' The variance of the negative binomial distribution is: Var(Y1) = lambda + lambda^2/nu
 #'
@@ -47,7 +44,7 @@
 #' corrbound2MixedContinuousCount(lambda = 1.0 * 2, nu = 1.0, mu = 0, sd = 300, t = 2)
 #'
 #' @export
-#' @importFrom stats pnbinom pnorm integrate qnbinom
+#' @importFrom stats pnbinom pnorm integrate
 corrbound2MixedContinuousCount <- function(lambda, nu, mu, sd, t) {
 
   # Calculate variance of count outcome: Var(Y1) = lambda + lambda^2/nu

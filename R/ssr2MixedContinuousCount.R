@@ -1,8 +1,8 @@
 #' Sample Size Calculation for Two Co-Primary Endpoints (Count and Continuous)
 #'
 #' Calculates the required sample size for a two-arm superiority trial with one
-#' overdispersed count co-primary endpoint and one continuous co-primary endpoint,
-#' as described in Homma and Yoshida (2024).
+#' overdispersed count co-primary endpoint and one continuous co-primary endpoint
+#' using the linear extrapolation approach, as described in Homma and Yoshida (2024).
 #'
 #' @param r0 Mean rate (events per unit time) for the control group (count endpoint)
 #' @param r1 Mean rate (events per unit time) for the treatment group (count endpoint)
@@ -33,8 +33,8 @@
 #'   \item{N}{Total sample size (n0 + n1)}
 #'
 #' @details
-#' This function uses linear extrapolation algorithm for efficient sample size
-#' determination:
+#' This function uses the linear extrapolation approach similar to other sample
+#' size calculation functions in this package:
 #'
 #' \strong{Step 1:} Initialize with sample sizes from single endpoint formulas
 #'
@@ -44,8 +44,7 @@
 #' \deqn{n_0^{new} = \frac{n_0^{(0)}(power^{(1)} - (1-\beta)) - n_0^{(1)}(power^{(0)} - (1-\beta))}
 #'       {power^{(1)} - power^{(0)}}}
 #'
-#' The algorithm converges when \eqn{n_0^{(1)} = n_0^{(0)}}. If convergence is not
-#' achieved within 100 iterations, a warning is issued.
+#' The algorithm converges when \eqn{n_0^{(1)} = n_0^{(0)}}.
 #'
 #' The correlation bounds are automatically checked using \code{\link{corrbound2MixedContinuousCount}}.
 #' If the specified correlation is outside the valid range, a warning is issued.
@@ -56,16 +55,15 @@
 #' outcomes. \emph{Pharmaceutical Statistics}, 23(1), 46-59.
 #'
 #' @examples
-#' # Example 1: COPD trial scenario (Table 1 in Homma and Yoshida 2024)
-#' # with nu = 0.8 and rho = 0.5
+#' # Sample size calculation for COPD trial scenario
 #' ssr2MixedContinuousCount(
 #'   r0 = 1.25, r1 = 1.0, nu = 0.8, t = 1,
 #'   mu0 = 0, mu1 = -50, sigma = 250,
-#'   r = 1, rho0 = 0.8, rho1 = 0.8,
+#'   r = 1, rho0 = 0.5, rho1 = 0.5,
 #'   alpha = 0.025, beta = 0.1
 #' )
 #'
-#' # Example 2: Multiple dispersion parameters
+#' # Multiple dispersion parameters
 #' ssr2MixedContinuousCount(
 #'   r0 = 1.25, r1 = 1.0, nu = c(0.8, 1.0, 2.0), t = 1,
 #'   mu0 = 0, mu1 = -50, sigma = 250,
@@ -73,7 +71,7 @@
 #'   alpha = 0.025, beta = 0.1
 #' )
 #'
-#' # Example 3: Zero correlation (independent endpoints)
+#' # Zero correlation (independent endpoints)
 #' ssr2MixedContinuousCount(
 #'   r0 = 1.5, r1 = 1.0, nu = 1.0, t = 1,
 #'   mu0 = 0, mu1 = -40, sigma = 200,

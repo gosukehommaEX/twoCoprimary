@@ -47,31 +47,72 @@ A data frame with the following columns:
 }
 \description{
 Calculates the power for a two-arm superiority trial with two co-primary
-binary endpoints using approximate methods, as described in Sozu et al. (2010).
+binary endpoints using various asymptotic normal approximation methods, as
+described in Sozu et al. (2010).
 }
 \details{
-This function calculates the power using asymptotic normal approximation or
-arcsine transformation methods as described in Sozu et al. (2010).
+This function implements four approximate power calculation methods:
 
-The power for co-primary endpoints is calculated using the bivariate normal
-distribution, accounting for the correlation between endpoints.
+\strong{Asymptotic Normal (AN):} Uses the standard normal approximation without
+continuity correction (equations 3-4 in Sozu et al. 2010).
+
+\strong{Asymptotic Normal with Continuity Correction (ANc):} Includes Yates's
+continuity correction (equation 5 in Sozu et al. 2010).
+
+\strong{Arcsine (AS):} Uses arcsine transformation without continuity correction
+(equation 6 in Sozu et al. 2010).
+
+\strong{Arcsine with Continuity Correction (ASc):} Arcsine method with continuity
+correction (equation 7 in Sozu et al. 2010).
+
+The correlation between test statistics for the two endpoints depends on the method:
+
+\strong{For AN and ANc methods:}
+\deqn{\rho_{nml} = \frac{\sum_{j=1}^{2} \rho_j \sqrt{\nu_{j1}\nu_{j2}}/n_j}
+      {se_1 \times se_2}}
+where \eqn{\nu_{jk} = p_{jk}(1-p_{jk})}.
+
+\strong{For AS method:}
+\deqn{\rho_{arc} = \frac{n_2 \rho_1 + n_1 \rho_2}{n_1 + n_2}}
+This is the weighted average of the correlations from both groups.
+
+\strong{For ASc method:}
+\deqn{\rho_{arc,c} = \frac{1}{se_1 \times se_2}
+      \left(\frac{\rho_1 \sqrt{\nu_{11}\nu_{12}}}{4n_1\sqrt{\nu_{11,c}\nu_{12,c}}} +
+      \frac{\rho_2 \sqrt{\nu_{21}\nu_{22}}}{4n_2\sqrt{\nu_{21,c}\nu_{22,c}}}\right)}
+where \eqn{\nu_{jk,c} = (p_{jk} + c_j)(1 - p_{jk} - c_j)},
+\eqn{c_1 = -1/(2n_1)}, and \eqn{c_2 = 1/(2n_2)}.
 }
 \examples{
-# Example 1: AN method with rho = 0.8 (from Sozu et al. 2010)
+# Power calculation using asymptotic normal method
 power2BinaryApprox(
-  n1 = 507,
-  n2 = 507,
-  p11 = 0.95,
-  p12 = 0.95,
-  p21 = 0.9,
-  p22 = 0.9,
-  rho1 = 0.8,
-  rho2 = 0.8,
+  n1 = 200,
+  n2 = 100,
+  p11 = 0.5,
+  p12 = 0.4,
+  p21 = 0.3,
+  p22 = 0.2,
+  rho1 = 0.7,
+  rho2 = 0.7,
   alpha = 0.025,
   Test = 'AN'
 )
 
-# Example 2: Balanced design with arcsine method
+# Power calculation with continuity correction
+power2BinaryApprox(
+  n1 = 200,
+  n2 = 100,
+  p11 = 0.5,
+  p12 = 0.4,
+  p21 = 0.3,
+  p22 = 0.2,
+  rho1 = 0.7,
+  rho2 = 0.7,
+  alpha = 0.025,
+  Test = 'ANc'
+)
+
+# Power calculation using arcsine method
 power2BinaryApprox(
   n1 = 150,
   n2 = 150,
@@ -83,34 +124,6 @@ power2BinaryApprox(
   rho2 = 0.5,
   alpha = 0.025,
   Test = 'AS'
-)
-
-# Example 3: With continuity correction
-power2BinaryApprox(
-  n1 = 180,
-  n2 = 120,
-  p11 = 0.55,
-  p12 = 0.45,
-  p21 = 0.35,
-  p22 = 0.25,
-  rho1 = 0.6,
-  rho2 = 0.6,
-  alpha = 0.025,
-  Test = 'ANc'
-)
-
-# Example 4: Zero correlation
-power2BinaryApprox(
-  n1 = 250,
-  n2 = 250,
-  p11 = 0.5,
-  p12 = 0.4,
-  p21 = 0.3,
-  p22 = 0.2,
-  rho1 = 0,
-  rho2 = 0,
-  alpha = 0.025,
-  Test = 'AN'
 )
 
 }

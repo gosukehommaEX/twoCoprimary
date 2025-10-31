@@ -2,13 +2,12 @@
 % Please edit documentation in R/corrbound2MixedContinuousCount.R
 \name{corrbound2MixedContinuousCount}
 \alias{corrbound2MixedContinuousCount}
-\title{Calculate Correlation Bounds for Mixed Count and Continuous Outcomes}
+\title{Calculate Correlation Bounds Between Count and Continuous Outcomes}
 \usage{
 corrbound2MixedContinuousCount(lambda, nu, mu, sd, t)
 }
 \arguments{
-\item{lambda}{Expected number of events (lambda = r * t, where r is the rate
-and t is the follow-up time)}
+\item{lambda}{Expected number of events for the count outcome (lambda = rate * time)}
 
 \item{nu}{Dispersion parameter for the negative binomial distribution (nu > 0)}
 
@@ -25,19 +24,17 @@ A named numeric vector with two elements:
 }
 \description{
 Computes the lower and upper bounds of the correlation coefficient between
-a negative binomial count outcome and a continuous outcome, using the
-Frechet-Hoeffding bounds as described in Homma and Yoshida (2024).
+an overdispersed count outcome (negative binomial) and a continuous outcome
+using Frechet-Hoeffding bounds, as described in Homma and Yoshida (2024).
 }
 \details{
-For a negative binomial count outcome Y1 ~ NB(lambda, nu) and a continuous
-outcome Y2 ~ N(mu, sd^2), the correlation coefficient rho is bounded using
-the Frechet-Hoeffding bounds on copulas:
-
-\strong{Lower bound (Frechet-Hoeffding lower bound):}
-\deqn{H^-(u, v) = \max(u + v - 1, 0)}
-
-\strong{Upper bound (Frechet-Hoeffding upper bound):}
-\deqn{H^+(u, v) = \min(u, v)}
+For a count outcome Y1 ~ NB(lambda, nu) and a continuous outcome Y2 ~ N(mu, sd^2),
+the correlation coefficient rho is bounded by Frechet-Hoeffding bounds:
+\deqn{L(\rho) = \frac{\int [H^-(F_1(y_1), F_2(y_2)) - F_1(y_1)F_2(y_2)] dy_2}
+      {\sd_{Y_1} \times \sd_{Y_2}}}
+\deqn{U(\rho) = \frac{\int [H^+(F_1(y_1), F_2(y_2)) - F_1(y_1)F_2(y_2)] dy_2}
+      {\sd_{Y_1} \times \sd_{Y_2}}}
+where H^- and H^+ are the lower and upper Frechet-Hoeffding bounds, respectively.
 
 The variance of the negative binomial distribution is: Var(Y1) = lambda + lambda^2/nu
 }

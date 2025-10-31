@@ -69,7 +69,8 @@ for mixed continuous-binary endpoint combinations.
 }
 \details{
 This function implements the sample size calculation for mixed continuous-binary
-co-primary endpoints following the methodology in Sozu et al. (2012).
+co-primary endpoints following the methodology in Sozu et al. (2012) and the
+iterative algorithm from Hamasaki et al. (2013) extended to mixed endpoints.
 
 \strong{Endpoint Types:}
 \itemize{
@@ -79,29 +80,38 @@ co-primary endpoints following the methodology in Sozu et al. (2012).
 
 \strong{Biserial Correlation Model:}
 The binary endpoint is assumed to arise from dichotomizing a latent continuous
-variable at a threshold. The correlation parameter rho represents the biserial
+variable at a threshold. The correlation parameter ρ (rho) represents the biserial
 correlation between the observed continuous endpoint and this latent continuous
 variable underlying the binary endpoint.
 
 \strong{Algorithm:}
 
-For methods AN, ANc, AS, and ASc, linear extrapolation algorithm is used:
+\strong{Step 1:} Initialize with sample sizes from single endpoint formulas.
+The initial value is the maximum of:
+\itemize{
+\item Sample size for continuous endpoint (from ss1Continuous)
+\item Sample size for binary endpoint (from ss1BinaryApprox with Test method)
+}
+Two initial values are calculated:
+\itemize{
+\item n2_0: Based on target power 1 - β
+\item n2_1: Based on adjusted power 1 - √(1-β) to provide a bracket
+}
 
-\strong{Step 1:} Initialize with sample sizes from single endpoint formulas
-
-\strong{Step 2-4:} Iteratively refine using linear extrapolation:
+\strong{Step 2-4:} Iteratively refine using linear extrapolation until convergence:
 \deqn{n_2^{new} = \frac{n_2^{(0)}(power^{(1)} - (1-\beta)) - n_2^{(1)}(power^{(0)} - (1-\beta))}
       {power^{(1)} - power^{(0)}}}
 
 The algorithm converges when \eqn{n_2^{(1)} = n_2^{(0)}}.
 
-For Fisher's exact test, sequential search is used instead, as Monte Carlo
-simulation has random variation that can prevent reliable convergence with
-linear extrapolation.
+\strong{For Fisher's Exact Test:}
+When Test = "Fisher", Monte Carlo simulation is used in the power calculation.
+Due to random variation in Monte Carlo estimates, sequential search (incrementing
+sample size by 1) is used instead of linear extrapolation for more stable convergence.
 }
 \examples{
 # Example 1: Based on PREMIER study (Table 2 in Sozu et al. 2012)
-# mTSS (continuous) and ACR50 (binary) with rho = 0.5
+# mTSS (continuous) and ACR50 (binary) with ρ = 0.5
 ss2MixedContinuousBinary(
   delta = 4.4,
   sd = 19.0,
@@ -175,4 +185,8 @@ ss2MixedContinuousBinary(
 Sozu, T., Sugimoto, T., & Hamasaki, T. (2012). Sample size determination in
 clinical trials with multiple co-primary endpoints including mixed continuous
 and binary variables. \emph{Biometrical Journal}, 54(5), 716-729.
+
+Hamasaki, T., Sugimoto, T., Evans, S. R., & Sozu, T. (2013). Sample size
+determination for clinical trials with co-primary outcomes: exponential event
+times. \emph{Pharmaceutical Statistics}, 12(1), 28-34.
 }

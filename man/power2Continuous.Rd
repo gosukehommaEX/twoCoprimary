@@ -77,57 +77,40 @@ where \eqn{c_k^* = t_{\alpha,\nu}\sqrt{\frac{1}{\nu}} - \frac{Z_k}{\sqrt{w_{kk}}
 \eqn{W} follows a Wishart distribution with \eqn{\nu = n_1 + n_2 - 2} degrees of freedom.
 }
 \examples{
-# Example 1: Known variance with rho = 0.5 (from Sozu et al. 2011)
-power2Continuous(
-  n1 = 417,
-  n2 = 417,
-  delta1 = 0.2,
-  delta2 = 0.25,
-  sd1 = 1,
-  sd2 = 1,
-  rho = 0.5,
-  alpha = 0.025,
-  known_var = TRUE
-)
+# Example parameters for comparison across methods
+n1_ex <- 100
+n2_ex <- 100
+delta1_ex <- 0.5
+delta2_ex <- 0.5
+sd1_ex <- 1
+sd2_ex <- 1
+rho_ex <- 0.3
+alpha_ex <- 0.025
 
-# Example 2: Known variance with zero correlation
+# Power calculation with known variance
 power2Continuous(
-  n1 = 350,
-  n2 = 350,
-  delta1 = 0.2,
-  delta2 = 0.2,
-  sd1 = 1,
-  sd2 = 1,
-  rho = 0,
-  alpha = 0.025,
-  known_var = TRUE
-)
-
-# Example 3: Unequal allocation
-power2Continuous(
-  n1 = 200,
-  n2 = 100,
-  delta1 = 0.3,
-  delta2 = 0.25,
-  sd1 = 1,
-  sd2 = 1,
-  rho = 0.3,
-  alpha = 0.025,
+  n1 = n1_ex,
+  n2 = n2_ex,
+  delta1 = delta1_ex,
+  delta2 = delta2_ex,
+  sd1 = sd1_ex,
+  sd2 = sd2_ex,
+  rho = rho_ex,
+  alpha = alpha_ex,
   known_var = TRUE
 )
 
 \donttest{
-# Example 4: Unknown variance (Monte Carlo simulation)
-set.seed(12345)
+# Power calculation with unknown variance (Monte Carlo)
 power2Continuous(
-  n1 = 150,
-  n2 = 150,
-  delta1 = 0.5,
-  delta2 = 0.4,
-  sd1 = 1,
-  sd2 = 1,
-  rho = 0.4,
-  alpha = 0.025,
+  n1 = n1_ex,
+  n2 = n2_ex,
+  delta1 = delta1_ex,
+  delta2 = delta2_ex,
+  sd1 = sd1_ex,
+  sd2 = sd2_ex,
+  rho = rho_ex,
+  alpha = alpha_ex,
   known_var = FALSE,
   nMC = 10000
 )

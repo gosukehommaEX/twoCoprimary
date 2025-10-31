@@ -7,11 +7,11 @@
 ss1Continuous(delta, sd, r, alpha, beta)
 }
 \arguments{
-\item{delta}{Mean difference (group 1 - group 2)}
+\item{delta}{Mean difference between treatment groups (treatment effect)}
 
-\item{sd}{Common standard deviation}
+\item{sd}{Common standard deviation for the continuous endpoint}
 
-\item{r}{Allocation ratio (group 1:group 2 = r:1, where r > 0)}
+\item{r}{Allocation ratio of group 1 to group 2 (group 1:group 2 = r:1, where r > 0)}
 
 \item{alpha}{One-sided significance level (typically 0.025 or 0.05)}
 
@@ -19,8 +19,8 @@ ss1Continuous(delta, sd, r, alpha, beta)
 }
 \value{
 A data frame with the following columns:
-\item{delta}{Mean difference}
-\item{sd}{Standard deviation}
+\item{delta}{Mean difference (treatment effect)}
+\item{sd}{Common standard deviation}
 \item{r}{Allocation ratio}
 \item{alpha}{One-sided significance level}
 \item{beta}{Type II error rate}
@@ -30,23 +30,25 @@ A data frame with the following columns:
 }
 \description{
 Calculates the required sample size for a two-arm superiority trial with a
-single continuous endpoint.
+single continuous endpoint using the standard formula for normally distributed
+outcomes.
 }
 \details{
-The required sample size is calculated using the standard formula for
-continuous endpoints:
-\deqn{n_2 = \left\lceil \left(\frac{(z_{1-\alpha} + z_{1-\beta}) \sigma}{\delta}\right)^2
-      \left(1 + \frac{1}{r}\right) \right\rceil}
-where \eqn{z_{1-\alpha}} and \eqn{z_{1-\beta}} are standard normal quantiles.
+The required sample size for group 2 is calculated using the standard formula:
+\deqn{n_2 = \left\lceil \frac{(1 + 1/r) \sigma^2 (z_\alpha + z_\beta)^2}{\delta^2} \right\rceil}
+where \eqn{z_\alpha} and \eqn{z_\beta} are the quantiles of the standard normal
+distribution corresponding to the one-sided significance level \eqn{\alpha} and
+type II error rate \eqn{\beta}, respectively. The sample size for group 1 is
+\eqn{n_1 = \lceil r \times n_2 \rceil}.
 }
 \examples{
 # Balanced design with 1:1 allocation
-ss1Continuous(delta = 0.2, sd = 1, r = 1, alpha = 0.025, beta = 0.1)
+ss1Continuous(delta = 0.4, sd = 1, r = 1, alpha = 0.025, beta = 0.1)
 
 # Unbalanced design with 2:1 allocation
-ss1Continuous(delta = 0.3, sd = 1, r = 2, alpha = 0.025, beta = 0.2)
+ss1Continuous(delta = 0.5, sd = 1.2, r = 2, alpha = 0.025, beta = 0.2)
 
-# Larger effect size
-ss1Continuous(delta = 0.5, sd = 1, r = 1, alpha = 0.025, beta = 0.1)
+# Large treatment effect
+ss1Continuous(delta = 0.8, sd = 1, r = 1, alpha = 0.025, beta = 0.1)
 
 }
