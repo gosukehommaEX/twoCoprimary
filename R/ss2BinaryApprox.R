@@ -1,8 +1,8 @@
 #' Sample Size Calculation for Two Co-Primary Binary Endpoints (Approximate)
 #'
-#' Calculates the required sample size for a two-arm superiority trial with two
-#' co-primary binary endpoints using the linear extrapolation approach described
-#' in Hamasaki et al. (2013).
+#' Determines the sample size for a two-arm superiority trial with two co-primary
+#' binary endpoints using approximate methods, to achieve a specified power at a
+#' given significance level.
 #'
 #' @param p11 True probability of responders in group 1 for the first outcome (0 < p11 < 1)
 #' @param p12 True probability of responders in group 1 for the second outcome (0 < p12 < 1)
@@ -33,18 +33,12 @@
 #'   \item{n}{Total sample size (n1 + n2)}
 #'
 #' @details
-#' This function uses the linear extrapolation approach to find the required
-#' sample size iteratively:
+#' This function uses linear extrapolation algorithm for efficient sample size
+#' determination. The algorithm iteratively refines the sample size estimate:
 #'
-#' \strong{Step 1:} Initialize with sample sizes from single endpoint formulas.
-#' The initial values use the same testing method specified in the Test argument
-#' to ensure consistency. Two initial values are calculated:
-#' \itemize{
-#'   \item n2_0: Based on target power 1 - β
-#'   \item n2_1: Based on adjusted power 1 - √(1-β) to provide a bracket
-#' }
+#' \strong{Step 1:} Initialize with sample sizes from single endpoint formulas
 #'
-#' \strong{Step 2-4:} Iteratively refine using linear extrapolation until convergence:
+#' \strong{Step 2-4:} Iteratively refine using linear extrapolation:
 #' \deqn{n_2^{new} = \frac{n_2^{(0)}(power^{(1)} - (1-\beta)) - n_2^{(1)}(power^{(0)} - (1-\beta))}
 #'       {power^{(1)} - power^{(0)}}}
 #'
@@ -53,34 +47,29 @@
 #' \strong{Note on Fisher's Exact Test:}
 #' Fisher's exact test is not supported in this function because the saw-tooth
 #' nature of exact power makes linear extrapolation inappropriate. For Fisher's
-#' exact test with co-primary endpoints, use \code{\link{ss2BinaryExact}} instead,
-#' or use this method for mixed endpoints via ss2Mixed (forthcoming).
+#' exact test with co-primary endpoints, use \code{\link{ss2BinaryExact}} instead.
 #'
 #' @references
-#' Hamasaki, T., Sugimoto, T., Evans, S. R., & Sozu, T. (2013). Sample size
-#' determination for clinical trials with co-primary outcomes: exponential event
-#' times. \emph{Pharmaceutical Statistics}, 12(1), 28-34.
-#'
 #' Sozu, T., Sugimoto, T., & Hamasaki, T. (2010). Sample size determination in
 #' clinical trials with multiple co-primary binary endpoints. \emph{Statistics in
 #' Medicine}, 29(21), 2169-2179.
 #'
 #' @examples
-#' # Sample size calculation using asymptotic normal method
+#' # Example 1: AN method with rho = 0.8 (from Sozu et al. 2010)
 #' ss2BinaryApprox(
-#'   p11 = 0.5,
-#'   p12 = 0.4,
-#'   p21 = 0.3,
-#'   p22 = 0.2,
-#'   rho1 = 0.7,
-#'   rho2 = 0.7,
-#'   r = 2,
+#'   p11 = 0.7,
+#'   p12 = 0.7,
+#'   p21 = 0.5,
+#'   p22 = 0.5,
+#'   rho1 = 0.8,
+#'   rho2 = 0.8,
+#'   r = 1,
 #'   alpha = 0.025,
-#'   beta = 0.1,
+#'   beta = 0.2,
 #'   Test = 'AN'
 #' )
 #'
-#' # Balanced design with arcsine method
+#' # Example 2: Balanced design with arcsine method
 #' ss2BinaryApprox(
 #'   p11 = 0.6,
 #'   p12 = 0.5,
@@ -94,7 +83,7 @@
 #'   Test = 'AS'
 #' )
 #'
-#' # With continuity correction
+#' # Example 3: With continuity correction
 #' ss2BinaryApprox(
 #'   p11 = 0.55,
 #'   p12 = 0.45,
@@ -125,13 +114,17 @@ ss2BinaryApprox <- function(p11, p12, p21, p22, rho1, rho2, r, alpha, beta, Test
 
   # For the second initial value, use adjusted target power
   # This provides a bracket for the linear extrapolation
-  # The adjusted power 1 - √(1-β) is typically higher than 1 - β
+  # The adjusted power 1 - sqrt(1 - beta) is typically higher than 1 - beta
   n2_endpoint1_adj <- ss1BinaryApprox(p11, p21, r, alpha, 1 - (1 - beta) ^ (1/2), Test = Test)[["n2"]]
   n2_endpoint2_adj <- ss1BinaryApprox(p12, p22, r, alpha, 1 - (1 - beta) ^ (1/2), Test = Test)[["n2"]]
   n2_1 <- max(n2_endpoint1_adj, n2_endpoint2_adj)
 
   # Step 2-4: Iterative refinement using linear extrapolation
-  while (n2_1 - n2_0 != 0) {
+  max_iter <- 100
+  iter <- 0
+
+  while (n2_1 - n2_0 != 0 && iter < max_iter) {
+    iter <- iter + 1
 
     # Calculate sample sizes for group 1
     n1_0 <- ceiling(r * n2_0)
@@ -151,6 +144,10 @@ ss2BinaryApprox <- function(p11, p12, p21, p22, rho1, rho2, r, alpha, beta, Test
     # Update values for next iteration
     n2_1 <- n2_0
     n2_0 <- ceiling(n2_updated)
+  }
+
+  if (iter >= max_iter) {
+    warning("Maximum iterations reached. Results may not have converged.")
   }
 
   # Final sample sizes

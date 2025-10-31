@@ -41,7 +41,7 @@ with \eqn{\xi = p_2 + \gamma(p_2 - p_1)} and
 \eqn{\mathcal{M} = \{m : m = \max(0, y_2-(N-y_1)), \ldots, \min(y_1, y_2)\}}.
 
 Either rho or gamma must be specified, but not both. If rho is provided, it
-is converted to gamma using \code{\link{bibinomGamma}}.
+is converted to gamma.
 }
 \examples{
 # Calculate single probability mass

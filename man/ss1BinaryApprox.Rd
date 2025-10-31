@@ -2,9 +2,9 @@
 % Please edit documentation in R/ss1BinaryApprox.R
 \name{ss1BinaryApprox}
 \alias{ss1BinaryApprox}
-\title{Sample Size Calculation for a Single Binary Endpoint (Approximate)}
+\title{Sample Size Calculation for a Single Binary Endpoint}
 \usage{
-ss1BinaryApprox(p1, p2, r, alpha, beta)
+ss1BinaryApprox(p1, p2, r, alpha, beta, Test = "AN")
 }
 \arguments{
 \item{p1}{True probability of responders in group 1 (0 < p1 < 1)}
@@ -16,6 +16,15 @@ ss1BinaryApprox(p1, p2, r, alpha, beta)
 \item{alpha}{One-sided significance level (typically 0.025 or 0.05)}
 
 \item{beta}{Target type II error rate (typically 0.1 or 0.2)}
+
+\item{Test}{Statistical testing method. One of:
+\itemize{
+\item \code{"AN"}: Asymptotic normal method without continuity correction (default)
+\item \code{"ANc"}: Asymptotic normal method with continuity correction
+\item \code{"AS"}: Arcsine transformation without continuity correction
+\item \code{"ASc"}: Arcsine transformation with continuity correction
+\item \code{"Fisher"}: Fisher's exact test with iterative sample size determination
+}}
 }
 \value{
 A data frame with the following columns:
@@ -24,34 +33,91 @@ A data frame with the following columns:
 \item{r}{Allocation ratio}
 \item{alpha}{One-sided significance level}
 \item{beta}{Type II error rate}
+\item{Test}{Testing method used}
 \item{n1}{Required sample size for group 1}
 \item{n2}{Required sample size for group 2}
 \item{n}{Total sample size (n1 + n2)}
 }
 \description{
 Calculates the required sample size for a two-arm superiority trial with a
-single binary endpoint using the asymptotic normal approximation.
+single binary endpoint using various statistical testing methods.
 }
 \details{
-The required sample size is calculated using the standard asymptotic normal
-approximation formula for binary endpoints:
-\deqn{n_2 = \left\lceil \frac{(1 + 1/r)}{(p_1 - p_2)^2}
-      \left(z_\alpha \sqrt{\bar{p}(1-\bar{p})} +
-      z_\beta \sqrt{\frac{p_1(1-p_1)}{r} + p_2(1-p_2)} / (1 + 1/r)\right)^2 \right\rceil}
-where \eqn{\bar{p} = (r \times p_1 + p_2)/(1 + r)} is the pooled proportion,
-and \eqn{z_\alpha}, \eqn{z_\beta} are standard normal quantiles.
+This function implements sample size calculations for single binary endpoint
+trials using five different methods.
 
-This function can handle vector inputs for p1 and p2, returning the maximum
-required sample size across all endpoint combinations.
+\strong{Important:} This function is designed for a \strong{single binary endpoint}.
+For co-primary endpoints, use \code{\link{ss2BinaryApprox}} (for approximate
+methods) or \code{\link{ss2BinaryExact}} (for exact methods).
+
+\strong{Notation:}
+\itemize{
+\item r = n1/n2: allocation ratio (group 1 to group 2)
+\item κ = 1/r = n2/n1: inverse allocation ratio
+\item π1, π2: response probabilities
+\item θ1 = 1 - π1, θ2 = 1 - π2: non-response probabilities
+\item δ = π1 - π2: treatment effect
+}
+
+\strong{AN (Asymptotic Normal) Method:}
+Uses the standard normal approximation with pooled variance under H0:
+\deqn{n_2 = \left\lceil \frac{(1 + \kappa)}{(\pi_1 - \pi_2)^2}
+      \left(z_{1-\alpha} \sqrt{\bar{\pi}(1-\bar{\pi})} +
+      z_{1-\beta} \sqrt{\kappa\pi_1\theta_1 + \pi_2\theta_2}\right)^2 / \kappa \right\rceil}
+where \eqn{\bar{\pi} = (r\pi_1 + \pi_2)/(1 + r)} is the pooled proportion.
+
+\strong{ANc Method:}
+Adds continuity correction to the AN method. Uses iterative calculation because
+the correction term depends on sample size. Converges when the difference between
+successive iterations is ≤ 1.
+
+\strong{AS (Arcsine) Method:}
+Uses the variance-stabilizing arcsine transformation:
+\deqn{n_2 = \left\lceil \frac{(z_{1-\alpha} + z_{1-\beta})^2}{4(\sin^{-1}\sqrt{\pi_1} - \sin^{-1}\sqrt{\pi_2})^2} \times \frac{1 + \kappa}{\kappa} \right\rceil}
+
+\strong{ASc Method:}
+Applies continuity correction to the arcsine method. Uses iterative procedure
+with convergence criterion.
+
+\strong{Fisher Method:}
+Fisher's exact test does not have a closed-form sample size formula. This method:
+\enumerate{
+\item Starts with the AN method's sample size as initial value
+\item Incrementally increases n2 by 1
+\item Calculates exact power using hypergeometric distribution
+\item Stops when power ≥ 1 - β
+}
+
+Note: Due to the saw-tooth nature of exact power (power does not increase
+monotonically with sample size), linear extrapolation is inappropriate for
+Fisher's method. The incremental approach ensures the minimum sample size
+that achieves the target power.
 }
 \examples{
-# Balanced design with 1:1 allocation
-ss1BinaryApprox(p1 = 0.6, p2 = 0.4, r = 1, alpha = 0.025, beta = 0.1)
+# Balanced design with 1:1 allocation (AN method)
+ss1BinaryApprox(p1 = 0.6, p2 = 0.4, r = 1, alpha = 0.025, beta = 0.1, Test = "AN")
 
-# Unbalanced design with 2:1 allocation
-ss1BinaryApprox(p1 = 0.5, p2 = 0.3, r = 2, alpha = 0.025, beta = 0.2)
+# Unbalanced design with 2:1 allocation (ANc method)
+ss1BinaryApprox(p1 = 0.5, p2 = 0.3, r = 2, alpha = 0.025, beta = 0.2, Test = "ANc")
 
-# Vector inputs for multiple endpoints
-ss1BinaryApprox(p1 = c(0.5, 0.4), p2 = c(0.3, 0.2), r = 2, alpha = 0.025, beta = 0.1)
+# Arcsine transformation method
+ss1BinaryApprox(p1 = 0.55, p2 = 0.35, r = 1, alpha = 0.025, beta = 0.1, Test = "AS")
 
+# Arcsine with continuity correction
+ss1BinaryApprox(p1 = 0.65, p2 = 0.45, r = 1, alpha = 0.025, beta = 0.1, Test = "ASc")
+
+# Fisher's exact test
+ss1BinaryApprox(p1 = 0.6, p2 = 0.4, r = 2, alpha = 0.025, beta = 0.1, Test = "Fisher")
+
+# Compare all methods
+methods <- c("AN", "ANc", "AS", "ASc", "Fisher")
+do.call(rbind, lapply(methods, function(m) {
+  ss1BinaryApprox(p1 = 0.6, p2 = 0.4, r = 1, alpha = 0.025, beta = 0.1, Test = m)
+}))
+
+}
+\references{
+Sozu, T., Sugimoto, T., & Hamasaki, T. (2010). Sample size determination in
+clinical trials with multiple co-primary binary endpoints. \emph{Statistics in
+Medicine}, 29(21), 2169-2179.
 }
