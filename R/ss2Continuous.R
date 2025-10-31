@@ -1,8 +1,9 @@
 #' Sample Size Calculation for Two Co-Primary Continuous Endpoints (Approximate)
 #'
 #' Calculates the required sample size for a two-arm superiority trial with two
-#' co-primary continuous endpoints using linear extrapolation approach, as
-#' described in Hamasaki et al. (2013) and Sozu et al. (2011).
+#' co-primary continuous endpoints using linear extrapolation approach (for known
+#' variance) or sequential search (for unknown variance), as described in
+#' Hamasaki et al. (2013) and Sozu et al. (2011).
 #'
 #' @param delta1 Mean difference for the first endpoint
 #' @param delta2 Mean difference for the second endpoint
@@ -13,8 +14,8 @@
 #' @param alpha One-sided significance level (typically 0.025 or 0.05)
 #' @param beta Target type II error rate (typically 0.1 or 0.2)
 #' @param known_var Logical value indicating whether variance is known (TRUE) or
-#'   unknown (FALSE). If TRUE, power is calculated analytically; otherwise,
-#'   Monte Carlo simulation is used for unknown variance
+#'   unknown (FALSE). If TRUE, power is calculated analytically using linear
+#'   extrapolation; if FALSE, Monte Carlo simulation with sequential search is used
 #' @param nMC Number of Monte Carlo simulations when known_var = FALSE (default is 10000)
 #'
 #' @return A data frame with the following columns:
@@ -31,11 +32,11 @@
 #'   \item{n}{Total sample size (n1 + n2)}
 #'
 #' @details
-#' This function uses a linear extrapolation algorithm (Hamasaki et al. 2013) to
-#' efficiently determine the required sample size that achieves power of at least
-#' \eqn{1-\beta} for both co-primary endpoints.
+#' This function uses different algorithms depending on the variance assumption:
 #'
-#' The algorithm works as follows:
+#' **For known variance (known_var = TRUE):**
+#' Uses a linear extrapolation algorithm (Hamasaki et al. 2013) to efficiently
+#' determine the required sample size.
 #' \enumerate{
 #'   \item Initialize two sample sizes: \eqn{n_{2,0}} using target power \eqn{1-\beta}
 #'         and \eqn{n_{2,1}} using adjusted power \eqn{1-\sqrt{1-\beta}}
@@ -44,6 +45,11 @@
 #'         \deqn{n_{2,new} = \frac{n_{2,0}(power_{n_{2,1}} - (1-\beta)) - n_{2,1}(power_{n_{2,0}} - (1-\beta))}{power_{n_{2,1}} - power_{n_{2,0}}}}
 #'   \item Update values and repeat until convergence
 #' }
+#'
+#' **For unknown variance (known_var = FALSE):**
+#' Uses sequential search starting from initial sample size, incrementing by 1 until
+#' target power is achieved. This approach is more stable for Monte Carlo simulation
+#' where power estimates have random variation.
 #'
 #' For known variance, the standardized test statistics are:
 #' \deqn{Z_k = \frac{\delta_k}{\sigma_k \sqrt{1/n_1 + 1/n_2}}}
@@ -88,7 +94,7 @@
 #' )
 #'
 #' \donttest{
-#' # Sample size calculation with unknown variance
+#' # Sample size calculation with unknown variance (uses sequential search)
 #' ss2Continuous(
 #'   delta1 = 0.5,
 #'   delta2 = 0.4,
@@ -106,7 +112,7 @@
 #' @export
 #' @importFrom stats qnorm
 ss2Continuous <- function(delta1, delta2, sd1, sd2, rho, r, alpha, beta,
-                                known_var = TRUE, nMC = 1e+4) {
+                          known_var = TRUE, nMC = 1e+4) {
 
   # Input validation
   if (delta1 <= 0 | delta2 <= 0) {
@@ -137,52 +143,81 @@ ss2Continuous <- function(delta1, delta2, sd1, sd2, rho, r, alpha, beta,
     return(n2)
   }
 
-  # Step 1: Initialize sample sizes using single endpoint formulas
-  # Use the maximum sample size from both endpoints
-  n2_0 <- max(
-    ss1Continuous(delta1, sd1, r, alpha, beta),
-    ss1Continuous(delta2, sd2, r, alpha, beta)
-  )
-
-  # For the second initial value, use adjusted target power
-  # This provides a bracket for the linear extrapolation
-  beta_adj <- 1 - (1 - beta) ^ (1 / 2)
-  n2_1 <- max(
-    ss1Continuous(delta1, sd1, r, alpha, beta_adj),
-    ss1Continuous(delta2, sd2, r, alpha, beta_adj)
-  )
-
-  # Step 2-4: Iterative refinement using linear extrapolation
-  while (n2_1 - n2_0 != 0) {
-
-    # Calculate sample sizes for group 1
-    n1_0 <- ceiling(r * n2_0)
-    n1_1 <- ceiling(r * n2_1)
-
-    # Calculate power at two candidate sample sizes
-    power_n2_0 <- power2Continuous(n1_0, n2_0, delta1, delta2, sd1, sd2,
-                                   rho, alpha, known_var, nMC)$powerCoprimary
-    power_n2_1 <- power2Continuous(n1_1, n2_1, delta1, delta2, sd1, sd2,
-                                   rho, alpha, known_var, nMC)$powerCoprimary
-
-    # Linear extrapolation to find sample size that achieves target power
-    # This solves: power = (1 - beta) for n2
-    n2_updated <- (n2_0 * (power_n2_1 - (1 - beta)) - n2_1 * (power_n2_0 - (1 - beta))) /
-      (power_n2_1 - power_n2_0)
-
-    # Update values for next iteration
-    n2_1 <- n2_0
-    n2_0 <- ceiling(n2_updated)
-  }
-
-  # Final sample sizes
-  n2 <- n2_0
-  n1 <- ceiling(r * n2)
-  n <- n1 + n2
-
-  # Set nMC to NA for known variance
   if (known_var) {
+    # ===== KNOWN VARIANCE: Use linear extrapolation =====
+
+    # Step 1: Initialize sample sizes using single endpoint formulas
+    # Use the maximum sample size from both endpoints
+    n2_0 <- max(
+      ss1Continuous(delta1, sd1, r, alpha, beta),
+      ss1Continuous(delta2, sd2, r, alpha, beta)
+    )
+
+    # For the second initial value, use adjusted target power
+    # This provides a bracket for the linear extrapolation
+    beta_adj <- 1 - (1 - beta) ^ (1 / 2)
+    n2_1 <- max(
+      ss1Continuous(delta1, sd1, r, alpha, beta_adj),
+      ss1Continuous(delta2, sd2, r, alpha, beta_adj)
+    )
+
+    # Step 2-4: Iterative refinement using linear extrapolation
+    while (n2_1 - n2_0 != 0) {
+
+      # Calculate sample sizes for group 1
+      n1_0 <- ceiling(r * n2_0)
+      n1_1 <- ceiling(r * n2_1)
+
+      # Calculate power at two candidate sample sizes
+      power_n2_0 <- power2Continuous(n1_0, n2_0, delta1, delta2, sd1, sd2,
+                                     rho, alpha, known_var, nMC)$powerCoprimary
+      power_n2_1 <- power2Continuous(n1_1, n2_1, delta1, delta2, sd1, sd2,
+                                     rho, alpha, known_var, nMC)$powerCoprimary
+
+      # Linear extrapolation to find sample size that achieves target power
+      # This solves: power = (1 - beta) for n2
+      n2_updated <- (n2_0 * (power_n2_1 - (1 - beta)) - n2_1 * (power_n2_0 - (1 - beta))) /
+        (power_n2_1 - power_n2_0)
+
+      # Update values for next iteration
+      n2_1 <- n2_0
+      n2_0 <- ceiling(n2_updated)
+    }
+
+    # Final sample sizes
+    n2 <- n2_0
+    n1 <- ceiling(r * n2)
+    n <- n1 + n2
+
+    # Set nMC to NA for known variance
     nMC <- NA
+
+  } else {
+    # ===== UNKNOWN VARIANCE: Use sequential search =====
+    # Monte Carlo simulation has random variation, so linear extrapolation
+    # may not converge reliably. Instead, use sequential search.
+
+    # Step 1: Initialize with sample size from single endpoint formulas
+    n2 <- max(
+      ss1Continuous(delta1, sd1, r, alpha, beta),
+      ss1Continuous(delta2, sd2, r, alpha, beta)
+    )
+    n1 <- ceiling(r * n2)
+
+    # Step 2: Calculate power at initial sample size
+    power <- power2Continuous(n1, n2, delta1, delta2, sd1, sd2,
+                              rho, alpha, known_var, nMC)$powerCoprimary
+
+    # Step 3: Sequential search - increment n2 by 1 until target power is achieved
+    while (power < 1 - beta) {
+      n2 <- n2 + 1
+      n1 <- ceiling(r * n2)
+      power <- power2Continuous(n1, n2, delta1, delta2, sd1, sd2,
+                                rho, alpha, known_var, nMC)$powerCoprimary
+    }
+
+    # Final sample sizes
+    n <- n1 + n2
   }
 
   # Return results as a data frame

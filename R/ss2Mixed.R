@@ -2,7 +2,8 @@
 #'
 #' Calculates the required sample size for a two-arm superiority trial with two
 #' co-primary endpoints where one is continuous and one is binary, using the
-#' linear extrapolation approach.
+#' linear extrapolation approach (for asymptotic methods) or sequential search
+#' (for Fisher's exact test).
 #'
 #' @param delta Mean difference for the continuous endpoint (group 1 - group 2)
 #' @param sd Common standard deviation for the continuous endpoint
@@ -38,9 +39,11 @@
 #'   \item{n}{Total sample size (n1 + n2)}
 #'
 #' @details
-#' This function uses the linear extrapolation approach to find the required
-#' sample size iteratively, as described in Hamasaki et al. (2013) and extended
-#' to mixed endpoints following Sozu et al. (2012).
+#' This function uses different algorithms depending on the test method:
+#'
+#' **For asymptotic methods (AN, ANc, AS, ASc):**
+#' Uses linear extrapolation approach (Hamasaki et al. 2013) extended to mixed
+#' endpoints following Sozu et al. (2012).
 #'
 #' **Algorithm:**
 #'
@@ -62,11 +65,10 @@
 #'
 #' The algorithm converges when \eqn{n_2^{(1)} = n_2^{(0)}}.
 #'
-#' **Fisher's Exact Test:**
+#' **For Fisher's Exact Test:**
 #' When Test = "Fisher", Monte Carlo simulation is used in the power calculation.
-#' The linear extrapolation algorithm is still appropriate because the overall
-#' co-primary power (considering both continuous and binary endpoints) tends to
-#' be smoother than the binary endpoint power alone.
+#' Due to random variation in Monte Carlo estimates, sequential search (incrementing
+#' sample size by 1) is used instead of linear extrapolation for more stable convergence.
 #'
 #' @references
 #' Sozu, T., Sugimoto, T., & Hamasaki, T. (2012). Sample size determination in
@@ -132,7 +134,7 @@
 #' )
 #'
 #' \donttest{
-#' # Example 5: Fisher's exact test (computationally intensive)
+#' # Example 5: Fisher's exact test (uses sequential search, computationally intensive)
 #' set.seed(12345)
 #' ss2Mixed(
 #'   delta = 0.5,
@@ -180,49 +182,83 @@ ss2Mixed <- function(delta, sd, p1, p2, rho, r, alpha, beta, Test, nMC = 10000) 
     stop("Test must be one of: AN, ANc, AS, ASc, Fisher")
   }
 
-  # Step 1: Initialize sample sizes using single endpoint formulas
-  # Calculate sample size for continuous endpoint
-  n2_cont <- ss1Continuous(delta, sd, r, alpha, beta)[["n2"]]
+  if (Test == "Fisher") {
+    # ===== FISHER'S EXACT TEST: Use sequential search =====
+    # Monte Carlo simulation has random variation, so linear extrapolation
+    # may not converge reliably. Instead, use sequential search.
 
-  # Calculate sample size for binary endpoint using the same Test method
-  n2_bin <- ss1BinaryApprox(p1, p2, r, alpha, beta, Test = Test)[["n2"]]
+    # Step 1: Initialize with sample size from single endpoint formulas
+    # Calculate sample size for continuous endpoint
+    n2_cont <- ss1Continuous(delta, sd, r, alpha, beta)[["n2"]]
 
-  # Use the maximum as initial value for target power
-  n2_0 <- max(n2_cont, n2_bin)
+    # Calculate sample size for binary endpoint
+    # For Fisher's test, use AN method for initial estimate
+    n2_bin <- ss1BinaryApprox(p1, p2, r, alpha, beta, Test = "AN")[["n2"]]
 
-  # For the second initial value, use adjusted target power
-  # This provides a bracket for the linear extrapolation
-  beta_adj <- 1 - (1 - beta) ^ (1/2)
+    # Use the maximum as initial value
+    n2 <- max(n2_cont, n2_bin)
+    n1 <- ceiling(r * n2)
 
-  n2_cont_adj <- ss1Continuous(delta, sd, r, alpha, beta_adj)[["n2"]]
-  n2_bin_adj <- ss1BinaryApprox(p1, p2, r, alpha, beta_adj, Test = Test)[["n2"]]
-  n2_1 <- max(n2_cont_adj, n2_bin_adj)
+    # Step 2: Calculate power at initial sample size
+    power <- power2Mixed(n1, n2, delta, sd, p1, p2, rho, alpha, Test, nMC)[["powerCoprimary"]]
 
-  # Step 2-4: Iterative refinement using linear extrapolation
-  while (n2_1 - n2_0 != 0) {
+    # Step 3: Sequential search - increment n2 by 1 until target power is achieved
+    while (power < 1 - beta) {
+      n2 <- n2 + 1
+      n1 <- ceiling(r * n2)
+      power <- power2Mixed(n1, n2, delta, sd, p1, p2, rho, alpha, Test, nMC)[["powerCoprimary"]]
+    }
 
-    # Calculate sample sizes for group 1
-    n1_0 <- ceiling(r * n2_0)
-    n1_1 <- ceiling(r * n2_1)
+    # Final sample sizes
+    n <- n1 + n2
 
-    # Calculate power at two candidate sample sizes
-    power_n2_0 <- power2Mixed(n1_0, n2_0, delta, sd, p1, p2, rho, alpha, Test, nMC)[["powerCoprimary"]]
-    power_n2_1 <- power2Mixed(n1_1, n2_1, delta, sd, p1, p2, rho, alpha, Test, nMC)[["powerCoprimary"]]
+  } else {
+    # ===== ASYMPTOTIC METHODS: Use linear extrapolation =====
 
-    # Linear extrapolation to find sample size that achieves target power
-    # This solves: power = (1 - beta) for n2
-    n2_updated <- (n2_0 * (power_n2_1 - (1 - beta)) - n2_1 * (power_n2_0 - (1 - beta))) /
-      (power_n2_1 - power_n2_0)
+    # Step 1: Initialize sample sizes using single endpoint formulas
+    # Calculate sample size for continuous endpoint
+    n2_cont <- ss1Continuous(delta, sd, r, alpha, beta)[["n2"]]
 
-    # Update values for next iteration
-    n2_1 <- n2_0
-    n2_0 <- ceiling(n2_updated)
+    # Calculate sample size for binary endpoint using the same Test method
+    n2_bin <- ss1BinaryApprox(p1, p2, r, alpha, beta, Test = Test)[["n2"]]
+
+    # Use the maximum as initial value for target power
+    n2_0 <- max(n2_cont, n2_bin)
+
+    # For the second initial value, use adjusted target power
+    # This provides a bracket for the linear extrapolation
+    beta_adj <- 1 - (1 - beta) ^ (1/2)
+
+    n2_cont_adj <- ss1Continuous(delta, sd, r, alpha, beta_adj)[["n2"]]
+    n2_bin_adj <- ss1BinaryApprox(p1, p2, r, alpha, beta_adj, Test = Test)[["n2"]]
+    n2_1 <- max(n2_cont_adj, n2_bin_adj)
+
+    # Step 2-4: Iterative refinement using linear extrapolation
+    while (n2_1 - n2_0 != 0) {
+
+      # Calculate sample sizes for group 1
+      n1_0 <- ceiling(r * n2_0)
+      n1_1 <- ceiling(r * n2_1)
+
+      # Calculate power at two candidate sample sizes
+      power_n2_0 <- power2Mixed(n1_0, n2_0, delta, sd, p1, p2, rho, alpha, Test, nMC)[["powerCoprimary"]]
+      power_n2_1 <- power2Mixed(n1_1, n2_1, delta, sd, p1, p2, rho, alpha, Test, nMC)[["powerCoprimary"]]
+
+      # Linear extrapolation to find sample size that achieves target power
+      # This solves: power = (1 - beta) for n2
+      n2_updated <- (n2_0 * (power_n2_1 - (1 - beta)) - n2_1 * (power_n2_0 - (1 - beta))) /
+        (power_n2_1 - power_n2_0)
+
+      # Update values for next iteration
+      n2_1 <- n2_0
+      n2_0 <- ceiling(n2_updated)
+    }
+
+    # Final sample sizes
+    n2 <- n2_0
+    n1 <- ceiling(r * n2)
+    n <- n1 + n2
   }
-
-  # Final sample sizes
-  n2 <- n2_0
-  n1 <- ceiling(r * n2)
-  n <- n1 + n2
 
   # Return result as a data frame
   result <- data.frame(
