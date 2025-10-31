@@ -48,25 +48,25 @@
 #' n1 <- 5
 #' n2 <- 5
 #' alpha <- 0.025
-#' RR <- rrBinary(n1, n2, alpha, Test = 'Chisq')
+#' RR <- rr1Binary(n1, n2, alpha, Test = 'Chisq')
 #' print(dim(RR))  # Should be (6, 6)
 #'
 #' # Fisher exact test
-#' RR_fisher <- rrBinary(n1 = 10, n2 = 10, alpha = 0.025, Test = 'Fisher')
+#' RR_fisher <- rr1Binary(n1 = 10, n2 = 10, alpha = 0.025, Test = 'Fisher')
 #'
 #' \donttest{
 #' # More computationally intensive: Boschloo test
 #' n1 <- 20
 #' n2 <- 10
 #' alpha <- 0.025
-#' RR <- rrBinary(n1, n2, alpha, Test = 'Boschloo')
+#' RR <- rr1Binary(n1, n2, alpha, Test = 'Boschloo')
 #' print(RR)
 #' }
 #'
 #' @export
 #' @import fpCompare
 #' @importFrom stats pnorm dbinom phyper dhyper
-rrBinary <- function(n1, n2, alpha, Test) {
+rr1Binary <- function(n1, n2, alpha, Test) {
 
   if ((Test == 'Chisq') | (Test == 'Z-pool')) {
 

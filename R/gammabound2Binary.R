@@ -27,16 +27,16 @@
 #'
 #' @examples
 #' # Calculate gamma bounds for two binary outcomes
-#' boundGamma(p1 = 0.3, p2 = 0.5)
+#' gammabound2Binary(p1 = 0.3, p2 = 0.5)
 #'
 #' # When p1 > p2
-#' boundGamma(p1 = 0.6, p2 = 0.4)
+#' gammabound2Binary(p1 = 0.6, p2 = 0.4)
 #'
 #' # When p1 = p2, upper bound is infinite
-#' boundGamma(p1 = 0.5, p2 = 0.5)
+#' gammabound2Binary(p1 = 0.5, p2 = 0.5)
 #'
 #' @export
-boundGamma <- function(p1, p2) {
+gammabound2Binary <- function(p1, p2) {
   # Calculate boundary of gamma (see Homma and Yoshida (2025))
 
   # Lower bound

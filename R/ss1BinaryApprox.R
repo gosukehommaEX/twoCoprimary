@@ -257,7 +257,7 @@ ss1BinaryApprox <- function(p1, p2, r, alpha, beta, Test = "AN") {
     # Note: Due to saw-tooth problem, we increment by 1
     while (power < 1 - beta) {
       # Calculate rejection region using Fisher's exact test
-      RR <- rrBinary(n1, n2, alpha, Test = 'Fisher')
+      RR <- rr1Binary(n1, n2, alpha, Test = 'Fisher')
 
       # Calculate exact power
       # P(reject H0) = sum over all (x1, x2) where we reject

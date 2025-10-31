@@ -27,16 +27,16 @@
 #'
 #' @examples
 #' # Calculate correlation bounds for two binary outcomes
-#' boundRho(p1 = 0.3, p2 = 0.5)
+#' corrbound2Binary(p1 = 0.3, p2 = 0.5)
 #'
 #' # When probabilities are equal, upper bound is 1
-#' boundRho(p1 = 0.4, p2 = 0.4)
+#' corrbound2Binary(p1 = 0.4, p2 = 0.4)
 #'
 #' # When p1 + p2 = 1, lower bound is -1
-#' boundRho(p1 = 0.3, p2 = 0.7)
+#' corrbound2Binary(p1 = 0.3, p2 = 0.7)
 #'
 #' @export
-boundRho <- function(p1, p2) {
+corrbound2Binary <- function(p1, p2) {
   # Calculate boundary of rho (see Prentice (1988))
   boundary <- c(
     max(

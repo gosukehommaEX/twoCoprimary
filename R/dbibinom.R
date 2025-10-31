@@ -26,7 +26,7 @@
 #' \eqn{\mathcal{M} = \{m : m = \max(0, y_2-(N-y_1)), \ldots, \min(y_1, y_2)\}}.
 #'
 #' Either rho or gamma must be specified, but not both. If rho is provided, it
-#' is converted to gamma using \code{\link{bibinomGamma}}.
+#' is converted to gamma.
 #'
 #' @references
 #' Homma, G., & Yoshida, T. (2025). Exact power and sample size in clinical
@@ -63,18 +63,21 @@ dbibinom <- function(N, y1, y2, p1, p2, rho, gamma = NULL) {
   # If rho is specified, convert to gamma
   if (!is.null(rho)) {
     # Check that rho is within valid bounds
-    bounds <- boundRho(p1, p2)
+    bounds <- corrbound2Binary(p1, p2)
     if (rho < bounds[1] | rho > bounds[2]) {
       stop(paste0("rho must be within [", round(bounds[1], 4), ", ",
                   round(bounds[2], 4), "]"))
     }
     # Convert rho to gamma
-    gamma <- bibinomGamma(p1, p2, rho)
+    gamma <- '/'(
+      rho * sqrt(p2 * (1 - p2) / (p1 * (1 - p1))),
+      (1 - rho * sqrt(p2 * (1 - p2) / (p1 * (1 - p1))))
+    )
   }
 
   # If gamma is specified, check bounds
   if (!is.null(gamma)) {
-    bounds <- boundGamma(p1, p2)
+    bounds <- gammabound2Binary(p1, p2)
     if (gamma < bounds[1] | gamma > bounds[2]) {
       stop(paste0("gamma must be within [", round(bounds[1], 4), ", ",
                   round(bounds[2], 4), "]"))

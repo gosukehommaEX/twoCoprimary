@@ -1,9 +1,9 @@
-#' Sample Size Calculation for Two Co-Primary Mixed Endpoints
+#' Sample Size Calculation for Two Co-Primary Endpoints: One Continuous and One Binary
 #'
-#' Calculates the required sample size for a two-arm superiority trial with two
-#' co-primary endpoints where one is continuous and one is binary, using the
-#' linear extrapolation approach (for asymptotic methods) or sequential search
-#' (for Fisher's exact test).
+#' Determines the sample size for a two-arm superiority trial with two co-primary
+#' endpoints where one is continuous and one is binary, to achieve a specified
+#' power at a given significance level. This function is specifically designed
+#' for mixed continuous-binary endpoint combinations.
 #'
 #' @param delta Mean difference for the continuous endpoint (group 1 - group 2)
 #' @param sd Common standard deviation for the continuous endpoint
@@ -11,16 +11,16 @@
 #' @param p2 Probability of response in group 2 for the binary endpoint (0 < p2 < 1)
 #' @param rho Biserial correlation between the latent continuous variable underlying
 #'   the binary endpoint and the observed continuous endpoint
-#' @param r Allocation ratio of group 1 to group 2 (group 1:group 2 = r:1, where r > 0)
+#' @param r Allocation ratio n1/n2 where n1 is sample size for group 1
 #' @param alpha One-sided significance level (typically 0.025 or 0.05)
-#' @param beta Target type II error rate (typically 0.1 or 0.2)
+#' @param beta Type II error rate (typically 0.1 or 0.2). Power = 1 - beta
 #' @param Test Statistical testing method for the binary endpoint. One of:
 #'   \itemize{
 #'     \item \code{"AN"}: Asymptotic normal method without continuity correction
 #'     \item \code{"ANc"}: Asymptotic normal method with continuity correction
 #'     \item \code{"AS"}: Arcsine method without continuity correction
 #'     \item \code{"ASc"}: Arcsine method with continuity correction
-#'     \item \code{"Fisher"}: Fisher's exact test (Monte Carlo simulation)
+#'     \item \code{"Fisher"}: Fisher's exact test (uses sequential search)
 #'   }
 #' @param nMC Number of Monte Carlo replications when Test = "Fisher" (default: 10000)
 #'
@@ -39,11 +39,21 @@
 #'   \item{n}{Total sample size (n1 + n2)}
 #'
 #' @details
-#' This function uses different algorithms depending on the test method:
+#' This function implements the sample size calculation for mixed continuous-binary
+#' co-primary endpoints following the methodology in Sozu et al. (2012) and the
+#' iterative algorithm from Hamasaki et al. (2013) extended to mixed endpoints.
 #'
-#' **For asymptotic methods (AN, ANc, AS, ASc):**
-#' Uses linear extrapolation approach (Hamasaki et al. 2013) extended to mixed
-#' endpoints following Sozu et al. (2012).
+#' **Endpoint Types:**
+#' \itemize{
+#'   \item \strong{Continuous Endpoint}: Analyzed using t-test for comparing means
+#'   \item \strong{Binary Endpoint}: Analyzed using one of several methods (AN, ANc, AS, ASc, or Fisher)
+#' }
+#'
+#' **Biserial Correlation Model:**
+#' The binary endpoint is assumed to arise from dichotomizing a latent continuous
+#' variable at a threshold. The correlation parameter ρ (rho) represents the biserial
+#' correlation between the observed continuous endpoint and this latent continuous
+#' variable underlying the binary endpoint.
 #'
 #' **Algorithm:**
 #'
@@ -82,7 +92,7 @@
 #' @examples
 #' # Example 1: Based on PREMIER study (Table 2 in Sozu et al. 2012)
 #' # mTSS (continuous) and ACR50 (binary) with ρ = 0.5
-#' ss2Mixed(
+#' ss2MixedContinuousBinary(
 #'   delta = 4.4,
 #'   sd = 19.0,
 #'   p1 = 0.59,
@@ -95,7 +105,7 @@
 #' )
 #'
 #' # Example 2: With continuity correction
-#' ss2Mixed(
+#' ss2MixedContinuousBinary(
 #'   delta = 5.0,
 #'   sd = 20.0,
 #'   p1 = 0.65,
@@ -108,7 +118,7 @@
 #' )
 #'
 #' # Example 3: Arcsine transformation
-#' ss2Mixed(
+#' ss2MixedContinuousBinary(
 #'   delta = 4.5,
 #'   sd = 18.0,
 #'   p1 = 0.70,
@@ -121,7 +131,7 @@
 #' )
 #'
 #' # Example 4: Unequal allocation
-#' ss2Mixed(
+#' ss2MixedContinuousBinary(
 #'   delta = 0.3,
 #'   sd = 1.0,
 #'   p1 = 0.6,
@@ -136,7 +146,7 @@
 #' \donttest{
 #' # Example 5: Fisher's exact test (uses sequential search, computationally intensive)
 #' set.seed(12345)
-#' ss2Mixed(
+#' ss2MixedContinuousBinary(
 #'   delta = 0.5,
 #'   sd = 1.0,
 #'   p1 = 0.4,
@@ -151,7 +161,7 @@
 #' }
 #'
 #' @export
-ss2Mixed <- function(delta, sd, p1, p2, rho, r, alpha, beta, Test, nMC = 10000) {
+ss2MixedContinuousBinary <- function(delta, sd, p1, p2, rho, r, alpha, beta, Test, nMC = 10000) {
 
   # Input validation
   if (delta <= 0) {
@@ -200,13 +210,13 @@ ss2Mixed <- function(delta, sd, p1, p2, rho, r, alpha, beta, Test, nMC = 10000) 
     n1 <- ceiling(r * n2)
 
     # Step 2: Calculate power at initial sample size
-    power <- power2Mixed(n1, n2, delta, sd, p1, p2, rho, alpha, Test, nMC)[["powerCoprimary"]]
+    power <- power2MixedContinuousBinary(n1, n2, delta, sd, p1, p2, rho, alpha, Test, nMC)[["powerCoprimary"]]
 
     # Step 3: Sequential search - increment n2 by 1 until target power is achieved
     while (power < 1 - beta) {
       n2 <- n2 + 1
       n1 <- ceiling(r * n2)
-      power <- power2Mixed(n1, n2, delta, sd, p1, p2, rho, alpha, Test, nMC)[["powerCoprimary"]]
+      power <- power2MixedContinuousBinary(n1, n2, delta, sd, p1, p2, rho, alpha, Test, nMC)[["powerCoprimary"]]
     }
 
     # Final sample sizes
@@ -241,8 +251,8 @@ ss2Mixed <- function(delta, sd, p1, p2, rho, r, alpha, beta, Test, nMC = 10000) 
       n1_1 <- ceiling(r * n2_1)
 
       # Calculate power at two candidate sample sizes
-      power_n2_0 <- power2Mixed(n1_0, n2_0, delta, sd, p1, p2, rho, alpha, Test, nMC)[["powerCoprimary"]]
-      power_n2_1 <- power2Mixed(n1_1, n2_1, delta, sd, p1, p2, rho, alpha, Test, nMC)[["powerCoprimary"]]
+      power_n2_0 <- power2MixedContinuousBinary(n1_0, n2_0, delta, sd, p1, p2, rho, alpha, Test, nMC)[["powerCoprimary"]]
+      power_n2_1 <- power2MixedContinuousBinary(n1_1, n2_1, delta, sd, p1, p2, rho, alpha, Test, nMC)[["powerCoprimary"]]
 
       # Linear extrapolation to find sample size that achieves target power
       # This solves: power = (1 - beta) for n2

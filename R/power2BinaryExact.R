@@ -110,7 +110,7 @@ power2BinaryExact <- function(n1, n2, p11, p12, p21, p22, rho1, rho2, alpha, Tes
   }
 
   # Calculate rejection region for the test
-  RR <- rrBinary(n1, n2, alpha, Test)
+  RR <- rr1Binary(n1, n2, alpha, Test)
 
   # Calculate power for individual endpoints using binomial distribution
   # For endpoint k, we sum over all outcomes where the null is rejected

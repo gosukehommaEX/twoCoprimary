@@ -1,8 +1,9 @@
-#' Power Calculation for Two Co-Primary Mixed Endpoints
+#' Power Calculation for Two Co-Primary Endpoints: One Continuous and One Binary
 #'
 #' Calculates the power for a two-arm superiority trial with two co-primary
 #' endpoints where one is continuous and one is binary, as described in
-#' Sozu et al. (2012).
+#' Sozu et al. (2012). This function is specifically designed for mixed
+#' continuous-binary endpoint combinations.
 #'
 #' @param n1 Sample size for group 1 (test group)
 #' @param n2 Sample size for group 2 (control group)
@@ -38,50 +39,30 @@
 #'   \item{powerCoprimary}{Power for both co-primary endpoints}
 #'
 #' @details
-#' This function implements the power calculation for mixed endpoints (one continuous
-#' and one binary) as described in Sozu et al. (2012). The method assumes that the
-#' binary variable is derived from a latent continuous variable via dichotomization
-#' at a threshold point.
+#' This function implements the power calculation for mixed continuous-binary endpoints
+#' as described in Sozu et al. (2012). The method assumes that the binary variable is
+#' derived from a latent continuous variable via dichotomization at a threshold point.
 #'
-#' **Notation:**
-#' - Group 1 corresponds to test group (T), Group 2 corresponds to control group (C)
-#' - κ (kappa) = n2/n1: allocation ratio (control/test)
-#' - n = n1: sample size in test group
-#' - π1, π2: response probabilities in groups 1 and 2
-#' - θ1 = 1 - π1, θ2 = 1 - π2: non-response probabilities
+#' **Endpoint Types:**
+#' \itemize{
+#'   \item \strong{Continuous Endpoint}: Analyzed using t-test for comparing means
+#'   \item \strong{Binary Endpoint}: Analyzed using one of several methods (AN, ANc, AS, ASc, or Fisher)
+#' }
 #'
-#' For the continuous endpoint, the standardized test statistic is:
-#' \deqn{Z_{cont} = \frac{\delta}{\sigma} \sqrt{\frac{\kappa n}{1+\kappa}}}
+#' **Biserial Correlation Model:**
+#' The binary endpoint is assumed to arise from dichotomizing a latent continuous
+#' variable at a threshold. The correlation parameter ρ (rho) represents the biserial
+#' correlation between the observed continuous endpoint and this latent continuous
+#' variable underlying the binary endpoint.
 #'
-#' For the binary endpoint (AN method), the test statistic uses:
-#' \deqn{v_{k0} = \sqrt{\frac{(\pi_1 + \kappa\pi_2)(\theta_1 + \kappa\theta_2)}{\kappa(1+\kappa)}}}
-#' \deqn{v_k = \sqrt{\frac{\kappa\pi_1\theta_1 + \pi_2\theta_2}{\kappa}}}
-#'
-#' The correlation between the two test statistics (continuous and binary) is:
-#' \deqn{\gamma = \frac{\kappa \rho \xi_1 + \rho \xi_2}{\sqrt{1+\kappa}\sqrt{\kappa\pi_1\theta_1 + \pi_2\theta_2}}}
-#' where ξ_1 = φ(Φ^{-1}(1-π_1)) and ξ_2 = φ(Φ^{-1}(1-π_2)) are the standard normal
-#' density values at the dichotomization thresholds. This γ represents the correlation
-#' between the standardized test statistics Z*_cont and Z*_bin (Equation 1 in paper).
-#'
-#' Note: ρ is the biserial correlation between the latent continuous variable
-#' underlying the binary endpoint and the observed continuous endpoint, not the
-#' point-biserial correlation between the observed binary and continuous variables.
-#' The observed correlation is given by Equation (1): Corr(Y_cont, Y_bin) = ρξ/√(πθ),
-#' which is always smaller than ρ in absolute value.
-#'
-#' **Fisher's Exact Test:**
-#' When Test = "Fisher", Monte Carlo simulation is used to estimate power. For each
-#' replication, latent bivariate normal variables are generated using rmvnorm(), the
-#' binary variable is dichotomized, and both t-test (for continuous) and Fisher's
-#' exact test (for binary) are performed. The overall power is the proportion of
-#' replications where both tests are significant at the α level. Use set.seed()
-#' before calling this function for reproducible results with Fisher's method.
-#'
-#' The implementation uses a fixed cutoff point (g = 0) and varies the means of
-#' latent variables to achieve different response probabilities. This is equivalent
-#' to using varying cutoff points with fixed means, and is the standard approach
-#' in biserial correlation models. For group i with response probability πᵢ,
-#' the latent variable has mean μᵢ = Φ⁻¹(πᵢ) and variance 1, with P(X ≥ 0) = Φ(μᵢ) = πᵢ.
+#' **Key Model Assumptions:**
+#' - The latent variable underlying the binary endpoint follows a bivariate normal
+#'   distribution with the continuous endpoint
+#' - For group i with response probability πᵢ, the latent variable has mean μᵢ = Φ⁻¹(πᵢ)
+#'   and variance 1
+#' - The dichotomization threshold is set at 0, so P(X ≥ 0) = Φ(μᵢ) = πᵢ
+#' - This is equivalent to using varying cutoff points with fixed means, and is the
+#'   standard approach in biserial correlation models
 #'
 #' **Note on Table 2 in Supporting Information:**
 #' There is a typographical error in the original paper's Table 2 for Arcsine(CC)
@@ -106,7 +87,7 @@
 #' @examples
 #' # Example 1: Reproduce Table 2 from Sozu et al. (2012)
 #' # mTSS (continuous) and ACR50 (binary) with correlation ρ = 0.0
-#' power2Mixed(
+#' power2MixedContinuousBinary(
 #'   n1 = 346,
 #'   n2 = 346,
 #'   delta = 4.4,
@@ -119,7 +100,7 @@
 #' )
 #'
 #' # Example 2: Same setting with correlation ρ = 0.8
-#' power2Mixed(
+#' power2MixedContinuousBinary(
 #'   n1 = 323,
 #'   n2 = 323,
 #'   delta = 4.4,
@@ -132,7 +113,7 @@
 #' )
 #'
 #' # Example 3: Normal approximation with continuity correction
-#' power2Mixed(
+#' power2MixedContinuousBinary(
 #'   n1 = 150,
 #'   n2 = 150,
 #'   delta = 0.3,
@@ -145,7 +126,7 @@
 #' )
 #'
 #' # Example 4: Arcsine transformation without continuity correction
-#' power2Mixed(
+#' power2MixedContinuousBinary(
 #'   n1 = 180,
 #'   n2 = 120,
 #'   delta = 4.5,
@@ -158,7 +139,7 @@
 #' )
 #'
 #' # Example 5: Arcsine transformation with continuity correction
-#' power2Mixed(
+#' power2MixedContinuousBinary(
 #'   n1 = 100,
 #'   n2 = 100,
 #'   delta = 0.4,
@@ -174,7 +155,7 @@
 #' # Example 6: Fisher's exact test (Monte Carlo simulation)
 #' # Useful for small sample sizes or rare events
 #' set.seed(12345)  # for reproducibility
-#' power2Mixed(
+#' power2MixedContinuousBinary(
 #'   n1 = 50,
 #'   n2 = 50,
 #'   delta = 0.5,
@@ -191,7 +172,7 @@
 #' @export
 #' @importFrom mvtnorm pmvnorm GenzBretz rmvnorm
 #' @importFrom stats qnorm pnorm dnorm phyper pt
-power2Mixed <- function(n1, n2, delta, sd, p1, p2, rho, alpha, Test, nMC = 10000) {
+power2MixedContinuousBinary <- function(n1, n2, delta, sd, p1, p2, rho, alpha, Test, nMC = 10000) {
 
   # Input validation
   if (n1 <= 0 || n2 <= 0) {
@@ -313,104 +294,114 @@ power2Mixed <- function(n1, n2, delta, sd, p1, p2, rho, alpha, Test, nMC = 10000
 
   # ===== CONTINUOUS ENDPOINT =====
   # Standardized effect size (equation 5 in Sozu et al. 2012)
-  Z_cont <- delta * sqrt(kappa * n1 / (1 + kappa)) / sd
+  c_cont_star <- sqrt((kappa / (1 + kappa)) * (delta / sd)^2)
 
-  # Standardized critical value (equation 5)
-  c_cont_star <- qnorm(1 - alpha) - Z_cont
+  # Standardized critical value for continuous endpoint
+  c_cont <- -qnorm(alpha) + c_cont_star
 
-  # For pmvnorm, use negative value
-  c_cont <- -c_cont_star
-
-  # Power for continuous endpoint: P(Z* > c_cont_star) = P(Z* < -c_cont_star)
+  # Power for continuous endpoint
   powerCont <- pnorm(c_cont)
 
   # ===== BINARY ENDPOINT =====
-  # Calculate xi (density at cutoff point) for biserial correlation
-  # Assuming standardized latent variables: mu = 0, sigma = 1
-  # Cutoff point: g = Φ^(-1)(1 - π)
+  # Standard normal density at dichotomization thresholds
   xiT <- dnorm(qnorm(1 - p1))
   xiC <- dnorm(qnorm(1 - p2))
 
-  # Effect size for binary endpoint
-  delta_bin <- p1 - p2
+  # Select method for binary endpoint
+  if (Test == "AN") {
+    # Asymptotic Normal method without continuity correction (Table 2, equation 8)
 
-  if (Test == "AN" || Test == "ANc") {
+    # Variance components (no continuity correction)
+    vk <- p1 * thetaT / n1 + p2 * thetaC / n2
 
-    # Variance components for Normal approximation (Table 1 in Supporting Info)
-    vk0 <- sqrt((p1 + kappa * p2) * (thetaT + kappa * thetaC) / (kappa * (1 + kappa)))
-    vk <- sqrt((kappa * p1 * thetaT + p2 * thetaC) / kappa)
-
-    # Standardized critical value for binary endpoint (Table 1)
-    c_bin_star <- (vk0 * qnorm(1 - alpha) - sqrt(n1) * delta_bin) / vk
+    # Standardized effect size (equation 8)
+    c_bin_star <- (p1 - p2) / sqrt(vk)
 
     # Correlation between continuous and binary test statistics (Table 2)
-    # γ = (κ * Corr(YTj1,YTj2) * √(πT2θT2) + Corr(YCj1,YCj2) * √(πC2θC2)) /
-    #     (√(1+κ) * √(κπT2θT2 + πC2θC2))
-    # where Corr(YTjk,YTjk') = ρ * ξTk' / √(πTk'θTk')
-    gamma <- (kappa * rho * xiT + rho * xiC) /
-      (sqrt(1 + kappa) * sqrt(kappa * p1 * thetaT + p2 * thetaC))
-
-    if (Test == "ANc") {
-      # Apply continuity correction (Table 1)
-      c_bin_star <- c_bin_star + (1 + kappa) / (2 * kappa * vk * sqrt(n1))
-    }
+    gamma <- (rho * xiT * sqrt(p1 * thetaT / n1) + rho * xiC * sqrt(p2 * thetaC / n2)) /
+      sqrt((1 + kappa) * vk)
 
     # For pmvnorm, use negative value
     c_bin <- -c_bin_star
 
-  } else {  # Test == "AS" or "ASc"
+  } else if (Test == "ANc") {
+    # Asymptotic Normal method with continuity correction (Table 2, equation 9)
 
-    # Arcsine transformation parameter
-    v <- 0.5 * sqrt((1 + kappa) / kappa)
+    # Continuity corrections
+    cT <- 1 / (2 * n1)
+    cC <- 1 / (2 * n2)
 
-    if (Test == "AS") {
+    # Variance components with continuity correction
+    vk <- (p1 + cT) * (thetaT - cT) / n1 + (p2 + cC) * (thetaC - cC) / n2
 
-      # Standardized critical value for binary endpoint (Table 1)
-      c_bin_star <- qnorm(1 - alpha) - sqrt(n1) * (asin(sqrt(p1)) - asin(sqrt(p2))) / v
+    # Standardized effect size (equation 9)
+    c_bin_star <- ((p1 + cT) - (p2 + cC)) / sqrt(vk)
 
-      # Correlation between continuous and binary test statistics (Table 2)
-      # For Arcsine method (k ≤ km < k'): γ = (κ * Corr + Corr) / (1+κ)
-      # where Corr(YTj1,YTj2) = ρ * ξT / √(πTθT)
-      gamma <- (kappa * rho * xiT / sqrt(p1 * thetaT) +
-                  rho * xiC / sqrt(p2 * thetaC)) / (1 + kappa)
+    # Additional probabilities for correlation calculation
+    p1T <- p1 + cT
+    p2T <- p2 + 2 * cT
+    p2C <- p2 + cC
+    thetacT <- thetaT - cT
+    thetacC <- thetaC - cC
 
-      # For pmvnorm, use negative value
-      c_bin <- -c_bin_star
+    # Correlation between continuous and binary test statistics (Table 2)
+    # Complex formula for AN(CC)
+    gamma <- (kappa * rho * xiT * sqrt(p1T * thetacT / n1) + rho * xiC * sqrt(p2C * thetacC / n2)) /
+      (sqrt(1 + kappa) * sqrt(kappa * p1T * thetacT / n1 + p2C * thetacC / n2))
 
-    } else {  # Test == "ASc"
+    # For pmvnorm, use negative value
+    c_bin <- -c_bin_star
 
-      # Continuity correction terms
-      cT <- -1 / (2 * n1)
-      cC <- 1 / (2 * kappa * n1)
+  } else if (Test == "AS") {
+    # Arcsine method without continuity correction (Table 2, equation 10)
 
-      # Corrected probabilities
-      p2T <- p1 - 1 / (2 * n1)
-      thetacT <- thetaT + 1 / (2 * n1)
-      p2C <- p2 + 1 / (2 * kappa * n1)
-      thetacC <- thetaC - 1 / (2 * kappa * n1)
+    # Variance components (no continuity correction)
+    vk_prime <- 1 / (4 * n1) + 1 / (4 * n2)
 
-      # Modified variance parameter (Table 1)
-      vk_prime <- 0.5 * sqrt(
-        p1 * thetaT / ((p1 + cT) * (thetaT - cT)) +
-          p2 * thetaC / (kappa * (p2 + cC) * (thetaC - cC))
-      )
+    # Standardized effect size (equation 10)
+    c_bin_star <- (asin(sqrt(p1)) - asin(sqrt(p2))) / sqrt(vk_prime)
 
-      # Standardized critical value with continuity correction (Table 1)
-      c_bin_star <- (v * qnorm(1 - alpha) -
-                       sqrt(n1) * (asin(sqrt(p1 + cT)) - asin(sqrt(p2 + cC)))) / vk_prime
+    # Correlation between continuous and binary test statistics (Table 2)
+    gamma <- (kappa * rho * xiT / sqrt(p1 * thetaT) * sqrt(p1 * thetaT / n1) +
+                rho * xiC / sqrt(p2 * thetaC) * sqrt(p2 * thetaC / n2)) /
+      (sqrt(1 + kappa) * sqrt(kappa * p1 * thetaT / n1 + p2 * thetaC / n2))
 
-      # Correlation between continuous and binary test statistics (Table 2)
-      # Complex formula for Arcsine(CC) with k ≤ km < k'
-      # Note: Explicit Corr() structure for clarity
-      # Note: Paper has typo - second term should use πCk'θCk' not πTk'θTk'
-      gamma <- (kappa * rho * xiT / sqrt(p1 * thetaT) * sqrt(p1 * thetaT * p2C * thetacC) +
-                  rho * xiC / sqrt(p2 * thetaC) * sqrt(p2T * thetacT * p2 * thetaC)) /
-        (sqrt(1 + kappa) * sqrt(kappa * p1 * thetaT * p2C * thetacC +
-                                  p2T * thetacT * p2 * thetaC))
+    # For pmvnorm, use negative value
+    c_bin <- -c_bin_star
 
-      # For pmvnorm, use negative value
-      c_bin <- -c_bin_star
-    }
+  } else if (Test == "ASc") {
+    # Arcsine method with continuity correction (Table 2, equation 11)
+
+    # Continuity corrections
+    cT <- 1 / (2 * n1)
+    cC <- 1 / (2 * n2)
+
+    # Variance components with continuity correction
+    vk_prime <- 1 / (4 * n1) + 1 / (4 * n2)
+
+    # Additional probabilities for correlation calculation
+    p1T <- p1 + cT
+    p2T <- p2 + 2 * cT
+    p2C <- p2 + cC
+    thetaT <- 1 - p1
+    thetacT <- thetaT - cT
+    thetacC <- thetaC - cC
+
+    # Standardized effect size (equation 11)
+    c_bin_star <- (sqrt(1 / (4 * n1) + 1 / (4 * n2)) * (asin(sqrt(p1)) - asin(sqrt(p2))) +
+                     (1 / (2 * n1) - 1 / (2 * n2)) * (asin(sqrt(p1 + cT)) - asin(sqrt(p2 + cC)))) / vk_prime
+
+    # Correlation between continuous and binary test statistics (Table 2)
+    # Complex formula for Arcsine(CC) with k ≤ km < k'
+    # Note: Explicit Corr() structure for clarity
+    # Note: Paper has typo - second term should use πCk'θCk' not πTk'θTk'
+    gamma <- (kappa * rho * xiT / sqrt(p1 * thetaT) * sqrt(p1 * thetaT * p2C * thetacC) +
+                rho * xiC / sqrt(p2 * thetaC) * sqrt(p2T * thetacT * p2 * thetaC)) /
+      (sqrt(1 + kappa) * sqrt(kappa * p1 * thetaT * p2C * thetacC +
+                                p2T * thetacT * p2 * thetaC))
+
+    # For pmvnorm, use negative value
+    c_bin <- -c_bin_star
   }
 
   # Power for binary endpoint: P(Z* > c_bin_star) = P(Z* < -c_bin_star)
