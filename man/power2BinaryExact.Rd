@@ -35,9 +35,15 @@ power2BinaryExact(n1, n2, p11, p12, p21, p22, rho1, rho2, alpha, Test)
 }}
 }
 \value{
-A named numeric vector with three elements:
-\item{Power1}{Power for the first endpoint alone}
-\item{Power2}{Power for the second endpoint alone}
+A data frame with the following columns:
+\item{n1}{Sample size for group 1}
+\item{n2}{Sample size for group 2}
+\item{p11, p12, p21, p22}{Response probabilities}
+\item{rho1, rho2}{Correlations}
+\item{alpha}{One-sided significance level}
+\item{Test}{Testing method used}
+\item{power1}{Power for the first endpoint alone}
+\item{power2}{Power for the second endpoint alone}
 \item{powerCoprimary}{Exact power for both co-primary endpoints}
 }
 \description{

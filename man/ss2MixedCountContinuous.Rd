@@ -34,6 +34,8 @@ ss2MixedCountContinuous(
 
 \item{sd}{Common standard deviation for the continuous endpoint}
 
+\item{r}{Allocation ratio of group 1 to group 2 (group 1:group 2 = r:1, where r > 0)}
+
 \item{rho1}{Correlation between count and continuous outcomes for treatment group}
 
 \item{rho2}{Correlation between count and continuous outcomes for control group}
@@ -51,6 +53,7 @@ A data frame with the following columns:
 \item{mu1}{Mean in group 1 for continuous endpoint}
 \item{mu2}{Mean in group 2 for continuous endpoint}
 \item{sd}{Standard deviation for continuous endpoint}
+\item{r}{Allocation ratio}
 \item{rho1}{Correlation for group 1}
 \item{rho2}{Correlation for group 2}
 \item{alpha}{One-sided significance level}
@@ -69,11 +72,10 @@ This function uses the linear extrapolation approach to find the required
 sample size iteratively:
 
 \strong{Step 1:} Initialize with sample sizes from single endpoint formulas.
-The initial values use the same testing method specified in the Test argument
-to ensure consistency. Two initial values are calculated:
+Two initial values are calculated:
 \itemize{
-\item n2_0: Based on target power 1 - β
-\item n2_1: Based on adjusted power 1 - √(1-β) to provide a bracket
+\item n2_0: Based on target power 1 - beta
+\item n2_1: Based on adjusted power 1 - sqrt(1-beta) to provide a bracket
 }
 
 \strong{Step 2-4:} Iteratively refine using linear extrapolation until convergence:
@@ -83,7 +85,7 @@ to ensure consistency. Two initial values are calculated:
 The algorithm converges when \eqn{n_2^{(1)} = n_2^{(0)}}.
 
 The correlation bounds are automatically checked using \code{\link{corrbound2MixedContinuousCount}}.
-If the specified correlation is outside the valid range, a warning is issued.
+If the specified correlation is outside the valid range, an error is issued.
 }
 \examples{
 # Sample size calculation for COPD trial scenario

@@ -17,7 +17,7 @@ dbibinom(N, y1, y2, p1, p2, rho)
 
 \item{p2}{True probability of responders for the second outcome (0 < p2 < 1)}
 
-\item{rho}{Correlation coefficient between the two binary outcomes (must be NULL if gamma is specified)}
+\item{rho}{Correlation coefficient between the two binary outcomes}
 }
 \value{
 Probability mass function value(s) for the bivariate binomial distribution.

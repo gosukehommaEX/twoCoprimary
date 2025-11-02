@@ -44,7 +44,7 @@ The test statistic for the negative binomial rate ratio is:
 \deqn{Z_1 = \frac{\hat{\beta}_1}{\sqrt{Var(\hat{\beta}_1)}}}
 where \eqn{\hat{\beta}_1 = \log(\bar{Y}_1) - \log(\bar{Y}_2)} and the variance is:
 \deqn{Var(\hat{\beta}_1) = \frac{1}{n_2}\left[\frac{1}{t}\left(\frac{1}{r_2} +
-      \frac{1}{\r r_1}\right) + \frac{1+\r}{\nu\r}\right]}
+      \frac{1}{r \cdot r_1}\right) + \frac{1+r}{\nu \cdot r}\right]}
 
 This is equation (8) in Homma and Yoshida (2024).
 }

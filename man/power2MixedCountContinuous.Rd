@@ -42,9 +42,10 @@ power2MixedCountContinuous(
 
 \item{rho2}{Correlation between count and continuous outcomes for control group}
 
-\item{alpha}{One-sided significance level (typically 0.025 or 0.05)
-
-#' @return A data frame with the following columns:
+\item{alpha}{One-sided significance level (typically 0.025 or 0.05)}
+}
+\value{
+A data frame with the following columns:
 \item{n1}{Sample size for group 1}
 \item{n2}{Sample size for group 2}
 \item{r1}{Mean rate in group 1 for count endpoint}
@@ -59,7 +60,7 @@ power2MixedCountContinuous(
 \item{alpha}{One-sided significance level}
 \item{powerCount}{Power for the count endpoint alone}
 \item{powerCont}{Power for the continuous endpoint alone}
-\item{powerCoprimary}{Power for both co-primary endpoints}}
+\item{powerCoprimary}{Power for both co-primary endpoints}
 }
 \description{
 Calculates the power for a two-arm superiority trial with one overdispersed

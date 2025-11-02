@@ -7,13 +7,13 @@
 corrbound2MixedCountContinuous(lambda, nu, mu, sd)
 }
 \arguments{
-\item{lambda}{Expected number of events for the count outcome (lambda = rate * time)}
+\item{lambda}{Mean parameter for the negative binomial distribution (lambda > 0)}
 
 \item{nu}{Dispersion parameter for the negative binomial distribution (nu > 0)}
 
-\item{mu}{Mean of the continuous outcome}
+\item{mu}{Mean for the continuous outcome}
 
-\item{sd}{Standard deviation of the continuous outcome}
+\item{sd}{Standard deviation for the continuous outcome (sd > 0)}
 }
 \value{
 A named numeric vector with two elements:
@@ -23,16 +23,13 @@ A named numeric vector with two elements:
 \description{
 Computes the lower and upper bounds of the correlation coefficient between
 an overdispersed count outcome (negative binomial) and a continuous outcome
-using Frechet-Hoeffding bounds, as described in Homma and Yoshida (2024).
+(normal), as described in Homma and Yoshida (2024).
 }
 \details{
-For a count outcome Y1 ~ NB(lambda, nu) and a continuous outcome Y2 ~ N(mu, sd^2),
-the correlation coefficient rho is bounded by Frechet-Hoeffding bounds:
-\deqn{L(\rho) = \frac{\int [H^-(F_1(y_1), F_2(y_2)) - F_1(y_1)F_2(y_2)] dy_2}
-      {\sd_{Y_1} \times \sd_{Y_2}}}
-\deqn{U(\rho) = \frac{\int [H^+(F_1(y_1), F_2(y_2)) - F_1(y_1)F_2(y_2)] dy_2}
-      {\sd_{Y_1} \times \sd_{Y_2}}}
-where H^- and H^+ are the lower and upper Frechet-Hoeffding bounds, respectively.
+The correlation bounds are calculated using the Frechet-Hoeffding bounds for
+copulas, as described in Trivedi and Zimmer (2007). The negative binomial
+distribution has mean lambda and variance:
+\deqn{Var(Y_1) = \lambda + \frac{\lambda^2}{\nu}}
 
 The variance of the negative binomial distribution is: Var(Y1) = lambda + lambda^2/nu
 }

@@ -53,10 +53,10 @@ methods) or \code{\link{ss2BinaryExact}} (for exact methods).
 \strong{Notation:}
 \itemize{
 \item r = n1/n2: allocation ratio (group 1 to group 2)
-\item κ = 1/r = n2/n1: inverse allocation ratio
-\item π1, π2: response probabilities
-\item θ1 = 1 - π1, θ2 = 1 - π2: non-response probabilities
-\item δ = π1 - π2: treatment effect
+\item kappa = 1/r = n2/n1: inverse allocation ratio
+\item p1, p2: response probabilities
+\item theta1 = 1 - p1, theta2 = 1 - p2: non-response probabilities
+\item delta = p1 - p2: treatment effect
 }
 
 \strong{AN (Asymptotic Normal) Method:}
@@ -69,7 +69,7 @@ where \eqn{\bar{\pi} = (r\pi_1 + \pi_2)/(1 + r)} is the pooled proportion.
 \strong{ANc Method:}
 Adds continuity correction to the AN method. Uses iterative calculation because
 the correction term depends on sample size. Converges when the difference between
-successive iterations is ≤ 1.
+successive iterations is less than or equal to 1.
 
 \strong{AS (Arcsine) Method:}
 Uses the variance-stabilizing arcsine transformation:
@@ -85,7 +85,7 @@ Fisher's exact test does not have a closed-form sample size formula. This method
 \item Starts with the AN method's sample size as initial value
 \item Incrementally increases n2 by 1
 \item Calculates exact power using hypergeometric distribution
-\item Stops when power ≥ 1 - β
+\item Stops when power is greater than or equal to 1 - beta
 }
 
 Note: Due to the saw-tooth nature of exact power (power does not increase
@@ -108,12 +108,6 @@ ss1BinaryApprox(p1 = 0.65, p2 = 0.45, r = 1, alpha = 0.025, beta = 0.1, Test = "
 
 # Fisher's exact test
 ss1BinaryApprox(p1 = 0.6, p2 = 0.4, r = 2, alpha = 0.025, beta = 0.1, Test = "Fisher")
-
-# Compare all methods
-methods <- c("AN", "ANc", "AS", "ASc", "Fisher")
-do.call(rbind, lapply(methods, function(m) {
-  ss1BinaryApprox(p1 = 0.6, p2 = 0.4, r = 1, alpha = 0.025, beta = 0.1, Test = m)
-}))
 
 }
 \references{

@@ -66,11 +66,10 @@ This function uses different algorithms depending on the variance assumption:
 Uses a linear extrapolation algorithm to efficiently determine the required sample size.
 
 \strong{Step 1:} Initialize with sample sizes from single endpoint formulas.
-The initial values use the same testing method specified in the Test argument
-to ensure consistency. Two initial values are calculated:
+Two initial values are calculated:
 \itemize{
-\item n2_0: Based on target power 1 - β
-\item n2_1: Based on adjusted power 1 - √(1-β) to provide a bracket
+\item n2_0: Based on target power 1 - beta
+\item n2_1: Based on adjusted power 1 - sqrt(1-beta) to provide a bracket
 }
 
 \strong{Step 2-4:} Iteratively refine using linear extrapolation until convergence:

@@ -52,23 +52,27 @@ co-primary binary endpoints using exact methods, as described in Homma and
 Yoshida (2025).
 }
 \details{
-This function implements the exact sample size calculation algorithm described
-in Appendix C of Homma and Yoshida (2025):
+This function uses a sequential search algorithm to find the minimum sample size
+that achieves the target power:
 
-\strong{Step 1:} Initialize with sample size from approximate method (AN)
+\strong{Step 1:} Initialize with sample size from approximate method (AN).
+This provides a good starting point for the exact calculation.
 
-\strong{Step 2:} Calculate exact power at current sample size
+\strong{Step 2:} Calculate exact power at current sample size using
+\code{\link{power2BinaryExact}}.
 
-\strong{Step 3:} Adjust sample size:
+\strong{Step 3:} Adjust sample size to achieve target power:
 \itemize{
-\item If power >= 1 - beta: decrease n2 until power drops below target, then add 1
-\item If power < 1 - beta: increase n2 until power reaches target
+\item If power is greater than or equal to target: decrease n2 by 1 until power drops below target, then add 1 back
+\item If power is less than target: increase n2 by 1 until power reaches target
 }
 
-\strong{Step 4:} Return final sample size
+\strong{Step 4:} Return final sample sizes.
 
-The required sample size is calculated as equation (10):
-\deqn{N_2 = \arg\min_{N_2 \in \mathbb{Z}} \{power_A(\theta) \geq 1 - \beta\}}
+Note: Due to the saw-tooth nature of exact power (power does not increase
+monotonically with sample size), linear extrapolation is not appropriate.
+This function uses sequential search to ensure the minimum sample size that
+achieves the target power.
 }
 \examples{
 # Exact sample size calculation using Boschloo test
