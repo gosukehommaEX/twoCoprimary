@@ -7,11 +7,11 @@
 rr1Binary(n1, n2, alpha, Test)
 }
 \arguments{
-\item{n1}{Sample size for group 1}
+\item{n1}{Sample size for group 1 (test group)}
 
-\item{n2}{Sample size for group 2}
+\item{n2}{Sample size for group 2 (control group)}
 
-\item{alpha}{One-sided significance level (typically 0.025 or 0.05)}
+\item{alpha}{One-sided significance level (typically 0.025)}
 
 \item{Test}{Type of statistical test. One of:
 \itemize{

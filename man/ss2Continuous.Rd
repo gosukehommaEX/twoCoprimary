@@ -52,28 +52,32 @@ A data frame with the following columns:
 \item{nMC}{Number of Monte Carlo simulations (NA if known_var = TRUE)}
 \item{n1}{Required sample size for group 1}
 \item{n2}{Required sample size for group 2}
-\item{n}{Total sample size (n1 + n2)}
+\item{N}{Total sample size (n1 + n2)}
 }
 \description{
 Calculates the required sample size for a two-arm superiority trial with two
 co-primary continuous endpoints using linear extrapolation approach (for known
-variance) or sequential search (for unknown variance), as described in
-Hamasaki et al. (2013) and Sozu et al. (2011).
+variance) or sequential search (for unknown variance).
 }
 \details{
 This function uses different algorithms depending on the variance assumption:
 
 \strong{For known variance (known_var = TRUE):}
-Uses a linear extrapolation algorithm (Hamasaki et al. 2013) to efficiently
-determine the required sample size.
-\enumerate{
-\item Initialize two sample sizes: \eqn{n_{2,0}} using target power \eqn{1-\beta}
-and \eqn{n_{2,1}} using adjusted power \eqn{1-\sqrt{1-\beta}}
-\item Calculate power at both sample sizes
-\item Use linear extrapolation to estimate sample size achieving target power:
-\deqn{n_{2,new} = \frac{n_{2,0}(power_{n_{2,1}} - (1-\beta)) - n_{2,1}(power_{n_{2,0}} - (1-\beta))}{power_{n_{2,1}} - power_{n_{2,0}}}}
-\item Update values and repeat until convergence
+Uses a linear extrapolation algorithm to efficiently determine the required sample size.
+
+\strong{Step 1:} Initialize with sample sizes from single endpoint formulas.
+The initial values use the same testing method specified in the Test argument
+to ensure consistency. Two initial values are calculated:
+\itemize{
+\item n2_0: Based on target power 1 - β
+\item n2_1: Based on adjusted power 1 - √(1-β) to provide a bracket
 }
+
+\strong{Step 2-4:} Iteratively refine using linear extrapolation until convergence:
+\deqn{n_2^{new} = \frac{n_2^{(0)}(power^{(1)} - (1-\beta)) - n_2^{(1)}(power^{(0)} - (1-\beta))}
+      {power^{(1)} - power^{(0)}}}
+
+The algorithm converges when \eqn{n_2^{(1)} = n_2^{(0)}}.
 
 \strong{For unknown variance (known_var = FALSE):}
 Uses sequential search starting from initial sample size, incrementing by 1 until
@@ -131,10 +135,6 @@ ss2Continuous(
 
 }
 \references{
-Hamasaki, T., Sugimoto, T., Evans, S. R., & Sozu, T. (2013). Sample size
-determination for clinical trials with co-primary outcomes: Exponential event
-times. \emph{Pharmaceutical Statistics}, 12(1), 28-34.
-
 Sozu, T., Sugimoto, T., & Hamasaki, T. (2011). Sample size determination in
 superiority clinical trials with multiple co-primary correlated endpoints.
 \emph{Journal of Biopharmaceutical Statistics}, 21(4), 650-668.

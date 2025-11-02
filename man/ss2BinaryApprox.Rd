@@ -43,12 +43,11 @@ A data frame with the following columns:
 \item{Test}{Testing method used}
 \item{n1}{Required sample size for group 1}
 \item{n2}{Required sample size for group 2}
-\item{n}{Total sample size (n1 + n2)}
+\item{N}{Total sample size (n1 + n2)}
 }
 \description{
 Calculates the required sample size for a two-arm superiority trial with two
-co-primary binary endpoints using the linear extrapolation approach described
-in Hamasaki et al. (2013).
+co-primary binary endpoints using the linear extrapolation approach.
 }
 \details{
 This function uses the linear extrapolation approach to find the required
@@ -119,10 +118,6 @@ ss2BinaryApprox(
 
 }
 \references{
-Hamasaki, T., Sugimoto, T., Evans, S. R., & Sozu, T. (2013). Sample size
-determination for clinical trials with co-primary outcomes: exponential event
-times. \emph{Pharmaceutical Statistics}, 12(1), 28-34.
-
 Sozu, T., Sugimoto, T., & Hamasaki, T. (2010). Sample size determination in
 clinical trials with multiple co-primary binary endpoints. \emph{Statistics in
 Medicine}, 29(21), 2169-2179.

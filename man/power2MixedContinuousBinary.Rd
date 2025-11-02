@@ -2,7 +2,7 @@
 % Please edit documentation in R/power2MixedContinuousBinary.R
 \name{power2MixedContinuousBinary}
 \alias{power2MixedContinuousBinary}
-\title{Power Calculation for Two Co-Primary Endpoints: One Continuous and One Binary}
+\title{Power Calculation for Two Co-Primary Mixed Endpoints}
 \usage{
 power2MixedContinuousBinary(
   n1,
@@ -64,53 +64,64 @@ A data frame with the following columns:
 \description{
 Calculates the power for a two-arm superiority trial with two co-primary
 endpoints where one is continuous and one is binary, as described in
-Sozu et al. (2012). This function is specifically designed for mixed
-continuous-binary endpoint combinations.
+Sozu et al. (2012).
 }
 \details{
-This function implements the power calculation for mixed continuous-binary endpoints
-as described in Sozu et al. (2012). The method assumes that the binary variable is
-derived from a latent continuous variable via dichotomization at a threshold point.
+This function implements the power calculation for mixed endpoints (one continuous
+and one binary) as described in Sozu et al. (2012). The method assumes that the
+binary variable is derived from a latent continuous variable via dichotomization
+at a threshold point.
 
-\strong{Endpoint Types:}
+\strong{Notation:}
 \itemize{
-\item \strong{Continuous Endpoint}: Analyzed using t-test for comparing means
-\item \strong{Binary Endpoint}: Analyzed using one of several methods (AN, ANc, AS, ASc, or Fisher)
+\item Group 1 corresponds to test group (T), Group 2 corresponds to control group (C)
+\item κ (kappa) = n2/n1: allocation ratio (control/test)
+\item n = n1: sample size in test group
+\item π1, π2: response probabilities in groups 1 and 2
+\item θ1 = 1 - π1, θ2 = 1 - π2: non-response probabilities
 }
 
-\strong{Biserial Correlation Model:}
-The binary endpoint is assumed to arise from dichotomizing a latent continuous
-variable at a threshold. The correlation parameter ρ (rho) represents the biserial
-correlation between the observed continuous endpoint and this latent continuous
-variable underlying the binary endpoint.
+For the continuous endpoint, the standardized test statistic is:
+\deqn{Z_{cont} = \frac{\delta}{\sigma} \sqrt{\frac{\kappa n}{1+\kappa}}}
 
-\strong{Key Model Assumptions:}
-\itemize{
-\item The latent variable underlying the binary endpoint follows a bivariate normal
-distribution with the continuous endpoint
-\item For group i with response probability πᵢ, the latent variable has mean μᵢ = Φ⁻¹(πᵢ)
-and variance 1
-\item The dichotomization threshold is set at 0, so P(X ≥ 0) = Φ(μᵢ) = πᵢ
-\item This is equivalent to using varying cutoff points with fixed means, and is the
-standard approach in biserial correlation models
-}
+For the binary endpoint (AN method), the test statistic uses:
+\deqn{v_{k0} = \sqrt{\frac{(\pi_1 + \kappa\pi_2)(\theta_1 + \kappa\theta_2)}{\kappa(1+\kappa)}}}
+\deqn{v_k = \sqrt{\frac{\kappa\pi_1\theta_1 + \pi_2\theta_2}{\kappa}}}
+
+The correlation between the two test statistics (continuous and binary) is:
+\deqn{\gamma = \frac{\kappa \rho \xi_1 + \rho \xi_2}{\sqrt{1+\kappa}\sqrt{\kappa\pi_1\theta_1 + \pi_2\theta_2}}}
+where ξ_1 = φ(Φ^{-1}(1-π_1)) and ξ_2 = φ(Φ^{-1}(1-π_2)) are the standard normal
+density values at the dichotomization thresholds. This γ represents the correlation
+between the standardized test statistics Z*_cont and Z*_bin (Equation 1 in paper).
+
+Note: ρ is the biserial correlation between the latent continuous variable
+underlying the binary endpoint and the observed continuous endpoint, not the
+point-biserial correlation between the observed binary and continuous variables.
+The observed correlation is given by Equation (1): Corr(Y_cont, Y_bin) = ρξ/√(πθ),
+which is always smaller than ρ in absolute value.
+
+\strong{Fisher's Exact Test:}
+When Test = "Fisher", Monte Carlo simulation is used to estimate power. For each
+replication, latent bivariate normal variables are generated using rmvnorm(), the
+binary variable is dichotomized, and both t-test (for continuous) and Fisher's
+exact test (for binary) are performed. The overall power is the proportion of
+replications where both tests are significant at the α level. Use set.seed()
+before calling this function for reproducible results with Fisher's method.
+
+The implementation uses a fixed cutoff point (g = 0) and varies the means of
+latent variables to achieve different response probabilities. This is equivalent
+to using varying cutoff points with fixed means, and is the standard approach
+in biserial correlation models. For group i with response probability πᵢ,
+the latent variable has mean μᵢ = Φ⁻¹(πᵢ) and variance 1, with P(X ≥ 0) = Φ(μᵢ) = πᵢ.
 
 \strong{Note on Table 2 in Supporting Information:}
 There is a typographical error in the original paper's Table 2 for Arcsine(CC)
 method. The second term in the numerator should use πCk'θCk' instead of πTk'θTk'.
 This implementation uses the corrected formula.
 
-\strong{Understanding Key Quantities:}
-\itemize{
-\item ρ (rho): Biserial correlation between the continuous endpoint and the latent
-continuous variable underlying the binary endpoint (before dichotomization)
-\item γ (gamma): Correlation between the test statistics of the two endpoints
-(after dichotomization and standardization)
-\item ξ: Standard normal density at the dichotomization threshold, calculated as
-ξ = φ(Φ⁻¹(1-π)) where π is the response probability
-\item c\emph{₁/c}₂: Ratio of standardized critical values for the two endpoints. When
-c\emph{₁/c}₂ ≈ 1, the individual powers of the two endpoints are approximately equal
-}
+\strong{Note on Ratios:}
+In the paper, c\emph{₁/c}₂ represents the ratio of critical values for the two endpoints.
+When c\emph{₁/c}₂ ≈ 1, the individual powers of the two endpoints are approximately equal
 }
 \examples{
 # Example 1: Reproduce Table 2 from Sozu et al. (2012)

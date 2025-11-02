@@ -4,7 +4,7 @@
 \alias{dbibinom}
 \title{Probability Mass Function of Bivariate Binomial Distribution}
 \usage{
-dbibinom(N, y1, y2, p1, p2, rho, gamma = NULL)
+dbibinom(N, y1, y2, p1, p2, rho)
 }
 \arguments{
 \item{N}{Sample size (number of trials)}
@@ -18,8 +18,6 @@ dbibinom(N, y1, y2, p1, p2, rho, gamma = NULL)
 \item{p2}{True probability of responders for the second outcome (0 < p2 < 1)}
 
 \item{rho}{Correlation coefficient between the two binary outcomes (must be NULL if gamma is specified)}
-
-\item{gamma}{Dependence parameter for the bivariate binomial distribution (must be NULL if rho is specified)}
 }
 \value{
 Probability mass function value(s) for the bivariate binomial distribution.
@@ -39,23 +37,17 @@ where
       (\xi+\gamma)^m (1-\xi)^{y_1-m} \xi^{y_2-m} (1-\xi+\gamma)^{N-y_1-(y_2-m)}}
 with \eqn{\xi = p_2 + \gamma(p_2 - p_1)} and
 \eqn{\mathcal{M} = \{m : m = \max(0, y_2-(N-y_1)), \ldots, \min(y_1, y_2)\}}.
-
-Either rho or gamma must be specified, but not both. If rho is provided, it
-is converted to gamma.
 }
 \examples{
 # Calculate single probability mass
-dbibinom(N = 100, y1 = 30, y2 = 50, p1 = 0.3, p2 = 0.5, rho = 0.5, gamma = NULL)
+dbibinom(N = 100, y1 = 30, y2 = 50, p1 = 0.3, p2 = 0.5, rho = 0.5)
 
 # Verify that probabilities sum to 1
 N <- 20
 p1 <- 0.3
 p2 <- 0.5
 rho <- 0.5
-sum(outer(0:N, 0:N, function(x, y) dbibinom(N, x, y, p1, p2, rho, gamma = NULL)))
-
-# Using gamma parameter directly
-dbibinom(N = 50, y1 = 20, y2 = 25, p1 = 0.4, p2 = 0.5, rho = NULL, gamma = 0.5)
+sum(outer(0:N, 0:N, function(x, y) dbibinom(N, x, y, p1, p2, rho)))
 
 }
 \references{

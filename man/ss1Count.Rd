@@ -4,12 +4,12 @@
 \alias{ss1Count}
 \title{Sample Size Calculation for a Single Count Endpoint (Negative Binomial)}
 \usage{
-ss1Count(r0, r1, nu, t, r, alpha, beta)
+ss1Count(r1, r2, nu, t, r, alpha, beta)
 }
 \arguments{
-\item{r0}{Mean rate (events per unit time) for the control group}
-
 \item{r1}{Mean rate (events per unit time) for the treatment group}
+
+\item{r2}{Mean rate (events per unit time) for the control group}
 
 \item{nu}{Common dispersion parameter for the negative binomial distribution (nu > 0)}
 
@@ -23,16 +23,16 @@ ss1Count(r0, r1, nu, t, r, alpha, beta)
 }
 \value{
 A data frame with the following columns:
-\item{r0}{Mean rate for control group}
 \item{r1}{Mean rate for treatment group}
+\item{r2}{Mean rate for control group}
 \item{nu}{Dispersion parameter}
 \item{t}{Follow-up time}
 \item{r}{Allocation ratio}
 \item{alpha}{One-sided significance level}
 \item{beta}{Type II error rate}
-\item{n0}{Required sample size for control group}
 \item{n1}{Required sample size for treatment group}
-\item{N}{Total sample size (n0 + n1)}
+\item{n2}{Required sample size for control group}
+\item{N}{Total sample size (n2 + n1)}
 }
 \description{
 Calculates the required sample size for a two-arm superiority trial with a
@@ -42,23 +42,23 @@ as described in Homma and Yoshida (2024).
 \details{
 The test statistic for the negative binomial rate ratio is:
 \deqn{Z_1 = \frac{\hat{\beta}_1}{\sqrt{Var(\hat{\beta}_1)}}}
-where \eqn{\hat{\beta}_1 = \log(\bar{Y}_1) - \log(\bar{Y}_0)} and the variance is:
-\deqn{Var(\hat{\beta}_1) = \frac{1}{n_0}\left[\frac{1}{t}\left(\frac{1}{r_0} +
+where \eqn{\hat{\beta}_1 = \log(\bar{Y}_1) - \log(\bar{Y}_2)} and the variance is:
+\deqn{Var(\hat{\beta}_1) = \frac{1}{n_2}\left[\frac{1}{t}\left(\frac{1}{r_2} +
       \frac{1}{\r r_1}\right) + \frac{1+\r}{\nu\r}\right]}
 
 This is equation (8) in Homma and Yoshida (2024).
 }
 \examples{
 # Sample size for count endpoint with nu = 0.8
-ss1Count(r0 = 1.25, r1 = 1.0, nu = 0.8, t = 1, r = 1,
+ss1Count(r1 = 1.0, r2 = 1.25, nu = 0.8, t = 1, r = 1,
          alpha = 0.025, beta = 0.1)
 
 # Unbalanced design with 2:1 allocation
-ss1Count(r0 = 1.5, r1 = 1.0, nu = 1.0, t = 1, r = 2,
+ss1Count(r1 = 1.0, r2 = 1.5, nu = 1.0, t = 1, r = 2,
          alpha = 0.025, beta = 0.2)
 
 # Higher dispersion
-ss1Count(r0 = 2.0, r1 = 1.5, nu = 3.0, t = 1, r = 1,
+ss1Count(r1 = 1.5, r2 = 2.0, nu = 3.0, t = 1, r = 1,
          alpha = 0.025, beta = 0.1)
 
 }

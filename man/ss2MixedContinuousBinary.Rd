@@ -59,7 +59,7 @@ A data frame with the following columns:
 \item{Test}{Testing method used for binary endpoint}
 \item{n1}{Required sample size for group 1}
 \item{n2}{Required sample size for group 2}
-\item{n}{Total sample size (n1 + n2)}
+\item{N}{Total sample size (n1 + n2)}
 }
 \description{
 Determines the sample size for a two-arm superiority trial with two co-primary
@@ -69,8 +69,8 @@ for mixed continuous-binary endpoint combinations.
 }
 \details{
 This function implements the sample size calculation for mixed continuous-binary
-co-primary endpoints following the methodology in Sozu et al. (2012) and the
-iterative algorithm from Hamasaki et al. (2013) extended to mixed endpoints.
+co-primary endpoints following the methodology in Sozu et al. (2012)
+using linear extrapolation approach.
 
 \strong{Endpoint Types:}
 \itemize{
@@ -185,8 +185,4 @@ ss2MixedContinuousBinary(
 Sozu, T., Sugimoto, T., & Hamasaki, T. (2012). Sample size determination in
 clinical trials with multiple co-primary endpoints including mixed continuous
 and binary variables. \emph{Biometrical Journal}, 54(5), 716-729.
-
-Hamasaki, T., Sugimoto, T., Evans, S. R., & Sozu, T. (2013). Sample size
-determination for clinical trials with co-primary outcomes: exponential event
-times. \emph{Pharmaceutical Statistics}, 12(1), 28-34.
 }

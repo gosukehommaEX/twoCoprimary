@@ -7,9 +7,9 @@
 power2BinaryApprox(n1, n2, p11, p12, p21, p22, rho1, rho2, alpha, Test)
 }
 \arguments{
-\item{n1}{Sample size for group 1}
+\item{n1}{Sample size for group 1 (test group)}
 
-\item{n2}{Sample size for group 2}
+\item{n2}{Sample size for group 2 (control group)}
 
 \item{p11}{True probability of responders in group 1 for the first outcome (0 < p11 < 1)}
 
@@ -82,6 +82,8 @@ This is the weighted average of the correlations from both groups.
       \frac{\rho_2 \sqrt{\nu_{21}\nu_{22}}}{4n_2\sqrt{\nu_{21,c}\nu_{22,c}}}\right)}
 where \eqn{\nu_{jk,c} = (p_{jk} + c_j)(1 - p_{jk} - c_j)},
 \eqn{c_1 = -1/(2n_1)}, and \eqn{c_2 = 1/(2n_2)}.
+
+The correlation bounds are automatically checked using \code{\link{corrbound2Binary}}.
 }
 \examples{
 # Power calculation using asymptotic normal method

@@ -26,7 +26,7 @@ A data frame with the following columns:
 \item{beta}{Type II error rate}
 \item{n1}{Required sample size for group 1}
 \item{n2}{Required sample size for group 2}
-\item{n}{Total sample size (n1 + n2)}
+\item{N}{Total sample size (n1 + n2)}
 }
 \description{
 Calculates the required sample size for a two-arm superiority trial with a

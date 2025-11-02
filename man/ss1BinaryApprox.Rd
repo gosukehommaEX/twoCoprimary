@@ -13,7 +13,7 @@ ss1BinaryApprox(p1, p2, r, alpha, beta, Test = "AN")
 
 \item{r}{Allocation ratio of group 1 to group 2 (group 1:group 2 = r:1, where r > 0)}
 
-\item{alpha}{One-sided significance level (typically 0.025 or 0.05)}
+\item{alpha}{One-sided significance level (typically 0.025)}
 
 \item{beta}{Target type II error rate (typically 0.1 or 0.2)}
 
@@ -36,7 +36,7 @@ A data frame with the following columns:
 \item{Test}{Testing method used}
 \item{n1}{Required sample size for group 1}
 \item{n2}{Required sample size for group 2}
-\item{n}{Total sample size (n1 + n2)}
+\item{N}{Total sample size (n1 + n2)}
 }
 \description{
 Calculates the required sample size for a two-arm superiority trial with a

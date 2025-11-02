@@ -18,9 +18,9 @@ power2Continuous(
 )
 }
 \arguments{
-\item{n1}{Sample size for group 1}
+\item{n1}{Sample size for group 1 (test group)}
 
-\item{n2}{Sample size for group 2}
+\item{n2}{Sample size for group 2 (control group)}
 
 \item{delta1}{Mean difference for the first endpoint}
 

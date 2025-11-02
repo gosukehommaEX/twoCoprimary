@@ -2,7 +2,7 @@
 % Please edit documentation in R/corrbound2Binary.R
 \name{corrbound2Binary}
 \alias{corrbound2Binary}
-\title{Calculate Correlation Bounds for Binary Outcomes}
+\title{Calculate Correlation Bounds Between Two Binary Outcomes}
 \usage{
 corrbound2Binary(p1, p2)
 }

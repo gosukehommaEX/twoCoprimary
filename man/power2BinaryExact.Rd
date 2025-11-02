@@ -7,9 +7,9 @@
 power2BinaryExact(n1, n2, p11, p12, p21, p22, rho1, rho2, alpha, Test)
 }
 \arguments{
-\item{n1}{Sample size for group 1}
+\item{n1}{Sample size for group 1 (test group)}
 
-\item{n2}{Sample size for group 2}
+\item{n2}{Sample size for group 2 (control group)}
 
 \item{p11}{True probability of responders in group 1 for the first outcome (0 < p11 < 1)}
 
@@ -56,7 +56,7 @@ where \eqn{\mathcal{A}_k} is the rejection region for endpoint k, and
 \eqn{(Y_{j,1}, Y_{j,2}) \sim BiBin(N_j, p_{j,1}, p_{j,2}, \gamma_j)} follows
 the bivariate binomial distribution.
 
-The correlation bounds are automatically checked using \code{\link{boundRho}}.
+The correlation bounds are automatically checked using \code{\link{corrbound2Binary}}.
 }
 \examples{
 # Exact power calculation using Boschloo test
