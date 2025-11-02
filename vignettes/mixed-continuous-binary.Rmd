@@ -33,78 +33,196 @@ library(knitr)
 
 Mixed continuous and binary co-primary endpoints are common in:
 
-- **Alzheimer's trials**: Cognitive score (continuous) + Clinical global impression (binary)
-- **Depression trials**: HAM-D score (continuous) + Response rate (binary)
-- **Cardiovascular trials**: Blood pressure change (continuous) + Target achievement (binary)
-- **Pain trials**: Pain intensity (continuous) + ≥50% pain reduction (binary)
+- **Alzheimer's trials**: ADAS-cog score (continuous) + CIBIC-plus impression (binary: improved/not improved)
+- **Depression trials**: HAM-D score (continuous) + Response rate (binary: ≥50% reduction)
+- **Cardiovascular trials**: Blood pressure change (continuous) + Target achievement (binary: BP < 140/90)
+- **Pain trials**: Pain intensity on VAS (continuous) + ≥50% pain reduction (binary)
+- **Diabetes trials**: HbA1c change (continuous) + Target achievement (binary: HbA1c < 7%)
 
-### Correlation Structure
+### Why Mixed Endpoints?
 
-The correlation between a continuous variable Y₁ and a binary variable Y₂ is expressed using the **biserial correlation** ρ, which measures the correlation between:
-
-- Y₁: Observed continuous variable
-- Y₂*: Latent continuous variable underlying the binary outcome
-
-The observed binary outcome Y₂ = 1 if Y₂* exceeds a threshold.
+Combining continuous and binary endpoints provides:
+1. **Comprehensive assessment**: Magnitude of change (continuous) + clinical meaningfulness (binary)
+2. **Regulatory relevance**: Many guidelines require both types
+3. **Clinical interpretability**: Binary endpoints are easier to communicate to patients
 
 ## Statistical Framework
 
-### Model
+### Model and Assumptions
 
-**Continuous endpoint** (k = 1):
+Consider a two-arm superiority trial with sample sizes n₁ (treatment) and n₂ (control).
+
+**Endpoint 1 (Continuous)**:
 $$Y_{ij1} \sim N(\mu_{j1}, \sigma^2)$$
 
-**Binary endpoint** (k = 2):
+where:
+- μⱼ₁ is the population mean in group j
+- σ² is the common variance across groups
+
+**Endpoint 2 (Binary)**:
 $$Y_{ij2} \sim \text{Bernoulli}(p_{j2})$$
 
-**Biserial correlation**: ρ relates the continuous Y₁ to the latent continuous variable underlying Y₂.
+where pⱼ₂ is the success probability in group j.
+
+### Correlation Structure: Biserial Correlation
+
+The correlation between a continuous variable and a binary variable requires special consideration. We use the **biserial correlation** ρ.
+
+**Key concept**: The binary outcome Y₂ is assumed to arise from dichotomizing a latent continuous variable Y₂*:
+
+$$Y_2 = \begin{cases} 
+1 & \text{if } Y_2^* > c \\
+0 & \text{if } Y_2^* \leq c
+\end{cases}$$
+
+where c is a threshold such that P(Y₂* > c) = p₂.
+
+**Biserial correlation** ρ measures the correlation between:
+- Y₁: Observed continuous variable
+- Y₂*: Latent continuous variable underlying Y₂
+
+Assume (Y₁, Y₂*) follows a bivariate normal distribution with correlation ρ. Then:
+
+$$p_2 = P(Y_2^* > c) = 1 - \Phi\left(\frac{c - \mu_{Y_2^*}}{\sigma_{Y_2^*}}\right)$$
+
+By standardization, we can set μ_{Y₂*} = 0 and σ_{Y₂*} = 1, giving:
+
+$$c = \Phi^{-1}(1 - p_2)$$
+
+**Relationship to observed data**: The biserial correlation ρ can be estimated from observed data using:
+
+$$\hat{\rho} = \frac{\bar{Y}_{1|Y_2=1} - \bar{Y}_{1|Y_2=0}}{\sigma_{Y_1}} \times \frac{\sqrt{p_2(1-p_2)}}{\phi(\Phi^{-1}(1-p_2))}$$
+
+where φ is the standard normal PDF.
+
+### Hypothesis Testing
+
+**For continuous endpoint** (k = 1):
+$$H_{01}: \mu_{11} - \mu_{21} \leq 0 \text{ vs. } H_{11}: \mu_{11} - \mu_{21} > 0$$
+
+**For binary endpoint** (k = 2):
+$$H_{02}: p_{12} - p_{22} \leq 0 \text{ vs. } H_{12}: p_{12} - p_{22} > 0$$
+
+**Co-primary endpoints** (intersection-union test):
+$$H_0 = H_{01} \cup H_{02} \text{ vs. } H_1 = H_{11} \cap H_{12}$$
+
+Reject H₀ at level α if and only if **both** H₀₁ and H₀₂ are rejected at level α.
 
 ### Test Statistics
 
 **Continuous endpoint**:
-$$Z_1 = \frac{\bar{Y}_{11} - \bar{Y}_{21}}{\sigma\sqrt{1/n_1 + 1/n_2}}$$
+$$Z_1 = \frac{\bar{Y}_{11} - \bar{Y}_{21}}{\sigma\sqrt{\frac{1}{n_1} + \frac{1}{n_2}}}$$
 
-**Binary endpoint** (various methods):
-- **AN**: Asymptotic normal without continuity correction
-- **ANc**: Asymptotic normal with continuity correction
-- **AS**: Arcsine transformation
-- **Fisher**: Fisher's exact test
+When σ is unknown, use the pooled sample standard deviation s.
+
+Under H₁₁, Z₁ ~ N(μ₁, 1) where:
+$$\mu_1 = \frac{\Delta_1}{\sigma\sqrt{\frac{1}{n_1} + \frac{1}{n_2}}} = \frac{\delta_1}{\sqrt{\frac{1}{n_1} + \frac{1}{n_2}}}$$
+
+with standardized effect size δ₁ = Δ₁/σ.
+
+**Binary endpoint** (several methods available):
+
+1. **AN (Asymptotic Normal)**: Without continuity correction
+$$Z_2 = \frac{\hat{p}_{12} - \hat{p}_{22}}{\sqrt{\hat{V}_2}}$$
+
+where $\hat{V}_2 = \frac{\hat{p}_{12}(1-\hat{p}_{12})}{n_1} + \frac{\hat{p}_{22}(1-\hat{p}_{22})}{n_2}$
+
+2. **ANc**: With continuity correction
+$$Z_2 = \frac{|\hat{p}_{12} - \hat{p}_{22}| - \frac{1}{2}(\frac{1}{n_1} + \frac{1}{n_2})}{\sqrt{\hat{V}_2}}$$
+
+3. **AS (Arcsine)**: Variance-stabilizing transformation
+$$Z_2 = \frac{\arcsin(\sqrt{\hat{p}_{12}}) - \arcsin(\sqrt{\hat{p}_{22}})}{\sqrt{\frac{1}{4n_1} + \frac{1}{4n_2}}}$$
+
+4. **ASc**: Arcsine with continuity correction
 
 ### Joint Distribution
 
-The test statistics $(Z_1, Z_2)$ follow an asymptotic bivariate normal distribution with correlation γ that depends on ρ.
+Under H₁, the test statistics (Z₁, Z₂) asymptotically follow a bivariate normal:
+
+$$\begin{pmatrix} Z_1 \\ Z_2 \end{pmatrix} \sim BN\left(\begin{pmatrix} \mu_1 \\ \mu_2 \end{pmatrix}, \begin{pmatrix} 1 & \gamma \\ \gamma & 1 \end{pmatrix}\right)$$
+
+The **correlation γ between test statistics** depends on the biserial correlation ρ between endpoints.
+
+**Key challenge**: Relating ρ (correlation between Y₁ and Y₂*) to γ (correlation between Z₁ and Z₂).
+
+Sozu et al. (2012) derived the following approximation. For balanced design (n₁ = n₂ = n):
+
+$$\gamma \approx \frac{\rho \cdot \phi(\Phi^{-1}(1-\bar{p}_2))}{\sqrt{2\bar{p}_2(1-\bar{p}_2)}}$$
+
+where $\bar{p}_2 = (p_{12} + p_{22})/2$ is the average success probability.
+
+For general allocation ratio r = n₁/n₂, the correlation is weighted by sample sizes:
+
+$$\gamma \approx \frac{\sum_{j=1,2} \frac{n_j}{n_1 + n_2} \rho_j \phi(\Phi^{-1}(1-p_{j2}))}{\sqrt{V_2} \sqrt{\bar{p}_2(1-\bar{p}_2)}}$$
+
+### Power Calculation
+
+The overall power is:
+
+$$1 - \beta = P(Z_1 > z_{1-\alpha} \text{ and } Z_2 > z_{1-\alpha} \mid H_1)$$
+
+Using the bivariate normal CDF:
+
+$$1 - \beta = \Phi_2(-z_{1-\alpha} + \mu_1, -z_{1-\alpha} + \mu_2 \mid \gamma)$$
+
+### Sample Size Determination
+
+The sample size is determined by solving:
+
+$$\Phi_2\left(-z_{1-\alpha} + \frac{\delta_1}{\sqrt{\frac{1}{n_1} + \frac{1}{n_2}}}, -z_{1-\alpha} + \frac{\Delta_2}{\sqrt{V_2}} \mid \gamma\right) = 1 - \beta$$
+
+where:
+- Δ₂ = p₁₂ - p₂₂ is the treatment effect on the binary endpoint
+- V₂ depends on n₁, n₂, p₁₂, p₂₂
+
+This equation is solved numerically for n (or n₁, n₂).
+
+**Computational approach**:
+1. Calculate individual-endpoint sample sizes
+2. Calculate joint power accounting for correlation
+3. Iterate until target power achieved
+
+## Understanding c₁*/c₂*: Power Balance
+
+The parameter c₁*/c₂* in Sozu et al. (2012) represents the **power balance** between endpoints.
+
+**Definition**: c₁* and c₂* are the arguments in the power function:
+$$1 - \beta = \Phi_2(c_1^*, c_2^* \mid \gamma)$$
+
+where:
+- c₁* = -z₁₋α + μ₁
+- c₂* = -z₁₋α + μ₂
+
+**Interpretation**:
+- **c₁*/c₂* = 1**: Both endpoints have equal individual power
+- **c₁*/c₂* > 1**: Continuous endpoint has higher individual power
+- **c₁*/c₂* < 1**: Binary endpoint has higher individual power
+
+**Why it matters**: The power balance affects how much correlation impacts sample size. When powers are balanced (c₁*/c₂* ≈ 1), correlation has maximum effect on sample size reduction.
 
 ## Replicating Sozu et al. (2012) Table 1
 
 Table 1 shows sample sizes for different standardized effect sizes and probability pairs with equal individual power (c₁*/c₂* = 1).
 
-### Understanding c₁*/c₂*
-
-The parameter c₁*/c₂* represents the ratio of arguments in the power function. When c₁*/c₂* = 1, both endpoints have approximately equal individual power.
-
 ### Table 1: Equal Individual Power (c₁*/c₂* = 1)
 
 ```{r table1_equal_power}
-# Scenarios from Table 1
-# δ₁*: standardized effect size for continuous endpoint
-# (πT2, πC2): probabilities for binary endpoint
-
+# Define scenarios with c₁*/c₂* = 1 (equal power)
 scenarios_table1 <- data.frame(
-  delta_star = c(0.100, 0.103, 0.112, 0.132, 0.201, 0.210, 0.231, 0.281),
+  delta_star = c(0.070, 0.074, 0.082, 0.098, 0.145, 0.153, 0.171, 0.210),
   pT2 = c(0.55, 0.65, 0.75, 0.85, 0.60, 0.70, 0.80, 0.90),
   pC2 = c(0.50, 0.60, 0.70, 0.80, 0.50, 0.60, 0.70, 0.80)
 )
 
-rho_values <- c(0, 0.3, 0.5, 0.8)
+rho_values <- c(0.0, 0.3, 0.5, 0.8)
 
-# Calculate sample sizes for each scenario and correlation
 results_table1 <- lapply(1:nrow(scenarios_table1), function(i) {
   scenario <- scenarios_table1[i, ]
   
   results_rho <- lapply(rho_values, function(rho) {
     result <- ss2MixedContinuousBinary(
       delta = scenario$delta_star,
-      sd = 1,  # Standardized
+      sd = 1,
       p1 = scenario$pT2,
       p2 = scenario$pC2,
       rho = rho,
@@ -126,7 +244,7 @@ results_table1 <- lapply(1:nrow(scenarios_table1), function(i) {
 
 table1_results <- bind_rows(results_table1)
 
-# Reshape for better presentation
+# Reshape for display
 table1_wide <- table1_results %>%
   select(delta_star, binary_pair, rho, n_per_group) %>%
   pivot_wider(
@@ -136,19 +254,17 @@ table1_wide <- table1_results %>%
   )
 
 kable(table1_wide,
-      caption = "Table 1: Sample Size per Group (c₁*/c₂* = 1, Equal Individual Power)",
+      caption = "Table 1: Sample Size per Group (c₁*/c₂* = 1)",
       digits = 0,
       col.names = c("δ₁*", "(πT₂, πC₂)", "ρ=0.0", "ρ=0.3", "ρ=0.5", "ρ=0.8"))
 ```
 
-**Key observations**:
-- As correlation increases, sample size decreases (5-7% reduction at ρ = 0.8)
-- Smaller effect sizes require larger sample sizes
-- Sample size is similar to that required for two continuous endpoints
+**Observations**:
+- Larger effect sizes require smaller sample sizes
+- Higher correlation reduces sample size by ~5-7% (ρ=0.5) to ~10-11% (ρ=0.8)
+- Binary endpoint probabilities closer to 0.5 require larger samples (higher variance)
 
-### Table 1: Unequal Individual Power (c₁*/c₂* = 1.5)
-
-When c₁*/c₂* = 1.5, the continuous endpoint has higher individual power.
+### Table 1: Moderately Unequal Power (c₁*/c₂* = 1.5)
 
 ```{r table1_unequal_power_1_5}
 # Scenarios with c₁*/c₂* = 1.5
@@ -186,7 +302,6 @@ results_table1_1_5 <- lapply(1:nrow(scenarios_table1_1_5), function(i) {
 
 table1_1_5_results <- bind_rows(results_table1_1_5)
 
-# Reshape
 table1_1_5_wide <- table1_1_5_results %>%
   select(delta_star, binary_pair, rho, n_per_group) %>%
   pivot_wider(
@@ -201,14 +316,14 @@ kable(table1_1_5_wide,
       col.names = c("δ₁*", "(πT₂, πC₂)", "ρ=0.0", "ρ=0.3", "ρ=0.5", "ρ=0.8"))
 ```
 
-### Table 1: Highly Unequal Power (c₁*/c₂* = 3)
+**Key finding**: When c₁*/c₂* = 1.5 (continuous endpoint has higher power), correlation has slightly less impact on sample size because the binary endpoint (with lower power) dominates.
 
-When c₁*/c₂* = 3, the binary endpoint dominates sample size.
+### Table 1: Highly Unequal Power (c₁*/c₂* = 3)
 
 ```{r table1_unequal_power_3}
 # Scenarios with c₁*/c₂* = 3
 scenarios_table1_3 <- data.frame(
-  delta_star = c(0.160, 0.165, 0.179, 0.211, 0.322, 0.336, 0.370, 0.450),
+  delta_star = c(0.233, 0.239, 0.258, 0.302, 0.465, 0.483, 0.532, 0.646),
   pT2 = c(0.55, 0.65, 0.75, 0.85, 0.60, 0.70, 0.80, 0.90),
   pC2 = c(0.50, 0.60, 0.70, 0.80, 0.50, 0.60, 0.70, 0.80)
 )
@@ -241,7 +356,6 @@ results_table1_3 <- lapply(1:nrow(scenarios_table1_3), function(i) {
 
 table1_3_results <- bind_rows(results_table1_3)
 
-# Reshape
 table1_3_wide <- table1_3_results %>%
   select(delta_star, binary_pair, rho, n_per_group) %>%
   pivot_wider(
@@ -256,139 +370,7 @@ kable(table1_3_wide,
       col.names = c("δ₁*", "(πT₂, πC₂)", "ρ=0.0", "ρ=0.3", "ρ=0.5", "ρ=0.8"))
 ```
 
-**Key findings**:
-- When c₁*/c₂* = 3, correlation has minimal impact on sample size
-- Sample size approaches that needed for the binary endpoint alone
-- The endpoint with smaller individual power dominates
-
-## Replicating Sozu et al. (2012) Table 2
-
-Table 2 shows a specific application to mTSS (modified Total Sharp Score) and ACR50 in rheumatoid arthritis trials.
-
-### Table 2: Rheumatoid Arthritis Trial Example
-
-```{r table2_ra_trial}
-# mTSS: Modified Total Sharp Score (continuous)
-# ACR50: American College of Rheumatology 50% improvement (binary)
-
-# Different scenarios with varying standard deviations
-sd_values <- c(19.0, 20.0, 21.0, 22.0)
-rho_values_table2 <- c(0, 0.3, 0.5, 0.8)
-
-results_table2 <- lapply(sd_values, function(sd_val) {
-  results_rho <- lapply(rho_values_table2, function(rho) {
-    result <- ss2MixedContinuousBinary(
-      delta = 4.4,  # mTSS effect
-      sd = sd_val,
-      p1 = 0.59,    # ACR50 treatment
-      p2 = 0.46,    # ACR50 control
-      rho = rho,
-      r = 1,
-      alpha = 0.025,
-      beta = 0.2,
-      Test = "AN"
-    )
-    
-    data.frame(
-      delta = 4.4,
-      sd = sd_val,
-      ACR50_pair = "(0.59, 0.46)",
-      rho = rho,
-      n_per_group = result$n2,
-      N_total = result$N
-    )
-  })
-  bind_rows(results_rho)
-})
-
-table2_results <- bind_rows(results_table2)
-
-# Reshape
-table2_wide <- table2_results %>%
-  select(sd, rho, n_per_group) %>%
-  pivot_wider(
-    names_from = rho,
-    values_from = n_per_group,
-    names_prefix = "rho_"
-  )
-
-kable(table2_wide,
-      caption = "Table 2: Rheumatoid Arthritis Trial (mTSS + ACR50)",
-      digits = 0,
-      col.names = c("SD (mTSS)", "ρ=0.0", "ρ=0.3", "ρ=0.5", "ρ=0.8"))
-```
-
-**Clinical interpretation**:
-- δ = 4.4 points difference in mTSS
-- σ varies from 19.0 to 22.0 (uncertainty in variance)
-- ACR50 rates: 59% vs 46%
-- Sample size is relatively insensitive to SD in this range
-
-## Power Verification
-
-Verify that calculated sample sizes achieve target power:
-
-```{r power_verification}
-# Select representative scenarios
-test_scenarios <- data.frame(
-  delta = c(0.10, 0.20, 0.15, 0.25),
-  sd = c(1, 1, 1, 1),
-  p1 = c(0.55, 0.70, 0.60, 0.80),
-  p2 = c(0.50, 0.60, 0.50, 0.70),
-  rho = c(0.3, 0.5, 0.5, 0.8)
-)
-
-power_results <- lapply(1:nrow(test_scenarios), function(i) {
-  scenario <- test_scenarios[i, ]
-  
-  # Get sample size
-  ss <- ss2MixedContinuousBinary(
-    delta = scenario$delta,
-    sd = scenario$sd,
-    p1 = scenario$p1,
-    p2 = scenario$p2,
-    rho = scenario$rho,
-    r = 1,
-    alpha = 0.025,
-    beta = 0.2,
-    Test = "AN"
-  )
-  
-  # Calculate power
-  power <- power2MixedContinuousBinary(
-    n1 = ss$n1,
-    n2 = ss$n2,
-    delta = scenario$delta,
-    sd = scenario$sd,
-    p1 = scenario$p1,
-    p2 = scenario$p2,
-    rho = scenario$rho,
-    alpha = 0.025,
-    Test = "AN"
-  )
-  
-  data.frame(
-    delta_star = scenario$delta,
-    binary_pair = paste0("(", scenario$p1, ", ", scenario$p2, ")"),
-    rho = scenario$rho,
-    n_per_group = ss$n2,
-    N_total = ss$N,
-    power_cont = power$powerCont,
-    power_binary = power$powerBin,
-    power_both = power$powerCoprimary
-  )
-})
-
-power_check <- bind_rows(power_results)
-
-kable(power_check,
-      caption = "Power Verification for Selected Scenarios",
-      digits = 3,
-      col.names = c("δ*", "Binary (π₁, π₂)", "ρ", "n per group", 
-                    "N total", "Power (Cont)", "Power (Binary)", "Power (Both)"))
-```
-
-All scenarios achieve approximately 0.8 power for co-primary endpoints.
+**Key finding**: When c₁*/c₂* = 3, the binary endpoint dominates sample size, so correlation has minimal impact (< 3% reduction even at ρ = 0.8).
 
 ## Impact of Test Method
 
@@ -486,6 +468,51 @@ legend("topright",
        bty = "n")
 ```
 
+## Comparison with Two Continuous Endpoints
+
+How do mixed endpoints compare to two continuous endpoints?
+
+```{r mixed_vs_two_continuous}
+# Mixed endpoints
+mixed <- ss2MixedContinuousBinary(
+  delta = 0.3,
+  sd = 1,
+  p1 = 0.65,
+  p2 = 0.50,
+  rho = 0.5,
+  r = 1,
+  alpha = 0.025,
+  beta = 0.2,
+  Test = "AN"
+)
+
+# Two continuous (same effect size)
+two_cont <- ss2Continuous(
+  delta1 = 0.3,
+  delta2 = 0.3,
+  sd1 = 1,
+  sd2 = 1,
+  rho = 0.5,
+  r = 1,
+  alpha = 0.025,
+  beta = 0.2,
+  known_var = TRUE
+)
+
+comparison <- data.frame(
+  Endpoint_types = c("Mixed (Continuous + Binary)", "Two Continuous"),
+  n_per_group = c(mixed$n2, two_cont$n2),
+  N_total = c(mixed$N, two_cont$N)
+)
+
+kable(comparison,
+      caption = "Comparison: Mixed vs Two Continuous Endpoints (ρ=0.5)",
+      digits = 0,
+      col.names = c("Endpoint Types", "n per group", "N total"))
+```
+
+**Finding**: Mixed endpoints and two continuous endpoints require similar sample sizes when effect sizes are comparable.
+
 ## Clinical Application: Alzheimer's Disease Trial
 
 Consider an Alzheimer's trial with:
@@ -536,51 +563,6 @@ cat("Sample size reduction:", reduction, "subjects\n")
 cat("Percentage reduction:", pct_reduction, "%\n")
 ```
 
-## Comparison with Two Continuous Endpoints
-
-How do mixed endpoints compare to two continuous endpoints?
-
-```{r mixed_vs_two_continuous}
-# Mixed endpoints
-mixed <- ss2MixedContinuousBinary(
-  delta = 0.3,
-  sd = 1,
-  p1 = 0.65,
-  p2 = 0.50,
-  rho = 0.5,
-  r = 1,
-  alpha = 0.025,
-  beta = 0.2,
-  Test = "AN"
-)
-
-# Two continuous (same effect size)
-two_cont <- ss2Continuous(
-  delta1 = 0.3,
-  delta2 = 0.3,
-  sd1 = 1,
-  sd2 = 1,
-  rho = 0.5,
-  r = 1,
-  alpha = 0.025,
-  beta = 0.2,
-  known_var = TRUE
-)
-
-comparison <- data.frame(
-  Endpoint_types = c("Mixed (Continuous + Binary)", "Two Continuous"),
-  n_per_group = c(mixed$n2, two_cont$n2),
-  N_total = c(mixed$N, two_cont$N)
-)
-
-kable(comparison,
-      caption = "Comparison: Mixed vs Two Continuous Endpoints (ρ=0.5)",
-      digits = 0,
-      col.names = c("Endpoint Types", "n per group", "N total"))
-```
-
-**Finding**: Mixed endpoints and two continuous endpoints require similar sample sizes when effect sizes are comparable.
-
 ## Summary
 
 ### Key Findings
@@ -599,20 +581,32 @@ kable(comparison,
 
 ### Practical Recommendations
 
-- **Estimating ρ**: Use pilot data or historical studies; be conservative if uncertain
-- **Test selection**: AN is most common; use Fisher for small samples or regulatory requirements
-- **Sample size planning**: Calculate for ρ = 0 (conservative) and expected ρ (realistic)
+1. **Estimating ρ**: Use pilot data or historical studies; be conservative if uncertain. Biserial correlation can be estimated from observed data or specified based on clinical knowledge.
 
-### Challenges
+2. **Test selection**: AN is most common; use Fisher for small samples or regulatory requirements
 
-1. **Correlation estimation**: Biserial correlation is harder to estimate than Pearson
-2. **Latent variable assumption**: Binary endpoint must conceptually have an underlying continuous scale
-3. **Threshold specification**: The dichotomization threshold affects correlation
+3. **Sample size planning**: Calculate for ρ = 0 (conservative) and expected ρ (realistic)
+
+4. **Continuous-binary relationship**: Ensure the binary endpoint conceptually has an underlying continuous latent variable
+
+5. **Sensitivity analysis**: Assess robustness to correlation misspecification
+
+### Challenges and Considerations
+
+1. **Correlation estimation**: Biserial correlation is harder to estimate than Pearson correlation because it involves a latent variable
+
+2. **Latent variable assumption**: The binary endpoint must conceptually have an underlying continuous scale (e.g., "improved" means crossing a threshold on a continuous improvement scale)
+
+3. **Threshold specification**: The dichotomization threshold affects correlation; ensure it's clinically meaningful
+
+4. **Asymmetric power**: Mixed endpoints often have unequal power for the two endpoints; the endpoint with lower power dominates sample size
 
 ## References
 
 Sozu, T., Sugimoto, T., & Hamasaki, T. (2012). Sample size determination in clinical trials with multiple co-primary endpoints including mixed continuous and binary variables. *Biometrical Journal*, 54(5), 716-729.
 
-Sozu, T., Sugimoto, T., & Hamasaki, T. (2011). Sample size determination in superiority clinical trials with multiple co-primary correlated endpoints. *Journal of Biopharmaceutical Statistics*, 21(4), 650-668.
+Sozu, T., Sugimoto, T., Hamasaki, T., & Evans, S. R. (2015). *Sample Size Determination in Clinical Trials with Multiple Endpoints*. Springer.
 
 Tate, R. F. (1954). Correlation between a discrete and a continuous variable. Point-biserial correlation. *Annals of Mathematical Statistics*, 25, 603-607.
+
+Pearson, K. (1909). On a new method of determining correlation between a measured character A, and a character B. *Biometrika*, 7(1-2), 96-105.

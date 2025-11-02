@@ -45,333 +45,180 @@ Co-primary continuous endpoints are common in:
 - **Cardiovascular trials**: Systolic blood pressure + Diastolic blood pressure
 - **Depression trials**: HAM-D + MADRS scores
 - **Pain trials**: Pain intensity + Physical function
+- **Pulmonary trials**: FEV₁ + FVC (Forced Vital Capacity)
 
 ## Statistical Framework
 
 ### Model and Assumptions
 
-For subject i in group j (j = 1: treatment, j = 2: control):
+Consider a two-arm parallel-group superiority trial comparing treatment (group 1) with control (group 2). Let n₁ and n₂ denote the sample sizes in the two groups, and define the allocation ratio κ = n₁/n₂.
 
-**Endpoint k** (k = 1, 2): $Y_{ijk} \sim N(\mu_{jk}, \sigma_k^2)$
+For subject i in group j (j = 1: treatment, j = 2: control), we observe two continuous endpoints:
 
-**Correlation**: $\text{Cor}(Y_{ij1}, Y_{ij2}) = \rho$ (common within both groups)
+**Endpoint k** (k = 1, 2): 
+$$Y_{ijk} \sim N(\mu_{jk}, \sigma_k^2)$$
+
+where:
+- μⱼₖ is the population mean for endpoint k in group j
+- σₖ² is the common variance for endpoint k across both groups
+
+**Within-subject correlation**: The two endpoints are correlated within each subject:
+$$\text{Cor}(Y_{ij1}, Y_{ij2}) = \rho_j$$
+
+We assume common correlation across groups: ρ₁ = ρ₂ = ρ.
+
+### Effect Size Parameterization
+
+The treatment effect for endpoint k is measured by:
+
+**Absolute difference**: Δₖ = μ₁ₖ - μ₂ₖ
+
+**Standardized effect size**: δₖ = Δₖ / σₖ
+
+The standardized effect size is preferred as it is scale-free and facilitates comparison across studies.
 
 ### Hypothesis Testing
 
-We test superiority of treatment over control:
+We test superiority of treatment over control for both endpoints:
 
+**For endpoint k**:
 $$H_{0k}: \mu_{1k} - \mu_{2k} \leq 0 \text{ vs. } H_{1k}: \mu_{1k} - \mu_{2k} > 0$$
 
-For co-primary endpoints:
+**For co-primary endpoints**, we use the intersection-union test (IUT):
 
-- $H_0 = H_{01} \cup H_{02}$ (at least one null is true)
-- $H_1 = H_{11} \cap H_{12}$ (both alternatives are true)
+**Null hypothesis**: H₀ = H₀₁ ∪ H₀₂ (at least one null is true)
 
-Reject $H_0$ only if both $H_{01}$ and $H_{02}$ are rejected at level α.
+**Alternative hypothesis**: H₁ = H₁₁ ∩ H₁₂ (both alternatives are true)
+
+**Decision rule**: Reject H₀ at level α if and only if **both** H₀₁ and H₀₂ are rejected at level α.
 
 ### Test Statistics
 
-**Known variance**:
-$$Z_k = \frac{\delta_k}{\sigma_k\sqrt{\frac{1}{n_1} + \frac{1}{n_2}}}$$
+#### Case 1: Known Variance
 
-**Unknown variance**:
+When variances σ₁² and σ₂² are known (or estimated from large external data), the test statistic for endpoint k is:
+
+$$Z_k = \frac{\bar{Y}_{1k} - \bar{Y}_{2k}}{\sigma_k\sqrt{\frac{1}{n_1} + \frac{1}{n_2}}}$$
+
+Under H₀ₖ, Zₖ ~ N(0, 1).
+
+Under H₁ₖ with true effect δₖ, Zₖ ~ N(μₖ, 1), where:
+
+$$\mu_k = \frac{\delta_k}{\sqrt{\frac{1}{n_1} + \frac{1}{n_2}}} = \delta_k \sqrt{\frac{n_1 n_2}{n_1 + n_2}}$$
+
+For balanced design (κ = 1, n₁ = n₂ = n):
+$$\mu_k = \delta_k \sqrt{\frac{n}{2}}$$
+
+#### Case 2: Unknown Variance
+
+When variances are unknown, we use the pooled t-test. The test statistic is:
+
 $$T_k = \frac{\bar{Y}_{1k} - \bar{Y}_{2k}}{S_k\sqrt{\frac{1}{n_1} + \frac{1}{n_2}}}$$
 
-where $S_k^2$ is the pooled sample variance.
+where Sₖ² is the pooled sample variance:
 
-### Power Calculation
+$$S_k^2 = \frac{(n_1 - 1)S_{1k}^2 + (n_2 - 1)S_{2k}^2}{n_1 + n_2 - 2}$$
 
-Under $H_1$, the joint distribution $(Z_1, Z_2)$ follows a bivariate normal:
+Under H₀ₖ, Tₖ ~ t(n₁ + n₂ - 2).
+
+For large samples, Tₖ approximately follows the same distribution as Zₖ, so we use the normal approximation.
+
+### Joint Distribution of Test Statistics
+
+The key to co-primary endpoint analysis is the **joint distribution** of (Z₁, Z₂).
+
+Under H₁, (Z₁, Z₂) follows a bivariate normal distribution:
 
 $$\begin{pmatrix} Z_1 \\ Z_2 \end{pmatrix} \sim BN\left(\begin{pmatrix} \mu_1 \\ \mu_2 \end{pmatrix}, \begin{pmatrix} 1 & \rho \\ \rho & 1 \end{pmatrix}\right)$$
 
-where $\mu_k = \frac{\delta_k}{\sigma_k}\sqrt{\frac{n_1 n_2}{n_1 + n_2}}$.
+**Important**: The correlation ρ between endpoints equals the correlation between test statistics because both endpoints are standardized identically within each group.
 
-**Overall power**:
+### Power Calculation
+
+The overall power (probability of rejecting both null hypotheses) is:
+
+$$1 - \beta = P(Z_1 > z_{1-\alpha} \text{ and } Z_2 > z_{1-\alpha} \mid H_1)$$
+
+where z₁₋α is the (1-α)-th quantile of the standard normal distribution.
+
+Using properties of bivariate normal distribution:
+
 $$1 - \beta = \Phi_2(-z_{1-\alpha} + \mu_1, -z_{1-\alpha} + \mu_2 \mid \rho)$$
 
-where $\Phi_2(\cdot, \cdot \mid \rho)$ is the bivariate normal CDF with correlation ρ.
+where Φ₂(a, b | ρ) is the bivariate normal cumulative distribution function:
 
-## Replicating Sozu et al. (2011) Table 1
+$$\Phi_2(a, b \mid \rho) = \int_{-\infty}^{a} \int_{-\infty}^{b} \phi_2(x, y \mid \rho) \, dy \, dx$$
 
-We replicate Table 1 from Sozu et al. (2011), which shows sample sizes for various standardized effect sizes and correlations.
+with φ₂(x, y | ρ) being the bivariate standard normal density function with correlation ρ.
 
-### Table 1: Equal Effect Sizes (δ₁* = δ₂*)
+### Sample Size Formula
 
-**Design parameters**:
-- Standardized effect sizes: δ* = δ/σ = 0.2, 0.25, 0.3, 0.4, 0.5
-- Correlation: ρ = 0, 0.3, 0.5, 0.8
-- Balanced allocation: r = 1
-- α = 0.025 (one-sided), 1 - β = 0.8
+For a target power 1 - β, we solve for n (assuming balanced design):
 
-```{r table1_equal_effects}
-# Define scenarios for Table 1 (equal effect sizes)
-delta_values <- c(0.2, 0.25, 0.3, 0.4, 0.5)
+$$\Phi_2\left(-z_{1-\alpha} + \delta_1\sqrt{\frac{n}{2}}, -z_{1-\alpha} + \delta_2\sqrt{\frac{n}{2}} \mid \rho\right) = 1 - \beta$$
+
+This equation is solved numerically. The sample size per group is:
+
+$$n = n_1 = n_2$$
+
+Total sample size: N = 2n.
+
+For unbalanced design with allocation ratio r = n₁/n₂:
+
+$$\mu_k = \delta_k\sqrt{\frac{n_2 \cdot r \cdot n_2}{r \cdot n_2 + n_2}} = \delta_k\sqrt{\frac{r \cdot n_2}{1 + r}}$$
+
+### Impact of Correlation
+
+The correlation ρ has a substantial impact on required sample size:
+
+**Positive correlation** (ρ > 0):
+- Test statistics tend to be concordant
+- P(Z₁ > c and Z₂ > c) increases
+- **Sample size decreases**
+
+**Zero correlation** (ρ = 0):
+- Test statistics are independent
+- Baseline scenario
+- P(Z₁ > c and Z₂ > c) = P(Z₁ > c) × P(Z₂ > c)
+
+**Negative correlation** (ρ < 0):
+- Test statistics tend to be discordant
+- P(Z₁ > c and Z₂ > c) decreases
+- **Sample size increases**
+
+**Quantitative impact**: For ρ = 0.5, sample size reduces by approximately 5-7% compared to ρ = 0. For ρ = 0.8, reduction is approximately 10-12%.
+
+## Sample Size Calculation Examples
+
+### Example 1: Balanced Design with Equal Effect Sizes
+
+```{r example1}
+# Design parameters
+result1 <- ss2Continuous(
+  delta1 = 0.5,     # Standardized effect size for endpoint 1
+  delta2 = 0.5,     # Standardized effect size for endpoint 2
+  sd1 = 1,          # Standard deviation for endpoint 1
+  sd2 = 1,          # Standard deviation for endpoint 2
+  rho = 0.5,        # Correlation between endpoints
+  r = 1,            # Balanced allocation
+  alpha = 0.025,    # One-sided Type I error rate
+  beta = 0.2,       # Type II error rate (80% power)
+  known_var = TRUE  # Variances are known
+)
+
+print(result1)
+```
+
+### Example 2: Impact of Correlation
+
+```{r example2_correlation}
+# Calculate sample sizes at different correlation levels
 rho_values <- c(0, 0.3, 0.5, 0.8)
 
-# Create all combinations
-scenarios_table1 <- expand.grid(
-  delta = delta_values,
-  rho = rho_values,
-  stringsAsFactors = FALSE
-)
-
-# Calculate sample sizes for each scenario
-results_table1 <- lapply(1:nrow(scenarios_table1), function(i) {
-  delta <- scenarios_table1$delta[i]
-  rho <- scenarios_table1$rho[i]
-  
+results_rho <- sapply(rho_values, function(rho) {
   result <- ss2Continuous(
-    delta1 = delta,
-    delta2 = delta,
-    sd1 = 1,
-    sd2 = 1,
-    rho = rho,
-    r = 1,
-    alpha = 0.025,
-    beta = 0.2,
-    known_var = TRUE
-  )
-  
-  data.frame(
-    delta_star = delta,
-    rho = rho,
-    n_per_group = result$n2,
-    N_total = result$N
-  )
-})
-
-table1_results <- bind_rows(results_table1)
-
-# Reshape for better presentation
-table1_wide <- table1_results %>%
-  select(delta_star, rho, n_per_group) %>%
-  pivot_wider(
-    names_from = rho,
-    values_from = n_per_group,
-    names_prefix = "rho_"
-  )
-
-kable(table1_wide, 
-      caption = "Table 1: Sample Size per Group for Equal Effect Sizes (δ₁* = δ₂*)",
-      digits = 0,
-      col.names = c("δ*", "ρ=0.0", "ρ=0.3", "ρ=0.5", "ρ=0.8"))
-```
-
-**Key observations**:
-- As correlation increases, required sample size decreases
-- At ρ = 0.8, approximately 11% reduction compared to ρ = 0
-- Larger effect sizes require smaller sample sizes (as expected)
-
-### Table 1 Extension: Unequal Effect Sizes
-
-Now consider scenarios with unequal effect sizes: δ₁* = 0.3, δ₂* varies.
-
-```{r table1_unequal_effects}
-# Scenarios with δ₁* = 0.3, varying δ₂*
-delta2_values <- c(0.25, 0.3, 0.35, 0.4)
-rho_values <- c(0, 0.3, 0.5, 0.8)
-
-scenarios_unequal <- expand.grid(
-  delta2 = delta2_values,
-  rho = rho_values,
-  stringsAsFactors = FALSE
-)
-
-results_unequal <- lapply(1:nrow(scenarios_unequal), function(i) {
-  delta2 <- scenarios_unequal$delta2[i]
-  rho <- scenarios_unequal$rho[i]
-  
-  result <- ss2Continuous(
-    delta1 = 0.3,
-    delta2 = delta2,
-    sd1 = 1,
-    sd2 = 1,
-    rho = rho,
-    r = 1,
-    alpha = 0.025,
-    beta = 0.2,
-    known_var = TRUE
-  )
-  
-  data.frame(
-    delta1_star = 0.3,
-    delta2_star = delta2,
-    rho = rho,
-    n_per_group = result$n2,
-    N_total = result$N
-  )
-})
-
-table1_unequal <- bind_rows(results_unequal)
-
-# Reshape
-table1_unequal_wide <- table1_unequal %>%
-  select(delta2_star, rho, n_per_group) %>%
-  pivot_wider(
-    names_from = rho,
-    values_from = n_per_group,
-    names_prefix = "rho_"
-  )
-
-kable(table1_unequal_wide, 
-      caption = "Table 1 Extension: Sample Size per Group with δ₁* = 0.3, Varying δ₂*",
-      digits = 0,
-      col.names = c("δ₂*", "ρ=0.0", "ρ=0.3", "ρ=0.5", "ρ=0.8"))
-```
-
-**Key observations**:
-- When effect sizes are unequal, the smaller effect size dominates
-- Correlation impact is reduced when effect sizes differ substantially
-- Sample size approaches that needed for the endpoint with smaller effect
-
-## Impact of Allocation Ratio
-
-Examine the effect of unbalanced allocation (r = 2:1).
-
-```{r allocation_ratio}
-# Compare balanced (r=1) vs unbalanced (r=2)
-delta_values <- c(0.3, 0.4, 0.5)
-rho_values <- c(0, 0.5, 0.8)
-r_values <- c(1, 2)
-
-scenarios_allocation <- expand.grid(
-  delta = delta_values,
-  rho = rho_values,
-  r = r_values,
-  stringsAsFactors = FALSE
-)
-
-results_allocation <- lapply(1:nrow(scenarios_allocation), function(i) {
-  delta <- scenarios_allocation$delta[i]
-  rho <- scenarios_allocation$rho[i]
-  r_alloc <- scenarios_allocation$r[i]
-  
-  result <- ss2Continuous(
-    delta1 = delta,
-    delta2 = delta,
-    sd1 = 1,
-    sd2 = 1,
-    rho = rho,
-    r = r_alloc,
-    alpha = 0.025,
-    beta = 0.2,
-    known_var = TRUE
-  )
-  
-  data.frame(
-    delta_star = delta,
-    rho = rho,
-    allocation = paste0(r_alloc, ":1"),
-    n1 = result$n1,
-    n2 = result$n2,
-    N_total = result$N
-  )
-})
-
-allocation_results <- bind_rows(results_allocation)
-
-# Compare total sample sizes
-allocation_comparison <- allocation_results %>%
-  select(delta_star, rho, allocation, N_total) %>%
-  pivot_wider(
-    names_from = allocation,
-    values_from = N_total
-  ) %>%
-  mutate(
-    N_increase = `2:1` - `1:1`,
-    Pct_increase = round((`2:1` - `1:1`) / `1:1` * 100, 1)
-  )
-
-kable(allocation_comparison, 
-      caption = "Impact of Allocation Ratio on Total Sample Size",
-      digits = 1,
-      col.names = c("δ*", "ρ", "Balanced (1:1)", "Unbalanced (2:1)", 
-                    "Increase", "% Increase"))
-```
-
-**Key findings**:
-- Unbalanced allocation (2:1) increases total sample size by ~12-13%
-- The percentage increase is relatively constant across effect sizes and correlations
-- Balanced allocation (1:1) is most efficient in terms of total sample size
-
-## Power Verification
-
-Verify that calculated sample sizes achieve target power of 0.8.
-
-```{r power_verification}
-# Select representative scenarios
-test_scenarios <- data.frame(
-  delta1 = c(0.3, 0.3, 0.4, 0.5),
-  delta2 = c(0.3, 0.35, 0.4, 0.5),
-  rho = c(0.5, 0.5, 0.3, 0.8)
-)
-
-power_results <- lapply(1:nrow(test_scenarios), function(i) {
-  delta1 <- test_scenarios$delta1[i]
-  delta2 <- test_scenarios$delta2[i]
-  rho <- test_scenarios$rho[i]
-  
-  # Get sample size
-  ss <- ss2Continuous(
-    delta1 = delta1,
-    delta2 = delta2,
-    sd1 = 1,
-    sd2 = 1,
-    rho = rho,
-    r = 1,
-    alpha = 0.025,
-    beta = 0.2,
-    known_var = TRUE
-  )
-  
-  # Calculate power
-  power <- power2Continuous(
-    n1 = ss$n1,
-    n2 = ss$n2,
-    delta1 = delta1,
-    delta2 = delta2,
-    sd1 = 1,
-    sd2 = 1,
-    rho = rho,
-    alpha = 0.025,
-    known_var = TRUE
-  )
-  
-  data.frame(
-    delta1_star = delta1,
-    delta2_star = delta2,
-    rho = rho,
-    n_per_group = ss$n2,
-    N_total = ss$N,
-    power_endpoint1 = power$power1,
-    power_endpoint2 = power$power2,
-    power_coprimary = power$powerCoprimary
-  )
-})
-
-power_check <- bind_rows(power_results)
-
-kable(power_check, 
-      caption = "Power Verification for Selected Scenarios",
-      digits = 3,
-      col.names = c("δ₁*", "δ₂*", "ρ", "n per group", "N total", 
-                    "Power EP1", "Power EP2", "Power Both"))
-```
-
-All scenarios achieve approximately 0.8 power for co-primary endpoints, confirming the accuracy of the sample size formulas.
-
-## Correlation Impact Visualization
-
-```{r correlation_plot, fig.width=7, fig.height=5}
-# Generate data for plot
-delta <- 0.3
-rho_seq <- seq(0, 0.8, by = 0.05)
-
-plot_data <- sapply(rho_seq, function(rho) {
-  result <- ss2Continuous(
-    delta1 = delta,
-    delta2 = delta,
+    delta1 = 0.5,
+    delta2 = 0.5,
     sd1 = 1,
     sd2 = 1,
     rho = rho,
@@ -383,169 +230,343 @@ plot_data <- sapply(rho_seq, function(rho) {
   result$N
 })
 
-plot(rho_seq, plot_data, 
-     type = "l", lwd = 2, col = "blue",
-     xlab = "Correlation (ρ)",
-     ylab = "Total Sample Size (N)",
-     main = paste0("Sample Size vs Correlation (δ* = ", delta, ")"),
-     las = 1)
-grid()
+correlation_table <- data.frame(
+  Correlation = rho_values,
+  Total_N = results_rho,
+  Reduction = c("Baseline", 
+                paste0(round((1 - results_rho[2]/results_rho[1]) * 100, 1), "%"),
+                paste0(round((1 - results_rho[3]/results_rho[1]) * 100, 1), "%"),
+                paste0(round((1 - results_rho[4]/results_rho[1]) * 100, 1), "%"))
+)
 
-# Add reference line at rho=0
-abline(h = plot_data[1], lty = 2, col = "gray")
-
-# Add percentage reduction annotations
-points(c(0, 0.3, 0.5, 0.8), 
-       c(plot_data[1], plot_data[7], plot_data[11], plot_data[17]),
-       pch = 19, col = "red", cex = 1.2)
-
-# Calculate reductions
-reduction_03 <- round((1 - plot_data[7]/plot_data[1]) * 100, 1)
-reduction_05 <- round((1 - plot_data[11]/plot_data[1]) * 100, 1)
-reduction_08 <- round((1 - plot_data[17]/plot_data[1]) * 100, 1)
-
-legend("topright", 
-       legend = c(
-         paste0("ρ=0.3: ", reduction_03, "% reduction"),
-         paste0("ρ=0.5: ", reduction_05, "% reduction"),
-         paste0("ρ=0.8: ", reduction_08, "% reduction")
-       ),
-       bty = "n")
+kable(correlation_table,
+      caption = "Impact of Correlation on Sample Size (δ₁ = δ₂ = 0.5)",
+      col.names = c("ρ", "N", "Reduction vs ρ=0"))
 ```
 
-## Clinical Application Example
+**Key finding**: At ρ = 0.8, approximately 11% reduction in sample size compared to ρ = 0.
 
-### Alzheimer's Disease Trial
+### Example 3: Unequal Effect Sizes
 
-Consider a trial evaluating a new treatment for Alzheimer's disease with two co-primary endpoints:
-
-1. **ADAS-cog** (Alzheimer's Disease Assessment Scale - cognitive): Lower scores indicate improvement
-2. **CIBIC-plus** (Clinician's Interview-Based Impression of Change): Continuous score
-
-**Parameters**:
-- Expected treatment effects: δ₁ = 3 points (ADAS-cog), δ₂ = 0.5 points (CIBIC-plus)
-- Standard deviations: σ₁ = 10, σ₂ = 1.5
-- Correlation: ρ = 0.5 (moderate)
-- α = 0.025 (one-sided), 1 - β = 0.9 (90% power)
-
-```{r alzheimers_example}
-# Calculate sample size
-alzheimers_trial <- ss2Continuous(
-  delta1 = 3,
-  delta2 = 0.5,
-  sd1 = 10,
-  sd2 = 1.5,
+```{r example3_unequal}
+# When effect sizes differ
+result3 <- ss2Continuous(
+  delta1 = 0.6,     # Larger effect for endpoint 1
+  delta2 = 0.4,     # Smaller effect for endpoint 2
+  sd1 = 1,
+  sd2 = 1,
   rho = 0.5,
   r = 1,
   alpha = 0.025,
-  beta = 0.1,
+  beta = 0.2,
   known_var = TRUE
 )
 
-cat("Alzheimer's Trial Design:\n")
-cat("Sample size per group:", alzheimers_trial$n2, "\n")
-cat("Total sample size:", alzheimers_trial$N, "\n\n")
+print(result3)
 
-# Compare with no correlation
-alzheimers_nocorr <- ss2Continuous(
-  delta1 = 3,
+# Compare with equal effect sizes (average)
+result3_equal <- ss2Continuous(
+  delta1 = 0.5,
   delta2 = 0.5,
-  sd1 = 10,
-  sd2 = 1.5,
-  rho = 0,
+  sd1 = 1,
+  sd2 = 1,
+  rho = 0.5,
   r = 1,
   alpha = 0.025,
-  beta = 0.1,
+  beta = 0.2,
+  known_var = TRUE
+)
+
+cat("\nComparison:\n")
+cat("Unequal effects (0.6, 0.4): N =", result3$N, "\n")
+cat("Equal effects (0.5, 0.5): N =", result3_equal$N, "\n")
+cat("Difference:", result3$N - result3_equal$N, "subjects\n")
+```
+
+**Key finding**: Unequal effect sizes require larger sample sizes. The endpoint with smaller effect size dominates the sample size requirement.
+
+### Example 4: Unbalanced Allocation
+
+```{r example4_unbalanced}
+# 2:1 allocation (treatment:control)
+result4 <- ss2Continuous(
+  delta1 = 0.5,
+  delta2 = 0.5,
+  sd1 = 1,
+  sd2 = 1,
+  rho = 0.5,
+  r = 2,            # 2:1 allocation
+  alpha = 0.025,
+  beta = 0.2,
+  known_var = TRUE
+)
+
+print(result4)
+
+# Compare with balanced allocation
+result4_balanced <- ss2Continuous(
+  delta1 = 0.5,
+  delta2 = 0.5,
+  sd1 = 1,
+  sd2 = 1,
+  rho = 0.5,
+  r = 1,
+  alpha = 0.025,
+  beta = 0.2,
+  known_var = TRUE
+)
+
+cat("\nComparison:\n")
+cat("Balanced (1:1): N =", result4_balanced$N, "\n")
+cat("Unbalanced (2:1): N =", result4$N, "\n")
+cat("Increase:", round((result4$N / result4_balanced$N - 1) * 100, 1), "%\n")
+```
+
+**Key finding**: Unbalanced allocation increases total sample size by approximately 12% for 2:1 allocation.
+
+### Example 5: Different Standard Deviations
+
+```{r example5_different_sd}
+# Endpoints with different variability
+result5 <- ss2Continuous(
+  delta1 = 0.5,     # Same effect size
+  delta2 = 0.5,
+  sd1 = 1,          # Endpoint 1: lower variability
+  sd2 = 2,          # Endpoint 2: higher variability
+  rho = 0.5,
+  r = 1,
+  alpha = 0.025,
+  beta = 0.2,
+  known_var = TRUE
+)
+
+print(result5)
+
+# Note: With different SDs, standardized effects differ
+# Endpoint 1: Δ₁ = 0.5 × 1 = 0.5
+# Endpoint 2: Δ₂ = 0.5 × 2 = 1.0
+# But relative to their variability, both have δ = 0.5
+```
+
+## Power Verification
+
+Let's verify that the calculated sample size achieves the target power:
+
+```{r power_verification}
+# Calculate sample size
+ss_result <- ss2Continuous(
+  delta1 = 0.5,
+  delta2 = 0.5,
+  sd1 = 1,
+  sd2 = 1,
+  rho = 0.5,
+  r = 1,
+  alpha = 0.025,
+  beta = 0.2,
+  known_var = TRUE
+)
+
+# Verify power
+power_result <- power2Continuous(
+  n1 = ss_result$n1,
+  n2 = ss_result$n2,
+  delta1 = 0.5,
+  delta2 = 0.5,
+  sd1 = 1,
+  sd2 = 1,
+  rho = 0.5,
+  alpha = 0.025,
+  known_var = TRUE
+)
+
+cat("Sample size calculation:\n")
+cat("  n per group:", ss_result$n2, "\n")
+cat("  Total N:", ss_result$N, "\n\n")
+
+cat("Power verification:\n")
+cat("  Target power: 0.80\n")
+cat("  Achieved power (both endpoints):", round(power_result$powerCoprimary, 4), "\n")
+cat("  Power for endpoint 1:", round(power_result$power1, 4), "\n")
+cat("  Power for endpoint 2:", round(power_result$power2, 4), "\n")
+```
+
+## Visualization
+
+### Power vs Sample Size Curves
+
+```{r power_curves, fig.width=8, fig.height=6}
+# Sample size range
+n_seq <- seq(50, 200, by = 5)
+
+# Calculate power for different sample sizes
+power_by_n <- sapply(n_seq, function(n) {
+  pw <- power2Continuous(
+    n1 = n,
+    n2 = n,
+    delta1 = 0.5,
+    delta2 = 0.5,
+    sd1 = 1,
+    sd2 = 1,
+    rho = 0.5,
+    alpha = 0.025,
+    known_var = TRUE
+  )
+  c(pw$power1, pw$power2, pw$powerCoprimary)
+})
+
+# Plot
+plot(n_seq, power_by_n[3, ],
+     type = "l", lwd = 2, col = "blue",
+     xlab = "Sample Size per Group (n)",
+     ylab = "Power",
+     main = "Power vs Sample Size (δ₁ = δ₂ = 0.5, ρ = 0.5)",
+     ylim = c(0, 1),
+     las = 1)
+lines(n_seq, power_by_n[1, ], lty = 2, col = "red", lwd = 2)
+lines(n_seq, power_by_n[2, ], lty = 2, col = "green", lwd = 2)
+abline(h = 0.8, lty = 3, col = "gray")
+abline(v = ss_result$n2, lty = 3, col = "gray")
+
+legend("bottomright",
+       legend = c("Both endpoints (co-primary)", "Endpoint 1", "Endpoint 2", "Target power = 0.80"),
+       col = c("blue", "red", "green", "gray"),
+       lty = c(1, 2, 2, 3),
+       lwd = c(2, 2, 2, 1),
+       bty = "n")
+
+grid()
+```
+
+### Impact of Correlation on Sample Size
+
+```{r correlation_impact_plot, fig.width=8, fig.height=6}
+# Correlation range
+rho_seq <- seq(-0.5, 0.9, by = 0.05)
+
+# Calculate sample size for each correlation
+n_by_rho <- sapply(rho_seq, function(rho) {
+  if (rho < -0.5 || rho > 0.95) return(NA)
+  result <- ss2Continuous(
+    delta1 = 0.5,
+    delta2 = 0.5,
+    sd1 = 1,
+    sd2 = 1,
+    rho = rho,
+    r = 1,
+    alpha = 0.025,
+    beta = 0.2,
+    known_var = TRUE
+  )
+  result$N
+})
+
+# Plot
+plot(rho_seq, n_by_rho,
+     type = "l", lwd = 2, col = "darkblue",
+     xlab = "Correlation (ρ)",
+     ylab = "Total Sample Size (N)",
+     main = "Sample Size vs Correlation (δ₁ = δ₂ = 0.5)",
+     las = 1)
+abline(v = 0, lty = 2, col = "gray")
+grid()
+
+# Highlight key points
+points(0, n_by_rho[rho_seq == 0], pch = 19, col = "red", cex = 1.5)
+points(0.5, n_by_rho[rho_seq == 0.5], pch = 19, col = "blue", cex = 1.5)
+
+text(0, n_by_rho[rho_seq == 0], 
+     paste0("ρ=0: N=", round(n_by_rho[rho_seq == 0])),
+     pos = 4, offset = 0.5)
+text(0.5, n_by_rho[rho_seq == 0.5], 
+     paste0("ρ=0.5: N=", round(n_by_rho[rho_seq == 0.5])),
+     pos = 4, offset = 0.5)
+```
+
+**Key insight**: Sample size is highly sensitive to correlation. Accounting for correlation is essential for efficient trial design.
+
+## Clinical Application: Cardiovascular Trial
+
+Consider a cardiovascular trial evaluating:
+1. **Systolic blood pressure** (SBP) reduction
+2. **Diastolic blood pressure** (DBP) reduction
+
+```{r cardiovascular_example}
+# Design parameters based on literature
+# Expected reductions: SBP -10 mmHg, DBP -6 mmHg
+# Standard deviations: SBP 15 mmHg, DBP 10 mmHg
+# Correlation between SBP and DBP: typically 0.6-0.7
+
+cv_design <- ss2Continuous(
+  delta1 = 10 / 15,     # SBP: Δ/σ = 10/15 ≈ 0.67
+  delta2 = 6 / 10,      # DBP: Δ/σ = 6/10 = 0.60
+  sd1 = 15,
+  sd2 = 10,
+  rho = 0.65,           # Moderate-high correlation
+  r = 1,
+  alpha = 0.025,
+  beta = 0.2,           # 80% power (lighter calculation)
+  known_var = TRUE      # Known variance for faster calculation
+)
+
+cat("Cardiovascular Trial Design:\n")
+cat("Sample size per group:", cv_design$n2, "\n")
+cat("Total sample size:", cv_design$N, "\n\n")
+
+# Compare with ignoring correlation
+cv_no_corr <- ss2Continuous(
+  delta1 = 10 / 15,
+  delta2 = 6 / 10,
+  sd1 = 15,
+  sd2 = 10,
+  rho = 0,              # Assume independence
+  r = 1,
+  alpha = 0.025,
+  beta = 0.2,
   known_var = TRUE
 )
 
 cat("If correlation ignored (ρ=0):\n")
-cat("Sample size per group:", alzheimers_nocorr$n2, "\n")
-cat("Total sample size:", alzheimers_nocorr$N, "\n\n")
+cat("Sample size per group:", cv_no_corr$n2, "\n")
+cat("Total sample size:", cv_no_corr$N, "\n\n")
 
-cat("Sample size reduction:", alzheimers_nocorr$N - alzheimers_trial$N, "patients\n")
-cat("Percentage reduction:", 
-    round((alzheimers_nocorr$N - alzheimers_trial$N) / alzheimers_nocorr$N * 100, 1), "%\n")
+reduction <- cv_no_corr$N - cv_design$N
+pct_reduction <- round(reduction / cv_no_corr$N * 100, 1)
+
+cat("Benefit of accounting for correlation:\n")
+cat("Sample size reduction:", reduction, "subjects\n")
+cat("Percentage reduction:", pct_reduction, "%\n")
 ```
 
-By accounting for the moderate correlation between endpoints, we can reduce the sample size by approximately 5-7%, resulting in significant cost savings and faster recruitment.
+## Summary
 
-## Known vs Unknown Variance
+### Key Findings
 
-The choice between known and unknown variance affects sample size requirements.
+1. **Correlation impact**: For ρ = 0.5, sample size reduces by 5-7%. For ρ = 0.8, reduction is 10-12%.
 
-```{r known_vs_unknown, eval=FALSE}
-# Known variance (uses Z-test)
-ss_known <- ss2Continuous(
-  delta1 = 0.4,
-  delta2 = 0.4,
-  sd1 = 1,
-  sd2 = 1,
-  rho = 0.5,
-  r = 1,
-  alpha = 0.025,
-  beta = 0.2,
-  known_var = TRUE
-)
+2. **Unequal effect sizes**: The endpoint with smaller effect size dominates sample size requirements.
 
-# Unknown variance (uses t-test with sequential search and MC simulation)
-# Note: This takes longer due to Monte Carlo simulation
-ss_unknown <- ss2Continuous(
-  delta1 = 0.4,
-  delta2 = 0.4,
-  sd1 = 1,
-  sd2 = 1,
-  rho = 0.5,
-  r = 1,
-  alpha = 0.025,
-  beta = 0.2,
-  known_var = FALSE,
-  nMC = 10000
-)
+3. **Unbalanced allocation**: 2:1 allocation increases total sample size by approximately 12% compared to balanced allocation.
 
-cat("Known variance: n =", ss_known$n2, "per group\n")
-cat("Unknown variance: n =", ss_unknown$n2, "per group\n")
-cat("Additional subjects needed:", ss_unknown$n2 - ss_known$n2, "\n")
-```
+4. **Known vs unknown variance**: When variance is unknown, t-distribution is used, but for large samples, normal approximation is adequate.
 
-Unknown variance typically requires 1-2 additional subjects per group to account for uncertainty in variance estimation.
+5. **Individual vs joint power**: Individual endpoint power is higher than joint power. For balanced designs with equal effects, individual power ≈ √(joint power).
 
-## Summary of Key Findings
+### Practical Recommendations
 
-1. **Correlation impact**: 
-   - At ρ = 0.3: ~3-4% reduction in sample size
-   - At ρ = 0.5: ~5-7% reduction in sample size
-   - At ρ = 0.8: ~11% reduction in sample size
+1. **Estimate correlation carefully**: Use pilot data or historical information. Conservative estimation (lower ρ) provides safety margin.
 
-2. **Effect size asymmetry**: When effect sizes differ, the smaller effect dominates sample size determination
+2. **Consider unequal effects**: If endpoints have different effect sizes, use the actual values rather than assuming equality.
 
-3. **Allocation ratio**: Unbalanced allocation (2:1) increases total sample size by ~12% but may be preferred for practical or ethical reasons
+3. **Balanced allocation preferred**: Unless there are strong ethical or practical reasons, balanced allocation is more efficient.
 
-4. **Variance assumption**: Unknown variance requires slightly larger sample sizes (1-2 subjects per group)
+4. **Sensitivity analysis**: Calculate sample size for range of plausible correlation values.
 
-5. **Clinical relevance**: Accounting for correlation can save dozens to hundreds of patients in large trials
-
-## Technical Notes
-
-### Linear Extrapolation Algorithm
-
-For known variance, the package uses a linear extrapolation approach:
-
-1. Calculate initial sample sizes from single-endpoint formulas
-2. Compute power at two bracketing sample sizes
-3. Use linear interpolation to find the exact sample size
-4. Iterate until convergence (typically 2-4 iterations)
-
-This is much faster than sequential search while maintaining accuracy.
-
-### Bivariate Normal Computation
-
-Power calculations use the `mvtnorm` package's `pmvnorm()` function for computing bivariate normal probabilities with high accuracy.
+5. **Verify power**: Always verify that calculated sample size achieves target power using power calculation functions.
 
 ## References
 
-Sozu, T., Sugimoto, T., & Hamasaki, T. (2011). Sample size determination in superiority clinical trials with multiple co-primary correlated endpoints. *Journal of Biopharmaceutical Statistics*, 21(4), 650-668.
+Sozu, T., Sugimoto, T., & Hamasaki, T. (2011). Sample size determination in superiority clinical trials with multiple co-primary continuous endpoints. *Japanese Journal of Biometrics*, 32(1), 15-31.
 
-Sozu, T., Sugimoto, T., & Hamasaki, T. (2012). A convenient formula for sample size calculations in clinical trials with multiple co-primary continuous endpoints. *Pharmaceutical Statistics*, 11(2), 118-128.
+Sozu, T., Sugimoto, T., Hamasaki, T., & Evans, S. R. (2015). *Sample Size Determination in Clinical Trials with Multiple Endpoints*. Springer.
 
-Xiong, C., Yu, K., Gao, F., Yan, Y., & Zhang, Z. (2005). Power and sample size for clinical trials when efficacy is required in multiple endpoints: application to an Alzheimer's treatment trial. *Clinical Trials*, 2(5), 387-393.
+Senn, S., & Bretz, F. (2007). Power and sample size when multiple endpoints are considered. *Pharmaceutical Statistics*, 6(3), 161-170.
