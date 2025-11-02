@@ -43,7 +43,7 @@
 ss1Continuous <- function(delta, sd, r, alpha, beta) {
 
   # Calculate the required sample size for group 2
-  n2 <- ceiling((1 + 1 / r) * sd ^ 2 * (qnorm(alpha) + qnorm(beta)) ^ 2 / (delta ^ 2))
+  n2 <- ceiling((1 + 1 / r) * sd ^ 2 * (qnorm(1 - alpha) + qnorm(1 - beta)) ^ 2 / (delta ^ 2))
 
   # Calculate the required sample size for group 1
   n1 <- ceiling(r * n2)
