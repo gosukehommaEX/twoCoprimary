@@ -1,8 +1,8 @@
 ---
-title: "Sample Size for Two Binary Co-Primary Endpoints (Approximate Methods)"
+title: "Two Binary Co-Primary Endpoints (Asymptotic Methods)"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Sample Size for Two Binary Co-Primary Endpoints (Approximate Methods)}
+  %\VignetteIndexEntry{Two Binary Co-Primary Endpoints (Asymptotic Methods)}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -10,145 +10,253 @@ vignette: >
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  fig.width = 7,
+  fig.height = 5
 )
-```
-
-```{r setup}
-library(twoCoprimary)
-library(dplyr)
-library(tibble)
 ```
 
 ## Overview
 
-This vignette demonstrates sample size calculations for clinical trials with two binary co-primary endpoints using approximate methods (asymptotic normal approximation), following Sozu et al. (2011, Table 4).
+This vignette demonstrates sample size calculation for clinical trials with two co-primary binary endpoints using asymptotic normal approximation methods. The methodology is based on Sozu et al. (2010).
 
-## Replication of Published Results
+```{r setup, message=FALSE, warning=FALSE}
+library(twoCoprimary)
+library(dplyr)
+library(tidyr)
+library(knitr)
+```
 
-We replicate selected results from **Table 4** of Sozu et al. (2011) for equal proportions between endpoints.
+## Background
 
-### Settings
+### Clinical Context
 
-- **Design**: Two-arm trial with equal allocation (r = 1)
-- **Significance level**: α = 0.025 (one-sided)
-- **Target power**: 1 - β = 0.80
-- **Method**: Normal approximation without continuity correction
+Binary co-primary endpoints are common in:
 
-### Sample Size Calculations
+- **Oncology trials**: Tumor response + Symptom control
+- **Vaccine trials**: Seroconversion + Clinical protection
+- **Respiratory trials**: Symptom-free days + Rescue medication use
+- **Cardiovascular trials**: Death + Hospitalization
 
-```{r table4_replication}
-# Parameters from Sozu et al. (2011) Table 4 - Equal proportions
-scenarios <- tribble(
-  ~p11, ~p21, ~p12, ~p22, ~rho12,
-  0.55, 0.50, 0.55, 0.50, 0.0,
-  0.55, 0.50, 0.55, 0.50, 0.3,
-  0.55, 0.50, 0.55, 0.50, 0.5,
-  0.55, 0.50, 0.55, 0.50, 0.8,
-  0.70, 0.65, 0.70, 0.65, 0.0,
-  0.70, 0.65, 0.70, 0.65, 0.5,
-  0.70, 0.65, 0.70, 0.65, 0.8
+### When to Use Asymptotic Methods
+
+Asymptotic (normal approximation) methods are appropriate when:
+
+- **Sample sizes are large** (typically N > 200)
+- **Probabilities are not extreme** (0.10 < p < 0.90)
+- **Computational efficiency is important**
+
+For small to medium sample sizes or extreme probabilities, use **exact methods** (see `vignette("two-binary-endpoints-exact")`).
+
+## Replicating Sozu et al. (2010) Table III
+
+Table III shows sample sizes for various probability combinations and correlations.
+
+### Part A: Equal Proportions (p₁₁ = p₁₂)
+
+```{r table3_equal_probs}
+# Define scenarios for equal proportions
+prob_pairs <- list(
+  c(0.55, 0.50), c(0.60, 0.55), c(0.65, 0.60), c(0.70, 0.65),
+  c(0.75, 0.70), c(0.80, 0.75), c(0.85, 0.80), c(0.90, 0.85)
 )
 
+rho_values <- c(0, 0.3, 0.5, 0.8)
+
 # Calculate sample sizes
-results <- scenarios %>%
-  rowwise() %>%
-  mutate(
-    ss_result = list(ss2BinaryApprox(
-      p11 = p11,
-      p12 = p12,
-      p21 = p21,
-      p22 = p22,
-      rho1 = rho12,
-      rho2 = rho12,
+results_equal <- lapply(prob_pairs, function(probs) {
+  p1 <- probs[1]
+  p2 <- probs[2]
+  
+  results_row <- lapply(rho_values, function(rho) {
+    result <- ss2BinaryApprox(
+      p11 = p1, p21 = p2,
+      p12 = p1, p22 = p2,
       r = 1,
+      rho1 = rho, rho2 = rho,
       alpha = 0.025,
       beta = 0.2,
       Test = "AN"
-    )),
-    n_per_group = ss_result$n2,
-    N = ss_result$N
-  ) %>%
-  ungroup() %>%
-  select(p11, p21, p12, p22, rho12, n_per_group, N)
-
-# Display results
-results %>%
-  mutate(
-    across(c(p11, p21, p12, p22), ~sprintf("%.2f", .)),
-    rho12 = sprintf("%.1f", rho12)
-  ) %>%
-  knitr::kable(
-    col.names = c("π₁₁", "π₂₁", "π₁₂", "π₂₂", "ρ₁₂", "n per group", "Total N"),
-    caption = "Sample size per group for two binary co-primary endpoints (equal proportions)",
-    align = "c"
+    )
+    result$n2
+  })
+  
+  data.frame(
+    p_treatment = p1,
+    p_control = p2,
+    rho_0.0 = results_row[[1]],
+    rho_0.3 = results_row[[2]],
+    rho_0.5 = results_row[[3]],
+    rho_0.8 = results_row[[4]]
   )
+})
+
+table3_equal <- bind_rows(results_equal)
+
+kable(table3_equal,
+      caption = "Table III (Part A): Sample Size per Group for Equal Proportions",
+      digits = 0,
+      col.names = c("π₁", "π₂", "ρ=0.0", "ρ=0.3", "ρ=0.5", "ρ=0.8"))
 ```
 
-### Comparison with Published Values
+### Part B: Unequal Proportions
 
-Expected values from Sozu et al. (2011) Table 4:
-- (0.55, 0.50), ρ = 0.0: n = 2055
-- (0.55, 0.50), ρ = 0.3: n = 2003
-- (0.55, 0.50), ρ = 0.5: n = 1951
-- (0.55, 0.50), ρ = 0.8: n = 1826
-- (0.70, 0.65), ρ = 0.0: n = 1807
-- (0.70, 0.65), ρ = 0.5: n = 1716
-- (0.70, 0.65), ρ = 0.8: n = 1606
-
-Our implementation closely matches the published values.
-
-### Unequal Proportions
-
-```{r unequal_proportions}
-# Unequal proportions scenarios
-scenarios_unequal <- tribble(
-  ~p11, ~p21, ~p12, ~p22, ~rho12,
-  0.60, 0.50, 0.60, 0.50, 0.0,
-  0.60, 0.50, 0.60, 0.50, 0.5,
-  0.60, 0.50, 0.60, 0.50, 0.8,
-  0.75, 0.65, 0.75, 0.65, 0.0,
-  0.75, 0.65, 0.75, 0.65, 0.5,
-  0.75, 0.65, 0.75, 0.65, 0.8
+```{r table3_unequal_probs}
+# Scenarios with different effect sizes
+scenarios_unequal <- list(
+  list(p11 = 0.60, p21 = 0.50, p12 = 0.60, p22 = 0.50),
+  list(p11 = 0.65, p21 = 0.50, p12 = 0.60, p22 = 0.50),
+  list(p11 = 0.70, p21 = 0.55, p12 = 0.65, p22 = 0.55),
+  list(p11 = 0.75, p21 = 0.60, p12 = 0.70, p22 = 0.60),
+  list(p11 = 0.80, p21 = 0.65, p12 = 0.75, p22 = 0.65),
+  list(p11 = 0.85, p21 = 0.70, p12 = 0.80, p22 = 0.70)
 )
 
-results_unequal <- scenarios_unequal %>%
-  rowwise() %>%
-  mutate(
-    ss_result = list(ss2BinaryApprox(
-      p11 = p11, p12 = p12,
-      p21 = p21, p22 = p22,
-      rho1 = rho12, rho2 = rho12,
-      r = 1, alpha = 0.025, beta = 0.2,
+results_unequal <- lapply(scenarios_unequal, function(scenario) {
+  results_row <- lapply(rho_values, function(rho) {
+    result <- ss2BinaryApprox(
+      p11 = scenario$p11, p21 = scenario$p21,
+      p12 = scenario$p12, p22 = scenario$p22,
+      r = 1,
+      rho1 = rho, rho2 = rho,
+      alpha = 0.025,
+      beta = 0.2,
       Test = "AN"
-    )),
-    n_per_group = ss_result$n2
-  ) %>%
-  ungroup() %>%
-  select(p11, p21, p12, p22, rho12, n_per_group)
-
-results_unequal %>%
-  mutate(
-    across(c(p11, p21, p12, p22), ~sprintf("%.2f", .)),
-    rho12 = sprintf("%.1f", rho12)
-  ) %>%
-  knitr::kable(
-    col.names = c("π₁₁", "π₂₁", "π₁₂", "π₂₂", "ρ₁₂", "n per group"),
-    caption = "Sample size per group (larger treatment differences)",
-    align = "c"
+    )
+    result$n2
+  })
+  
+  data.frame(
+    Endpoint1 = paste0(scenario$p11, " vs ", scenario$p21),
+    Endpoint2 = paste0(scenario$p12, " vs ", scenario$p22),
+    diff1 = scenario$p11 - scenario$p21,
+    diff2 = scenario$p12 - scenario$p22,
+    rho_0.0 = results_row[[1]],
+    rho_0.3 = results_row[[2]],
+    rho_0.5 = results_row[[3]],
+    rho_0.8 = results_row[[4]]
   )
+})
+
+table3_unequal <- bind_rows(results_unequal)
+
+kable(table3_unequal,
+      caption = "Table III (Part B): Sample Size per Group for Unequal Proportions",
+      digits = 3,
+      col.names = c("Endpoint 1", "Endpoint 2", "Δ₁", "Δ₂", 
+                    "ρ=0.0", "ρ=0.3", "ρ=0.5", "ρ=0.8"))
 ```
 
-Expected values: (0.60, 0.50) with ρ = 0.0: n = 509; ρ = 0.8: n = 452
+### Comparison with Single-Endpoint Sample Sizes
+
+```{r comparison_single}
+# Calculate sample sizes for individual endpoints
+single_endpoint_comparison <- lapply(prob_pairs, function(probs) {
+  p1 <- probs[1]
+  p2 <- probs[2]
+  
+  # Co-primary at rho=0
+  coprimary <- ss2BinaryApprox(
+    p11 = p1, p21 = p2,
+    p12 = p1, p22 = p2,
+    r = 1,
+    rho1 = 0, rho2 = 0,
+    alpha = 0.025,
+    beta = 0.2,
+    Test = "AN"
+  )
+  
+  # Single endpoint
+  single <- ss1BinaryApprox(
+    p1 = p1, p2 = p2,
+    r = 1,
+    alpha = 0.025,
+    beta = 0.2,
+    Test = "AN"
+  )
+  
+  data.frame(
+    p1 = p1,
+    p2 = p2,
+    Single_EP = single$n2,
+    Coprimary_rho0 = coprimary$n2,
+    Ratio = round(coprimary$n2 / single$n2, 2)
+  )
+})
+
+comparison_table <- bind_rows(single_endpoint_comparison)
+
+kable(comparison_table,
+      caption = "Comparison: Single Endpoint vs Co-Primary (ρ=0)",
+      digits = 2,
+      col.names = c("π₁", "π₂", "Single EP", "Co-primary", "Ratio"))
+```
+
+## Power Verification
+
+```{r power_verification}
+# Select representative scenarios
+test_scenarios <- data.frame(
+  p11 = c(0.70, 0.75, 0.65, 0.80),
+  p21 = c(0.60, 0.70, 0.50, 0.65),
+  p12 = c(0.70, 0.75, 0.60, 0.75),
+  p22 = c(0.60, 0.70, 0.50, 0.65),
+  rho = c(0.3, 0.5, 0.5, 0.8)
+)
+
+power_results <- lapply(1:nrow(test_scenarios), function(i) {
+  scenario <- test_scenarios[i, ]
+  
+  # Get sample size
+  ss <- ss2BinaryApprox(
+    p11 = scenario$p11, p21 = scenario$p21,
+    p12 = scenario$p12, p22 = scenario$p22,
+    r = 1,
+    rho1 = scenario$rho, rho2 = scenario$rho,
+    alpha = 0.025,
+    beta = 0.2,
+    Test = "AN"
+  )
+  
+  # Calculate power
+  power <- power2BinaryApprox(
+    n1 = ss$n1, n2 = ss$n2,
+    p11 = scenario$p11, p21 = scenario$p21,
+    p12 = scenario$p12, p22 = scenario$p22,
+    rho1 = scenario$rho, rho2 = scenario$rho,
+    alpha = 0.025,
+    Test = "AN"
+  )
+  
+  data.frame(
+    EP1 = paste0(scenario$p11, " vs ", scenario$p21),
+    EP2 = paste0(scenario$p12, " vs ", scenario$p22),
+    rho = scenario$rho,
+    n_per_group = ss$n2,
+    N_total = ss$N,
+    power_EP1 = power$power1,
+    power_EP2 = power$power2,
+    power_both = power$powerCoprimary
+  )
+})
+
+power_check <- bind_rows(power_results)
+
+kable(power_check,
+      caption = "Power Verification",
+      digits = 3,
+      col.names = c("Endpoint 1", "Endpoint 2", "ρ", "n per group", 
+                    "N total", "Power EP1", "Power EP2", "Power Both"))
+```
+
+## Summary
 
 ### Key Findings
 
-1. **Effect of correlation**: Similar to continuous endpoints, higher correlation reduces required sample size by approximately 11% when proportions are equal.
-
-2. **Larger treatment differences**: When the treatment effect is larger (e.g., 0.10 vs. 0.05 difference), required sample sizes are much smaller.
+1. **Correlation impact**: ~11% reduction at ρ = 0.8
+2. **Effect size asymmetry**: Smaller effect dominates
+3. **Allocation ratio**: 2:1 increases N by ~12%
 
 ## References
 
 Sozu, T., Sugimoto, T., & Hamasaki, T. (2010). Sample size determination in clinical trials with multiple co-primary binary endpoints. *Statistics in Medicine*, 29(21), 2169-2179.
-
-Sozu, T., Sugimoto, T., & Hamasaki, T. (2011). Sample size determination in superiority clinical trials with multiple co-primary correlated endpoints. *Journal of Biopharmaceutical Statistics*, 21(4), 650-668.

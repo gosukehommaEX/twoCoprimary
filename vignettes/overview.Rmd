@@ -1,0 +1,240 @@
+---
+title: "Overview of Two Co-Primary Endpoints Analysis"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Overview of Two Co-Primary Endpoints Analysis}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## Introduction
+
+The `twoCoprimary` package provides comprehensive tools for sample size calculation and power analysis in clinical trials with two co-primary endpoints. This package implements methodologies from multiple publications and supports various endpoint types.
+
+```{r setup}
+library(twoCoprimary)
+```
+
+## What are Co-Primary Endpoints?
+
+In clinical trials, **co-primary endpoints** are multiple primary endpoints that must **all** show statistically significant treatment effects for the trial to be considered successful. This is in contrast to multiple primary endpoints where demonstrating an effect on **any one** endpoint is sufficient.
+
+The key statistical property is:
+- **No multiplicity adjustment needed** for Type I error control
+- The overall power is the **product** of individual powers: Power = P(Reject H₁) × P(Reject H₂)
+- Accounting for **correlation** between endpoints can improve efficiency
+
+## Supported Endpoint Types
+
+The package supports five combinations of co-primary endpoints:
+
+### 1. Two Continuous Endpoints
+
+**Use case**: Trials measuring two continuous outcomes (e.g., blood pressure and cholesterol levels)
+
+**Key functions**:
+- `ss2Continuous()`: Sample size calculation
+- `power2Continuous()`: Power calculation
+
+**Reference**: Sozu et al. (2011)
+
+```{r two_continuous_example, eval=FALSE}
+# Example: Two continuous endpoints with correlation ρ = 0.5
+ss2Continuous(
+  delta1 = 0.5,  # Standardized effect size for endpoint 1
+  delta2 = 0.5,  # Standardized effect size for endpoint 2
+  r = 1,         # Balanced allocation
+  rho = 0.5,     # Correlation between endpoints
+  alpha = 0.025,
+  beta = 0.2
+)
+```
+
+### 2. Two Binary Endpoints (Asymptotic Approximation)
+
+**Use case**: Trials with two binary outcomes using normal approximation
+
+**Key functions**:
+- `ss2Binary()`: Sample size calculation
+- `power2Binary()`: Power calculation
+
+**Reference**: Sozu et al. (2010)
+
+```{r two_binary_approx_example, eval=FALSE}
+# Example: Two binary endpoints
+ss2Binary(
+  p11 = 0.7, p21 = 0.4,  # Endpoint 1: treatment vs control
+  p12 = 0.6, p22 = 0.3,  # Endpoint 2: treatment vs control
+  r = 1,
+  rho1 = 0.3, rho2 = 0.3,
+  alpha = 0.025,
+  beta = 0.2
+)
+```
+
+### 3. Two Binary Endpoints (Exact Methods)
+
+**Use case**: Small to medium sample sizes requiring exact inference
+
+**Key functions**:
+- `ss2BinaryExact()`: Sample size calculation using exact tests
+- `power2BinaryExact()`: Exact power calculation
+
+**Reference**: Homma and Yoshida (2025)
+
+**Supported tests**:
+- Fisher's exact test
+- Z-pooled exact unconditional test
+- Boschloo's exact unconditional test
+
+```{r two_binary_exact_example, eval=FALSE}
+# Example: Exact methods for small samples
+ss2BinaryExact(
+  p11 = 0.7, p21 = 0.4,
+  p12 = 0.6, p22 = 0.3,
+  r = 1,
+  rho1 = 0.5, rho2 = 0.5,
+  alpha = 0.025,
+  beta = 0.2,
+  test = "Fisher"  # or "Z-pooled", "Boschloo"
+)
+```
+
+### 4. Mixed Continuous and Binary Endpoints
+
+**Use case**: Trials with one continuous and one binary outcome
+
+**Key functions**:
+- `ss2MixedContinuousBinary()`: Sample size calculation
+- `power2MixedContinuousBinary()`: Power calculation
+
+**Reference**: Sozu et al. (2012)
+
+```{r mixed_cont_binary_example, eval=FALSE}
+# Example: Continuous + Binary endpoints
+ss2MixedContinuousBinary(
+  delta = 0.5,    # Standardized effect for continuous endpoint
+  p1 = 0.7, p2 = 0.4,  # Binary endpoint probabilities
+  r = 1,
+  rho1 = 0.3, rho2 = 0.3,
+  alpha = 0.025,
+  beta = 0.2
+)
+```
+
+### 5. Mixed Count and Continuous Endpoints
+
+**Use case**: Trials with overdispersed count data (e.g., exacerbations) and continuous outcomes (e.g., lung function)
+
+**Key functions**:
+- `ss2MixedCountContinuous()`: Sample size calculation
+- `power2MixedCountContinuous()`: Power calculation
+- `corrbound2MixedCountContinuous()`: Correlation bounds
+
+**Reference**: Homma and Yoshida (2024)
+
+```{r mixed_count_cont_example, eval=FALSE}
+# Example: Count (exacerbations) + Continuous (FEV1)
+ss2MixedCountContinuous(
+  r1 = 1.0, r2 = 1.25,  # Count rates
+  nu = 0.8,              # Dispersion parameter
+  t = 1,                 # Follow-up time
+  mu1 = -50, mu2 = 0,    # Continuous means
+  sd = 250,              # Standard deviation
+  r = 1,
+  rho1 = 0.4, rho2 = 0.4,
+  alpha = 0.025,
+  beta = 0.2
+)
+```
+
+## Impact of Correlation
+
+A key advantage of accounting for correlation between co-primary endpoints is the potential for **sample size reduction**. The table below illustrates this for two continuous endpoints:
+
+```{r correlation_impact}
+# Sample size at different correlation levels
+correlations <- c(0, 0.3, 0.5, 0.8)
+results <- sapply(correlations, function(rho) {
+  ss2Continuous(
+    delta1 = 0.5,
+    delta2 = 0.5,
+    sd1 = 1,
+    sd2 = 1,
+    rho = rho,
+    r = 1,
+    alpha = 0.025,
+    beta = 0.2
+  )$N
+})
+
+data.frame(
+  Correlation = correlations,
+  Total_N = results,
+  Reduction = paste0(round((1 - results/results[1]) * 100, 1), "%")
+)
+```
+
+As correlation increases, the required sample size decreases. At ρ = 0.8, approximately 11% reduction in sample size can be achieved compared to ρ = 0.
+
+## Choosing the Right Method
+
+| Endpoint Types | Sample Size | Method | Key Considerations |
+|----------------|-------------|--------|-------------------|
+| Both continuous | Any | Asymptotic | Simple, well-established |
+| Both binary | Large (N > 200) | Asymptotic | Fast computation |
+| Both binary | Small/Medium | Exact | Better Type I error control |
+| 1 Continuous + 1 Binary | Any | Asymptotic | Handles mixed types |
+| 1 Count + 1 Continuous | Any | Asymptotic | Accounts for overdispersion |
+
+## Statistical Framework
+
+### Intersection-Union Test
+
+For two co-primary endpoints, we test:
+
+- H₀: H₀₁ ∪ H₀₂ (at least one null hypothesis is true)
+- H₁: H₁₁ ∩ H₁₂ (both alternative hypotheses are true)
+
+We reject H₀ only if **both** H₀₁ and H₀₂ are rejected at level α.
+
+### Overall Power
+
+The overall power is:
+
+Power = P(Reject H₀₁ and Reject H₀₂) ≤ min{P(Reject H₀₁), P(Reject H₀₂)}
+
+With correlation ρ between test statistics:
+
+Power = Φ₂(c₁, c₂; ρ)
+
+where Φ₂ is the bivariate normal CDF and c₁, c₂ are critical values.
+
+## Detailed Vignettes
+
+For detailed methodology, examples, and validation against published results, please see:
+
+1. `vignette("two-continuous-endpoints")`: Two continuous endpoints
+2. `vignette("two-binary-endpoints-approx")`: Two binary endpoints (asymptotic)
+3. `vignette("two-binary-endpoints-exact")`: Two binary endpoints (exact)
+4. `vignette("mixed-continuous-binary")`: Mixed continuous and binary
+5. `vignette("mixed-count-continuous")`: Mixed count and continuous
+
+## References
+
+1. Sozu, T., Sugimoto, T., & Hamasaki, T. (2011). Sample size determination in superiority clinical trials with multiple co-primary continuous endpoints. *Japanese Journal of Biometrics*, 32(1), 15-31.
+
+2. Sozu, T., Sugimoto, T., & Hamasaki, T. (2010). Sample size determination in clinical trials with multiple co-primary binary endpoints. *Statistics in Medicine*, 29(21), 2169-2179.
+
+3. Homma, G., & Yoshida, T. (2025). Exact power and sample size in clinical trials with two co-primary binary endpoints. *Statistical Methods in Medical Research* (in press).
+
+4. Sozu, T., Sugimoto, T., & Hamasaki, T. (2012). Sample size determination in clinical trials with multiple co-primary endpoints including mixed continuous and binary variables. *Biometrical Journal*, 54(5), 716-729.
+
+5. Homma, G., & Yoshida, T. (2024). Sample size calculation in clinical trials with two co-primary endpoints including overdispersed count and continuous outcomes. *Pharmaceutical Statistics*, 23(1), 46-59.
