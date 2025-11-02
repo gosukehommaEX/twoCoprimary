@@ -1,8 +1,7 @@
 #' Sample Size Calculation for Two Co-Primary Binary Endpoints (Approximate)
 #'
 #' Calculates the required sample size for a two-arm superiority trial with two
-#' co-primary binary endpoints using the linear extrapolation approach described
-#' in Hamasaki et al. (2013).
+#' co-primary binary endpoints using the linear extrapolation approach.
 #'
 #' @param p11 True probability of responders in group 1 for the first outcome (0 < p11 < 1)
 #' @param p12 True probability of responders in group 1 for the second outcome (0 < p12 < 1)
@@ -30,7 +29,7 @@
 #'   \item{Test}{Testing method used}
 #'   \item{n1}{Required sample size for group 1}
 #'   \item{n2}{Required sample size for group 2}
-#'   \item{n}{Total sample size (n1 + n2)}
+#'   \item{N}{Total sample size (n1 + n2)}
 #'
 #' @details
 #' This function uses the linear extrapolation approach to find the required
@@ -57,10 +56,6 @@
 #' or use this method for mixed endpoints via ss2Mixed (forthcoming).
 #'
 #' @references
-#' Hamasaki, T., Sugimoto, T., Evans, S. R., & Sozu, T. (2013). Sample size
-#' determination for clinical trials with co-primary outcomes: exponential event
-#' times. \emph{Pharmaceutical Statistics}, 12(1), 28-34.
-#'
 #' Sozu, T., Sugimoto, T., & Hamasaki, T. (2010). Sample size determination in
 #' clinical trials with multiple co-primary binary endpoints. \emph{Statistics in
 #' Medicine}, 29(21), 2169-2179.
@@ -119,16 +114,18 @@ ss2BinaryApprox <- function(p11, p12, p21, p22, rho1, rho2, r, alpha, beta, Test
   # Step 1: Initialize sample sizes using single endpoint formulas
   # IMPORTANT: Use the same Test method for initial values to ensure consistency
   # Calculate sample size for each endpoint separately, then take the maximum
-  n2_endpoint1 <- ss1BinaryApprox(p11, p21, r, alpha, beta, Test = Test)[["n2"]]
-  n2_endpoint2 <- ss1BinaryApprox(p12, p22, r, alpha, beta, Test = Test)[["n2"]]
-  n2_0 <- max(n2_endpoint1, n2_endpoint2)
+  n2_0 <- max(
+    ss1BinaryApprox(p11, p21, r, alpha, beta, Test = Test)[["n2"]],
+    ss1BinaryApprox(p12, p22, r, alpha, beta, Test = Test)[["n2"]]
+  )
 
   # For the second initial value, use adjusted target power
   # This provides a bracket for the linear extrapolation
   # The adjusted power 1 - √(1-β) is typically higher than 1 - β
-  n2_endpoint1_adj <- ss1BinaryApprox(p11, p21, r, alpha, 1 - (1 - beta) ^ (1/2), Test = Test)[["n2"]]
-  n2_endpoint2_adj <- ss1BinaryApprox(p12, p22, r, alpha, 1 - (1 - beta) ^ (1/2), Test = Test)[["n2"]]
-  n2_1 <- max(n2_endpoint1_adj, n2_endpoint2_adj)
+  n2_1 <- max(
+    ss1BinaryApprox(p11, p21, r, alpha, 1 - (1 - beta) ^ (1/2), Test = Test)[["n2"]],
+    ss1BinaryApprox(p12, p22, r, alpha, 1 - (1 - beta) ^ (1/2), Test = Test)[["n2"]]
+  )
 
   # Step 2-4: Iterative refinement using linear extrapolation
   while (n2_1 - n2_0 != 0) {
@@ -138,15 +135,19 @@ ss2BinaryApprox <- function(p11, p12, p21, p22, rho1, rho2, r, alpha, beta, Test
     n1_1 <- ceiling(r * n2_1)
 
     # Calculate power at two candidate sample sizes
-    power_n2_0 <- power2BinaryApprox(n1_0, n2_0, p11, p12, p21, p22, rho1, rho2,
-                                     alpha, Test)[["powerCoprimary"]]
-    power_n2_1 <- power2BinaryApprox(n1_1, n2_1, p11, p12, p21, p22, rho1, rho2,
-                                     alpha, Test)[["powerCoprimary"]]
+    power_n2_0 <- power2BinaryApprox(
+      n1_0, n2_0, p11, p12, p21, p22, rho1, rho2, alpha, Test
+    )[["powerCoprimary"]]
+    power_n2_1 <- power2BinaryApprox(
+      n1_1, n2_1, p11, p12, p21, p22, rho1, rho2, alpha, Test
+    )[["powerCoprimary"]]
 
     # Linear extrapolation to find sample size that achieves target power
     # This solves: power = (1 - beta) for n2
-    n2_updated <- (n2_0 * (power_n2_1 - (1 - beta)) - n2_1 * (power_n2_0 - (1 - beta))) /
-      (power_n2_1 - power_n2_0)
+    n2_updated <- '/'(
+      n2_0 * (power_n2_1 - (1 - beta)) - n2_1 * (power_n2_0 - (1 - beta)),
+      power_n2_1 - power_n2_0
+    )
 
     # Update values for next iteration
     n2_1 <- n2_0
@@ -156,12 +157,12 @@ ss2BinaryApprox <- function(p11, p12, p21, p22, rho1, rho2, r, alpha, beta, Test
   # Final sample sizes
   n2 <- n2_0
   n1 <- ceiling(r * n2)
-  n <- n1 + n2
+  N <- n1 + n2
 
   # Return result as a data frame
   result <- data.frame(
     p11, p12, p21, p22, rho1, rho2, r, alpha, beta, Test,
-    n1, n2, n
+    n1, n2, N
   )
   return(result)
 }

@@ -4,8 +4,8 @@
 #' binary endpoints using the bivariate binomial distribution, as described in
 #' Homma and Yoshida (2025).
 #'
-#' @param n1 Sample size for group 1
-#' @param n2 Sample size for group 2
+#' @param n1 Sample size for group 1 (test group)
+#' @param n2 Sample size for group 2 (control group)
 #' @param p11 True probability of responders in group 1 for the first outcome (0 < p11 < 1)
 #' @param p12 True probability of responders in group 1 for the second outcome (0 < p12 < 1)
 #' @param p21 True probability of responders in group 2 for the first outcome (0 < p21 < 1)
@@ -38,7 +38,7 @@
 #' \eqn{(Y_{j,1}, Y_{j,2}) \sim BiBin(N_j, p_{j,1}, p_{j,2}, \gamma_j)} follows
 #' the bivariate binomial distribution.
 #'
-#' The correlation bounds are automatically checked using \code{\link{boundRho}}.
+#' The correlation bounds are automatically checked using \code{\link{corrbound2Binary}}.
 #'
 #' @references
 #' Homma, G., & Yoshida, T. (2025). Exact power and sample size in clinical
@@ -96,14 +96,14 @@
 power2BinaryExact <- function(n1, n2, p11, p12, p21, p22, rho1, rho2, alpha, Test) {
 
   # Check that rho1 is within valid bounds
-  bounds1 <- boundRho(p11, p12)
+  bounds1 <- corrbound2Binary(p11, p12)
   if (rho1 < bounds1[1] | rho1 > bounds1[2]) {
     stop(paste0("rho1 must be within [", round(bounds1[1], 4), ", ",
                 round(bounds1[2], 4), "]"))
   }
 
   # Check that rho2 is within valid bounds
-  bounds2 <- boundRho(p21, p22)
+  bounds2 <- corrbound2Binary(p21, p22)
   if (rho2 < bounds2[1] | rho2 > bounds2[2]) {
     stop(paste0("rho2 must be within [", round(bounds2[1], 4), ", ",
                 round(bounds2[2], 4), "]"))
@@ -119,10 +119,10 @@ power2BinaryExact <- function(n1, n2, p11, p12, p21, p22, rho1, rho2, alpha, Tes
 
   # Calculate probability mass functions of bivariate binomial distribution for each group
   # pmass1[i+1, j+1] = P(Y_{1,1} = i, Y_{1,2} = j) for group 1
-  pmass1 <- outer(0:n1, 0:n1, function(x, y) dbibinom(n1, x, y, p11, p12, rho1, NULL))
+  pmass1 <- outer(0:n1, 0:n1, function(x, y) dbibinom(n1, x, y, p11, p12, rho1))
 
   # pmass2[i+1, j+1] = P(Y_{2,1} = i, Y_{2,2} = j) for group 2
-  pmass2 <- outer(0:n2, 0:n2, function(x, y) dbibinom(n2, x, y, p21, p22, rho2, NULL))
+  pmass2 <- outer(0:n2, 0:n2, function(x, y) dbibinom(n2, x, y, p21, p22, rho2))
 
   # Calculate power for co-primary endpoints using equation (9)
   # Sum over all outcomes where BOTH endpoints reject the null
@@ -136,7 +136,10 @@ power2BinaryExact <- function(n1, n2, p11, p12, p21, p22, rho1, rho2, alpha, Tes
   )
 
   # Return power as a named vector
-  power <- c(power1, power2, powerCoprimary)
-  names(power) <- c('Power1', 'Power2', 'powerCoprimary')
-  return(power)
+  # Return results as a data frame
+  result <- data.frame(
+    n1, n2, p11, p12, p21, p22, rho1, rho2, alpha, Test,
+    power1, power2, powerCoprimary
+  )
+  return(result)
 }

@@ -1,4 +1,4 @@
-#' Calculate Correlation Bounds for Binary Outcomes
+#' Calculate Correlation Bounds Between Two Binary Outcomes
 #'
 #' Computes the lower and upper bounds of the correlation coefficient between
 #' two binary outcomes based on their marginal probabilities, as described in

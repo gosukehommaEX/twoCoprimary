@@ -3,9 +3,9 @@
 #' Calculates the rejection region for two-arm trials with a single binary endpoint
 #' using various exact statistical tests, as described in Homma and Yoshida (2025).
 #'
-#' @param n1 Sample size for group 1
-#' @param n2 Sample size for group 2
-#' @param alpha One-sided significance level (typically 0.025 or 0.05)
+#' @param n1 Sample size for group 1 (test group)
+#' @param n2 Sample size for group 2 (control group)
+#' @param alpha One-sided significance level (typically 0.025)
 #' @param Test Type of statistical test. One of:
 #'   \itemize{
 #'     \item \code{"Chisq"}: One-sided Pearson chi-squared test
@@ -72,101 +72,101 @@ rr1Binary <- function(n1, n2, alpha, Test) {
 
     # Calculate test statistics for chi-squared test over all combinations
     # of i (0,...,n1) and j (0,...,n2)
-    Z.ij <- '/'(
+    Z_ij <- '/'(
       outer(n2 * (0:n1), n1 * (0:n2), '-') / (n1 * n2),
       sqrt(outer(0:n1, 0:n2, '+') / (n1 * n2) * (1 - outer(0:n1, 0:n2, '+') / (n1 + n2)))
     )
 
     # Replace NaN values (when denominator is 0) with 0
-    Z.ij[is.na(Z.ij)] <- 0
+    Z_ij[is.na(Z_ij)] <- 0
 
     if (Test == 'Chisq') {
 
       # Calculate p-values for chi-squared test using standard normal approximation
-      p.val <- pnorm(Z.ij, lower.tail = FALSE)
+      p_val <- pnorm(Z_ij, lower.tail = FALSE)
 
     } else if (Test == 'Z-pool') {
 
       # Extract positive test statistics (negative/zero values cannot be significant)
-      Z.ij.posi <- Z.ij[Z.ij %>>% 0]
-      order.Z.ij.posi <- order(Z.ij.posi, decreasing = TRUE)
+      Z_ij_posi <- Z_ij[Z_ij %>>% 0]
+      order_Z_ij_posi <- order(Z_ij_posi, decreasing = TRUE)
 
       # Get indices for positive test statistics
-      i <- (row(Z.ij)[Z.ij %>>% 0] - 1)[order.Z.ij.posi]
-      j <- (col(Z.ij)[Z.ij %>>% 0] - 1)[order.Z.ij.posi]
+      i <- (row(Z_ij)[Z_ij %>>% 0] - 1)[order_Z_ij_posi]
+      j <- (col(Z_ij)[Z_ij %>>% 0] - 1)[order_Z_ij_posi]
 
       # Calculate P_H0(X1 = i, X2 = j | theta) for theta in [0, 1]
       # This is the probability under the null hypothesis as a function of theta
-      uniq.i <- sort(unique(i))
-      dbinom.i <- sapply(seq(0, 1, l = 100), function(theta) dbinom(uniq.i, n1, theta))
-      uniq.j <- sort(unique(j))
-      dbinom.j <- sapply(seq(0, 1, l = 100), function(theta) dbinom(uniq.j, n2, theta))
+      uniq_i <- sort(unique(i))
+      dbinom_i <- sapply(seq(0, 1, l = 100), function(theta) dbinom(uniq_i, n1, theta))
+      uniq_j <- sort(unique(j))
+      dbinom_j <- sapply(seq(0, 1, l = 100), function(theta) dbinom(uniq_j, n2, theta))
 
       # Joint probability for each (i, j) pair across all theta values
-      P_H0 <- dbinom.i[match(i, uniq.i), ] * dbinom.j[match(j, uniq.j), ]
+      P_H0 <- dbinom_i[match(i, uniq_i), ] * dbinom_j[match(j, uniq_j), ]
 
       # Calculate p-values by maximizing over theta (nuisance parameter)
-      p.ij <- apply(apply(P_H0, 2, cumsum), 1, max)
+      p_ij <- apply(apply(P_H0, 2, cumsum), 1, max)
 
       # Assign p-values to the matrix (initialize with 1 for non-significant outcomes)
-      p.val <- 1 ^ Z.ij
-      p.val[cbind(i + 1, j + 1)] <- p.ij
+      p_val <- 1 ^ Z_ij
+      p_val[cbind(i + 1, j + 1)] <- p_ij
     }
 
   } else if (Test == 'Fisher-midP') {
 
     # Calculate p-values for Fisher mid-p test
     # Mid-p = P(X > x) + 0.5 * P(X = x)
-    p.val <- outer(0:n1, 0:n2, function(i, j) {
+    p_val <- outer(0:n1, 0:n2, function(i, j) {
       phyper(i, n1, n2, i + j, lower.tail = FALSE) + 0.5 * dhyper(i, n1, n2, i + j)
     })
 
   } else if ((Test == 'Fisher') | (Test == 'Boschloo')) {
 
     # Calculate p-values for Fisher exact test over all combinations
-    p.fisher <- outer(0:n1, 0:n2, function(i, j) {
+    p_fisher <- outer(0:n1, 0:n2, function(i, j) {
       phyper(i - 1, n1, n2, i + j, lower.tail = FALSE)
     })
 
     if (Test == 'Fisher') {
 
       # Use Fisher p-values directly
-      p.val <- p.fisher
+      p_val <- p_fisher
 
     } else if (Test == 'Boschloo') {
 
       # Boschloo test: maximize Fisher p-values over nuisance parameter
 
       # Extract p-values where p1 - p2 > 0 (only these can be significant)
-      p.max.boschloo <- min(p.fisher[(outer(n2 * (0:n1), n1 * (0:n2), '-') / (n1 * n2)) %<=% 0])
-      p.fisher.posi <- p.fisher[p.fisher %<<% p.max.boschloo]
-      order.p.fisher.posi <- order(p.fisher.posi, decreasing = FALSE)
+      p_max_boschloo <- min(p_fisher[(outer(n2 * (0:n1), n1 * (0:n2), '-') / (n1 * n2)) %<=% 0])
+      p_fisher_posi <- p_fisher[p_fisher %<<% p_max_boschloo]
+      order_p_fisher_posi <- order(p_fisher_posi, decreasing = FALSE)
 
       # Get indices for positive outcomes
-      i <- (row(p.fisher)[p.fisher %<<% p.max.boschloo] - 1)[order.p.fisher.posi]
-      j <- (col(p.fisher)[p.fisher %<<% p.max.boschloo] - 1)[order.p.fisher.posi]
+      i <- (row(p_fisher)[p_fisher %<<% p_max_boschloo] - 1)[order_p_fisher_posi]
+      j <- (col(p_fisher)[p_fisher %<<% p_max_boschloo] - 1)[order_p_fisher_posi]
 
       # Calculate P_H0(X1 = i, X2 = j | theta) for theta in [0, 1]
-      uniq.i <- sort(unique(i))
-      dbinom.i <- sapply(seq(0, 1, l = 100), function(theta) dbinom(uniq.i, n1, theta))
-      uniq.j <- sort(unique(j))
-      dbinom.j <- sapply(seq(0, 1, l = 100), function(theta) dbinom(uniq.j, n2, theta))
+      uniq_i <- sort(unique(i))
+      dbinom_i <- sapply(seq(0, 1, l = 100), function(theta) dbinom(uniq_i, n1, theta))
+      uniq_j <- sort(unique(j))
+      dbinom_j <- sapply(seq(0, 1, l = 100), function(theta) dbinom(uniq_j, n2, theta))
 
       # Joint probability for each (i, j) pair
-      P_H0 <- dbinom.i[match(i, uniq.i) - min(match(i, uniq.i)) + 1, ] *
-        dbinom.j[match(j, uniq.j), ]
+      P_H0 <- dbinom_i[match(i, uniq_i) - min(match(i, uniq_i)) + 1, ] *
+        dbinom_j[match(j, uniq_j), ]
 
       # Calculate p-values by maximizing over theta
-      p.ij <- apply(apply(P_H0, 2, cumsum), 1, max)
+      p_ij <- apply(apply(P_H0, 2, cumsum), 1, max)
 
       # Assign p-values to the matrix
-      p.val <- 1 ^ p.fisher
-      p.val[cbind(i + 1, j + 1)] <- p.ij
+      p_val <- 1 ^ p_fisher
+      p_val[cbind(i + 1, j + 1)] <- p_ij
     }
   }
 
   # Define rejection region: reject if p-value < alpha
-  RR <- (p.val %<<% alpha)
+  RR <- (p_val %<<% alpha)
 
   return(RR)
 }

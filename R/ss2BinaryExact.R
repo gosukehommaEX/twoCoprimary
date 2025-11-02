@@ -31,7 +31,7 @@
 #'   \item{Test}{Testing method used}
 #'   \item{n1}{Required sample size for group 1}
 #'   \item{n2}{Required sample size for group 2}
-#'   \item{n}{Total sample size (n1 + n2)}
+#'   \item{N}{Total sample size (n1 + n2)}
 #'
 #' @details
 #' This function implements the exact sample size calculation algorithm described
@@ -140,12 +140,12 @@ ss2BinaryExact <- function(p11, p12, p21, p22, rho1, rho2, r, alpha, beta, Test)
 
   # Step 4: Determine final sample sizes
   n1 <- ceiling(r * n2)
-  n <- n1 + n2
+  N <- n1 + n2
 
   # Return result as a data frame
   result <- data.frame(
     p11, p12, p21, p22, rho1, rho2, r, alpha, beta, Test,
-    n1, n2, n
+    n1, n2, N
   )
   return(result)
 }

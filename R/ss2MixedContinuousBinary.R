@@ -36,12 +36,12 @@
 #'   \item{Test}{Testing method used for binary endpoint}
 #'   \item{n1}{Required sample size for group 1}
 #'   \item{n2}{Required sample size for group 2}
-#'   \item{n}{Total sample size (n1 + n2)}
+#'   \item{N}{Total sample size (n1 + n2)}
 #'
 #' @details
 #' This function implements the sample size calculation for mixed continuous-binary
-#' co-primary endpoints following the methodology in Sozu et al. (2012) and the
-#' iterative algorithm from Hamasaki et al. (2013) extended to mixed endpoints.
+#' co-primary endpoints following the methodology in Sozu et al. (2012)
+#' using linear extrapolation approach.
 #'
 #' **Endpoint Types:**
 #' \itemize{
@@ -84,10 +84,6 @@
 #' Sozu, T., Sugimoto, T., & Hamasaki, T. (2012). Sample size determination in
 #' clinical trials with multiple co-primary endpoints including mixed continuous
 #' and binary variables. \emph{Biometrical Journal}, 54(5), 716-729.
-#'
-#' Hamasaki, T., Sugimoto, T., Evans, S. R., & Sozu, T. (2013). Sample size
-#' determination for clinical trials with co-primary outcomes: exponential event
-#' times. \emph{Pharmaceutical Statistics}, 12(1), 28-34.
 #'
 #' @examples
 #' # Example 1: Based on PREMIER study (Table 2 in Sozu et al. 2012)
@@ -198,50 +194,46 @@ ss2MixedContinuousBinary <- function(delta, sd, p1, p2, rho, r, alpha, beta, Tes
     # may not converge reliably. Instead, use sequential search.
 
     # Step 1: Initialize with sample size from single endpoint formulas
-    # Calculate sample size for continuous endpoint
-    n2_cont <- ss1Continuous(delta, sd, r, alpha, beta)[["n2"]]
-
-    # Calculate sample size for binary endpoint
-    # For Fisher's test, use AN method for initial estimate
-    n2_bin <- ss1BinaryApprox(p1, p2, r, alpha, beta, Test = "AN")[["n2"]]
-
-    # Use the maximum as initial value
-    n2 <- max(n2_cont, n2_bin)
+    n2 <- max(
+      ss1Continuous(delta, sd, r, alpha, beta)[["n2"]],
+      ss1BinaryApprox(p1, p2, r, alpha, beta, Test = "AN")[["n2"]]
+    )
     n1 <- ceiling(r * n2)
 
     # Step 2: Calculate power at initial sample size
-    power <- power2MixedContinuousBinary(n1, n2, delta, sd, p1, p2, rho, alpha, Test, nMC)[["powerCoprimary"]]
+    power <- power2MixedContinuousBinary(
+      n1, n2, delta, sd, p1, p2, rho, alpha, Test, nMC
+    )[["powerCoprimary"]]
 
     # Step 3: Sequential search - increment n2 by 1 until target power is achieved
     while (power < 1 - beta) {
       n2 <- n2 + 1
       n1 <- ceiling(r * n2)
-      power <- power2MixedContinuousBinary(n1, n2, delta, sd, p1, p2, rho, alpha, Test, nMC)[["powerCoprimary"]]
+      power <- power2MixedContinuousBinary(
+        n1, n2, delta, sd, p1, p2, rho, alpha, Test, nMC
+      )[["powerCoprimary"]]
     }
 
     # Final sample sizes
-    n <- n1 + n2
+    N <- n1 + n2
 
   } else {
     # ===== ASYMPTOTIC METHODS: Use linear extrapolation =====
 
-    # Step 1: Initialize sample sizes using single endpoint formulas
-    # Calculate sample size for continuous endpoint
-    n2_cont <- ss1Continuous(delta, sd, r, alpha, beta)[["n2"]]
-
-    # Calculate sample size for binary endpoint using the same Test method
-    n2_bin <- ss1BinaryApprox(p1, p2, r, alpha, beta, Test = Test)[["n2"]]
-
-    # Use the maximum as initial value for target power
-    n2_0 <- max(n2_cont, n2_bin)
+    # Step 1: Initialize sample sizes using single endpoint formula
+    # Calculate sample size for each endpoint separately, then take the maximum
+    n2_0 <- max(
+      ss1Continuous(delta, sd, r, alpha, beta)[["n2"]],
+      ss1BinaryApprox(p1, p2, r, alpha, beta, Test = Test)[["n2"]]
+    )
 
     # For the second initial value, use adjusted target power
     # This provides a bracket for the linear extrapolation
-    beta_adj <- 1 - (1 - beta) ^ (1/2)
-
-    n2_cont_adj <- ss1Continuous(delta, sd, r, alpha, beta_adj)[["n2"]]
-    n2_bin_adj <- ss1BinaryApprox(p1, p2, r, alpha, beta_adj, Test = Test)[["n2"]]
-    n2_1 <- max(n2_cont_adj, n2_bin_adj)
+    # The adjusted power 1 - √(1-β) is typically higher than 1 - β
+    n2_1 <- max(
+      ss1Continuous(delta, sd, r, alpha, 1 - (1 - beta) ^ (1/2))[["n2"]],
+      ss1BinaryApprox(p1, p2, r, alpha, 1 - (1 - beta) ^ (1/2), Test = Test)[["n2"]]
+    )
 
     # Step 2-4: Iterative refinement using linear extrapolation
     while (n2_1 - n2_0 != 0) {
@@ -251,13 +243,19 @@ ss2MixedContinuousBinary <- function(delta, sd, p1, p2, rho, r, alpha, beta, Tes
       n1_1 <- ceiling(r * n2_1)
 
       # Calculate power at two candidate sample sizes
-      power_n2_0 <- power2MixedContinuousBinary(n1_0, n2_0, delta, sd, p1, p2, rho, alpha, Test, nMC)[["powerCoprimary"]]
-      power_n2_1 <- power2MixedContinuousBinary(n1_1, n2_1, delta, sd, p1, p2, rho, alpha, Test, nMC)[["powerCoprimary"]]
+      power_n2_0 <- power2MixedContinuousBinary(
+        n1_0, n2_0, delta, sd, p1, p2, rho, alpha, Test, nMC
+      )[["powerCoprimary"]]
+      power_n2_1 <- power2MixedContinuousBinary(
+        n1_1, n2_1, delta, sd, p1, p2, rho, alpha, Test, nMC
+      )[["powerCoprimary"]]
 
       # Linear extrapolation to find sample size that achieves target power
       # This solves: power = (1 - beta) for n2
-      n2_updated <- (n2_0 * (power_n2_1 - (1 - beta)) - n2_1 * (power_n2_0 - (1 - beta))) /
-        (power_n2_1 - power_n2_0)
+      n2_updated <- '/'(
+        n2_0 * (power_n2_1 - (1 - beta)) - n2_1 * (power_n2_0 - (1 - beta)),
+        power_n2_1 - power_n2_0
+      )
 
       # Update values for next iteration
       n2_1 <- n2_0
@@ -267,24 +265,16 @@ ss2MixedContinuousBinary <- function(delta, sd, p1, p2, rho, r, alpha, beta, Tes
     # Final sample sizes
     n2 <- n2_0
     n1 <- ceiling(r * n2)
-    n <- n1 + n2
+    N <- n1 + n2
+
+    # Set nMC to NA for known variance
+    nMC <- NA
   }
 
-  # Return result as a data frame
+  # Return results as a data frame
   result <- data.frame(
-    delta = delta,
-    sd = sd,
-    p1 = p1,
-    p2 = p2,
-    rho = rho,
-    r = r,
-    alpha = alpha,
-    beta = beta,
-    Test = Test,
-    n1 = n1,
-    n2 = n2,
-    n = n
+    delta, sd, p1, p2, rho, r, alpha, beta, Test, nMC,
+    n1, n2, N
   )
-
   return(result)
 }

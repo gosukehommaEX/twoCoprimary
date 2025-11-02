@@ -3,8 +3,8 @@
 #' Calculates the power for a two-arm superiority trial with two co-primary
 #' continuous endpoints, as described in Sozu et al. (2011).
 #'
-#' @param n1 Sample size for group 1
-#' @param n2 Sample size for group 2
+#' @param n1 Sample size for group 1 (test group)
+#' @param n2 Sample size for group 2 (control group)
 #' @param delta1 Mean difference for the first endpoint
 #' @param delta2 Mean difference for the second endpoint
 #' @param sd1 Common standard deviation for the first endpoint
@@ -98,23 +98,30 @@
 power2Continuous <- function(n1, n2, delta1, delta2, sd1, sd2, rho, alpha,
                              known_var = TRUE, nMC = 1e+4) {
 
-  # Calculate test statistics for each endpoint
-  Z1 <- delta1 / (sd1 * sqrt(1 / n1 + 1 / n2))
-  Z2 <- delta2 / (sd2 * sqrt(1 / n1 + 1 / n2))
+  # Standard normal quantiles
+  z_alpha <- qnorm(1 - alpha)
+
+  # Test statistics
+  Z <- c(delta1, delta2) / (c(sd1, sd2) * sqrt(1 / n1 + 1 / n2))
 
   if (known_var) {
 
     # Set nMC to NA for known variance case
     nMC <- NA
 
+    # Standard normal quantiles
+    z_alpha <- qnorm(1 - alpha)
+
+    # Critical values
+    c_val <- -z_alpha + Z
+
     # Calculate power for individual endpoints using normal distribution
-    power1 <- pnorm(-qnorm(1 - alpha) + Z1)
-    power2 <- pnorm(-qnorm(1 - alpha) + Z2)
+    power1and2 <- pnorm(c_val)
 
     # Calculate power for co-primary endpoints using bivariate normal distribution
     powerCoprimary <- pmvnorm(
       lower = c(-Inf, -Inf),
-      upper = c(-qnorm(1 - alpha) + Z1, -qnorm(1 - alpha) + Z2),
+      upper = c_val,
       mean = c(0, 0),
       corr = matrix(c(1, rho, rho, 1), ncol = 2),
       algorithm = GenzBretz(maxpts = 25000, abseps = 0.001, releps = 0),
@@ -127,8 +134,7 @@ power2Continuous <- function(n1, n2, delta1, delta2, sd1, sd2, rho, alpha,
     nu <- n1 + n2 - 2
 
     # Calculate power for individual endpoints using t-distribution
-    power1 <- 1 - pt(qt(1 - alpha, nu), df = nu, ncp = Z1)
-    power2 <- 1 - pt(qt(1 - alpha, nu), df = nu, ncp = Z2)
+    power1and2 <- 1 - pt(qt(1 - alpha, nu), df = nu, ncp = Z)
 
     # Define variance-covariance matrix
     Sigma <- matrix(c(sd1 ^ 2, rho * sd1 * sd2, rho * sd1 * sd2, sd2 ^ 2), nrow = 2)
@@ -144,11 +150,12 @@ power2Continuous <- function(n1, n2, delta1, delta2, sd1, sd2, rho, alpha,
       Wi <- diag(Ws[, , i])
 
       # Calculate critical values adjusted by estimated variances
-      ci <- qt(1 - alpha, df = nu) * sqrt(Wi / nu) - c(Z1, Z2)
+      c_val <- -qt(1 - alpha, df = nu) * sqrt(Wi / nu) + Z
 
       # Calculate probability for this iteration
       probs[i] <- pmvnorm(
-        upper = -ci,
+        lower = c(-Inf, -Inf),
+        upper = c_val,
         mean = c(0, 0),
         corr = matrix(c(1, rho, rho, 1), ncol = 2),
         algorithm = GenzBretz(maxpts = 25000, abseps = 0.001, releps = 0),
@@ -163,7 +170,7 @@ power2Continuous <- function(n1, n2, delta1, delta2, sd1, sd2, rho, alpha,
   # Return results as a data frame
   result <- data.frame(
     n1, n2, delta1, delta2, sd1, sd2, rho, alpha, known_var, nMC,
-    power1, power2, powerCoprimary
+    power1and2[1], power1and2[2], powerCoprimary
   )
   return(result)
 }

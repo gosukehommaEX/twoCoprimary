@@ -8,7 +8,6 @@
 #' @param nu Dispersion parameter for the negative binomial distribution (nu > 0)
 #' @param mu Mean of the continuous outcome
 #' @param sd Standard deviation of the continuous outcome
-#' @param t Follow-up time period
 #'
 #' @return A named numeric vector with two elements:
 #'   \item{L_bound}{Lower bound of the correlation}
@@ -35,17 +34,17 @@
 #'
 #' @examples
 #' # Calculate correlation bounds for NB(1.25, 0.8) and N(0, 250)
-#' corrbound2MixedContinuousCount(lambda = 1.25, nu = 0.8, mu = 0, sd = 250, t = 1)
+#' corrbound2MixedCountContinuous(lambda = 1.25, nu = 0.8, mu = 0, sd = 250)
 #'
 #' # Higher dispersion parameter
-#' corrbound2MixedContinuousCount(lambda = 2.0, nu = 2.0, mu = 50, sd = 200, t = 1)
+#' corrbound2MixedCountContinuous(lambda = 2.0, nu = 2.0, mu = 50, sd = 200)
 #'
 #' # Different follow-up time
-#' corrbound2MixedContinuousCount(lambda = 1.0 * 2, nu = 1.0, mu = 0, sd = 300, t = 2)
+#' corrbound2MixedCountContinuous(lambda = 1.0 * 2, nu = 1.0, mu = 0, sd = 300)
 #'
 #' @export
 #' @importFrom stats pnbinom pnorm integrate
-corrbound2MixedContinuousCount <- function(lambda, nu, mu, sd, t) {
+corrbound2MixedCountContinuous <- function(lambda, nu, mu, sd) {
 
   # Calculate variance of count outcome: Var(Y1) = lambda + lambda^2/nu
   var_count <- lambda + lambda ^ 2 / nu

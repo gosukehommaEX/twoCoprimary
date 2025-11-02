@@ -6,7 +6,7 @@
 #' @param p1 True probability of responders in group 1 (0 < p1 < 1)
 #' @param p2 True probability of responders in group 2 (0 < p2 < 1)
 #' @param r Allocation ratio of group 1 to group 2 (group 1:group 2 = r:1, where r > 0)
-#' @param alpha One-sided significance level (typically 0.025 or 0.05)
+#' @param alpha One-sided significance level (typically 0.025)
 #' @param beta Target type II error rate (typically 0.1 or 0.2)
 #' @param Test Statistical testing method. One of:
 #'   \itemize{
@@ -26,7 +26,7 @@
 #'   \item{Test}{Testing method used}
 #'   \item{n1}{Required sample size for group 1}
 #'   \item{n2}{Required sample size for group 2}
-#'   \item{n}{Total sample size (n1 + n2)}
+#'   \item{N}{Total sample size (n1 + n2)}
 #'
 #' @details
 #' This function implements sample size calculations for single binary endpoint
@@ -151,7 +151,7 @@ ss1BinaryApprox <- function(p1, p2, r, alpha, beta, Test = "AN") {
     v1 <- sqrt((p1 * theta1 / r + p2 * theta2) / (1 + 1 / r))
 
     # Sample size for group 2
-    n2 <- ceiling((1 + 1 / r) / delta^2 * (z_alpha * v0 + z_beta * v1)^2)
+    n2 <- ceiling((1 + 1 / r) / delta ^ 2 * (z_alpha * v0 + z_beta * v1) ^ 2)
 
   } else if (Test == "ANc") {
     # Asymptotic Normal method with continuity correction
@@ -161,7 +161,7 @@ ss1BinaryApprox <- function(p1, p2, r, alpha, beta, Test = "AN") {
     p_pooled <- (r * p1 + p2) / (1 + r)
     v0 <- sqrt(p_pooled * (1 - p_pooled))
     v1 <- sqrt((p1 * theta1 / r + p2 * theta2) / (1 + 1 / r))
-    n2_initial <- ceiling((1 + 1 / r) / delta^2 * (z_alpha * v0 + z_beta * v1)^2)
+    n2_initial <- ceiling((1 + 1 / r) / delta ^ 2 * (z_alpha * v0 + z_beta * v1) ^ 2)
 
     # Iterative refinement using while loop
     n2 <- n2_initial
@@ -186,7 +186,7 @@ ss1BinaryApprox <- function(p1, p2, r, alpha, beta, Test = "AN") {
       }
 
       # Recalculate n2
-      n2 <- ceiling((1 + 1 / r) / delta_adj^2 * (z_alpha * v0 + z_beta * v1)^2)
+      n2 <- ceiling((1 + 1 / r) / delta_adj ^ 2 * (z_alpha * v0 + z_beta * v1) ^ 2)
     }
 
   } else if (Test == "AS") {
@@ -197,14 +197,14 @@ ss1BinaryApprox <- function(p1, p2, r, alpha, beta, Test = "AN") {
     delta_as <- asin(sqrt(p1)) - asin(sqrt(p2))
 
     # Sample size (variance is approximately 1/(4n) for arcsine-transformed proportions)
-    n2 <- ceiling((z_alpha + z_beta)^2 / (4 * delta_as^2) * (1 + kappa) / kappa)
+    n2 <- ceiling((z_alpha + z_beta) ^ 2 / (4 * delta_as ^ 2) * (1 + kappa) / kappa)
 
   } else if (Test == "ASc") {
     # Arcsine transformation with continuity correction
 
     # Initial estimate
     delta_as <- asin(sqrt(p1)) - asin(sqrt(p2))
-    n2_initial <- ceiling((z_alpha + z_beta)^2 / (4 * delta_as^2) * (1 + kappa) / kappa)
+    n2_initial <- ceiling((z_alpha + z_beta) ^ 2 / (4 * delta_as ^ 2) * (1 + kappa) / kappa)
 
     # Iterative refinement using while loop
     n2 <- n2_initial
@@ -237,7 +237,7 @@ ss1BinaryApprox <- function(p1, p2, r, alpha, beta, Test = "AN") {
       delta_as_adj <- asin(sqrt(p1_c)) - asin(sqrt(p2_c))
 
       # Recalculate n2
-      n2 <- ceiling((z_alpha + z_beta)^2 / (4 * delta_as_adj^2) * (1 + kappa) / kappa)
+      n2 <- ceiling((z_alpha + z_beta) ^ 2 / (4 * delta_as_adj ^ 2) * (1 + kappa) / kappa)
     }
 
   } else {  # Test == "Fisher"
@@ -246,7 +246,7 @@ ss1BinaryApprox <- function(p1, p2, r, alpha, beta, Test = "AN") {
     p_pooled <- (r * p1 + p2) / (1 + r)
     v0 <- sqrt(p_pooled * (1 - p_pooled))
     v1 <- sqrt((p1 * theta1 / r + p2 * theta2) / (1 + 1 / r))
-    n2_initial <- ceiling((1 + 1 / r) / delta^2 * (z_alpha * v0 + z_beta * v1)^2)
+    n2_initial <- ceiling((1 + 1 / r) / delta ^ 2 * (z_alpha * v0 + z_beta * v1) ^ 2)
 
     # Initialize
     n2 <- n2_initial
@@ -274,9 +274,9 @@ ss1BinaryApprox <- function(p1, p2, r, alpha, beta, Test = "AN") {
 
   # Calculate n1 and total n
   n1 <- ceiling(r * n2)
-  n <- n1 + n2
+  N <- n1 + n2
 
   # Return result as a data frame
-  result <- data.frame(p1, p2, r, alpha, beta, Test, n1, n2, n)
+  result <- data.frame(p1, p2, r, alpha, beta, Test, n1, n2, N)
   return(result)
 }

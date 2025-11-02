@@ -18,7 +18,7 @@
 #'   \item{beta}{Type II error rate}
 #'   \item{n1}{Required sample size for group 1}
 #'   \item{n2}{Required sample size for group 2}
-#'   \item{n}{Total sample size (n1 + n2)}
+#'   \item{N}{Total sample size (n1 + n2)}
 #'
 #' @details
 #' The required sample size for group 2 is calculated using the standard formula:
@@ -49,9 +49,9 @@ ss1Continuous <- function(delta, sd, r, alpha, beta) {
   n1 <- ceiling(r * n2)
 
   # Calculate total sample size
-  n <- n1 + n2
+  N <- n1 + n2
 
   # Return result as a data frame
-  result <- data.frame(delta, sd, r, alpha, beta, n1, n2, n)
+  result <- data.frame(delta, sd, r, alpha, beta, n1, n2, N)
   return(result)
 }

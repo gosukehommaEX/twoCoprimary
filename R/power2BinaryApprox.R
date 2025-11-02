@@ -4,8 +4,8 @@
 #' binary endpoints using various asymptotic normal approximation methods, as
 #' described in Sozu et al. (2010).
 #'
-#' @param n1 Sample size for group 1
-#' @param n2 Sample size for group 2
+#' @param n1 Sample size for group 1 (test group)
+#' @param n2 Sample size for group 2 (control group)
 #' @param p11 True probability of responders in group 1 for the first outcome (0 < p11 < 1)
 #' @param p12 True probability of responders in group 1 for the second outcome (0 < p12 < 1)
 #' @param p21 True probability of responders in group 2 for the first outcome (0 < p21 < 1)
@@ -65,6 +65,8 @@
 #' where \eqn{\nu_{jk,c} = (p_{jk} + c_j)(1 - p_{jk} - c_j)},
 #' \eqn{c_1 = -1/(2n_1)}, and \eqn{c_2 = 1/(2n_2)}.
 #'
+#' The correlation bounds are automatically checked using \code{\link{corrbound2Binary}}.
+#'
 #' @references
 #' Sozu, T., Sugimoto, T., & Hamasaki, T. (2010). Sample size determination in
 #' clinical trials with multiple co-primary binary endpoints. \emph{Statistics in
@@ -118,6 +120,23 @@
 #' @importFrom stats qnorm
 power2BinaryApprox <- function(n1, n2, p11, p12, p21, p22, rho1, rho2, alpha, Test) {
 
+  # Check that rho1 is within valid bounds
+  bounds1 <- corrbound2Binary(p11, p12)
+  if (rho1 < bounds1[1] | rho1 > bounds1[2]) {
+    stop(paste0("rho1 must be within [", round(bounds1[1], 4), ", ",
+                round(bounds1[2], 4), "]"))
+  }
+
+  # Check that rho2 is within valid bounds
+  bounds2 <- corrbound2Binary(p21, p22)
+  if (rho2 < bounds2[1] | rho2 > bounds2[2]) {
+    stop(paste0("rho2 must be within [", round(bounds2[1], 4), ", ",
+                round(bounds2[2], 4), "]"))
+  }
+
+  # Standard normal quantiles
+  z_alpha <- qnorm(1 - alpha)
+
   # Define common variance parameters
   nu_1k <- c(p11, p12) * (1 - c(p11, p12))
   nu_2k <- c(p21, p22) * (1 - c(p21, p22))
@@ -135,24 +154,17 @@ power2BinaryApprox <- function(n1, n2, p11, p12, p21, p22, rho1, rho2, alpha, Te
     se_k <- sqrt(nu_1k / n1 + nu_2k / n2)
 
     # Calculate correlation between test statistics (equation 4 in Sozu et al. 2010)
-    rho_nml <- (rho1 * sqrt(prod(nu_1k)) / n1 + rho2 * sqrt(prod(nu_2k)) / n2) / prod(se_k)
+    rho <- '+'(
+      rho1 * sqrt(prod(nu_1k)) / n1,
+      rho2 * sqrt(prod(nu_2k)) / n2
+    ) / prod(se_k)
 
     if (Test == "AN") {
 
       # Asymptotic normal method without continuity correction
 
-      # Calculate power for individual endpoints
-      power1and2 <- pnorm((delta_k - se_k0 * qnorm(1 - alpha)) / se_k)
-
-      # Calculate power for co-primary endpoints
-      powerCoprimary <- pmvnorm(
-        lower = c(-Inf, -Inf),
-        upper = (delta_k - se_k0 * qnorm(1 - alpha)) / se_k,
-        mean = c(0, 0),
-        corr = matrix(c(1, rho_nml, rho_nml, 1), ncol = 2),
-        algorithm = GenzBretz(maxpts = 25000, abseps = 0.001, releps = 0),
-        seed = 1
-      )[[1]]
+      # Critical values
+      c_val <- (delta_k - se_k0 * z_alpha) / se_k
 
     } else if (Test == "ANc") {
 
@@ -161,18 +173,8 @@ power2BinaryApprox <- function(n1, n2, p11, p12, p21, p22, rho1, rho2, alpha, Te
       # Calculate continuity correction
       ycc <- (1 / 2) * (1 / n1 + 1 / n2)
 
-      # Calculate power for individual endpoints with continuity correction
-      power1and2 <- pnorm((delta_k - se_k0 * qnorm(1 - alpha) - ycc) / se_k)
-
-      # Calculate power for co-primary endpoints with continuity correction
-      powerCoprimary <- pmvnorm(
-        lower = c(-Inf, -Inf),
-        upper = (delta_k - se_k0 * qnorm(1 - alpha) - ycc) / se_k,
-        mean = c(0, 0),
-        corr = matrix(c(1, rho_nml, rho_nml, 1), ncol = 2),
-        algorithm = GenzBretz(maxpts = 25000, abseps = 0.001, releps = 0),
-        seed = 1
-      )[[1]]
+      # Critical values
+      c_val <- (delta_k - se_k0 * z_alpha - ycc) / se_k
     }
 
   } else if (Test == "AS" | Test == "ASc") {
@@ -187,21 +189,11 @@ power2BinaryApprox <- function(n1, n2, p11, p12, p21, p22, rho1, rho2, alpha, Te
       # Apply arcsine transformation to probabilities
       delta_k <- asin(sqrt(c(p11, p12))) - asin(sqrt(c(p21, p22)))
 
-      # Calculate power for individual endpoints
-      power1and2 <- pnorm(delta_k / se - qnorm(1 - alpha))
+      # Critical values
+      c_val <- delta_k / se - z_alpha
 
       # Calculate correlation between test statistics for arcsine method
-      rho_arc <- (n2 * rho1 + n1 * rho2) / (n1 + n2)
-
-      # Calculate power for co-primary endpoints
-      powerCoprimary <- pmvnorm(
-        lower = c(-Inf, -Inf),
-        upper = delta_k / se - qnorm(1 - alpha),
-        mean = c(0, 0),
-        corr = matrix(c(1, rho_arc, rho_arc, 1), ncol = 2),
-        algorithm = GenzBretz(maxpts = 25000, abseps = 0.001, releps = 0),
-        seed = 1
-      )[[1]]
+      rho <- (n2 * rho1 + n1 * rho2) / (n1 + n2)
 
     } else if (Test == "ASc") {
 
@@ -212,18 +204,21 @@ power2BinaryApprox <- function(n1, n2, p11, p12, p21, p22, rho1, rho2, alpha, Te
       c2 <-  1 / (2 * n2)
 
       # Apply arcsine transformation with continuity correction
-      delta_k <- asin(sqrt(c(p11, p12) + c1)) - asin(sqrt(c(p21, p22) + c2))
+      delta_k <- '-'(
+        asin(sqrt(c(p11, p12) + c1)),
+        asin(sqrt(c(p21, p22) + c2))
+      )
 
       # Calculate adjusted variances for continuity correction
       nu_1k_c <- (c(p11, p12) + c1) * (1 - c(p11, p12) - c1)
       nu_2k_c <- (c(p21, p22) + c2) * (1 - c(p21, p22) - c2)
       se_k <- sqrt(nu_1k / (4 * n1 * nu_1k_c) + nu_2k / (4 * n2 * nu_2k_c))
 
-      # Calculate power for individual endpoints with continuity correction
-      power1and2 <- pnorm((delta_k - se * qnorm(1 - alpha)) / se_k)
+      # Critical values
+      c_val <- (delta_k - se * z_alpha) / se_k
 
       # Calculate correlation between test statistics with continuity correction
-      rho_arc_c <- '*'(
+      rho <- '*'(
         1 / prod(se_k),
         '+'(
           rho1 * sqrt(prod(nu_1k)) / (4 * n1 * sqrt(prod(nu_1k_c))),
@@ -231,17 +226,21 @@ power2BinaryApprox <- function(n1, n2, p11, p12, p21, p22, rho1, rho2, alpha, Te
         )
       )
 
-      # Calculate power for co-primary endpoints with continuity correction
-      powerCoprimary <- pmvnorm(
-        lower = c(-Inf, -Inf),
-        upper = (delta_k - se * qnorm(1 - alpha)) / se_k,
-        mean = c(0, 0),
-        corr = matrix(c(1, rho_arc_c, rho_arc_c, 1), ncol = 2),
-        algorithm = GenzBretz(maxpts = 25000, abseps = 0.001, releps = 0),
-        seed = 1
-      )[[1]]
     }
   }
+
+  # Calculate power for individual endpoints
+  power1and2 <- pnorm(c_val)
+
+  # Calculate power for co-primary endpoints with continuity correction
+  powerCoprimary <- pmvnorm(
+    lower = c(-Inf, -Inf),
+    upper = c_val,
+    mean = c(0, 0),
+    corr = matrix(c(1, rho, rho, 1), ncol = 2),
+    algorithm = GenzBretz(maxpts = 25000, abseps = 0.001, releps = 0),
+    seed = 1
+  )[[1]]
 
   # Return results as a data frame
   result <- data.frame(

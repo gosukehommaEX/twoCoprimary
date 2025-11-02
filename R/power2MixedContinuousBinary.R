@@ -216,13 +216,6 @@ power2MixedContinuousBinary <- function(n1, n2, delta, sd, p1, p2, rho, alpha, T
     warning("nMC should be at least 1000 for reliable results with Fisher's exact test")
   }
 
-  # Calculate allocation ratio
-  kappa <- n2 / n1  # κ = n2/n1
-
-  # Calculate non-response probabilities
-  thetaT <- 1 - p1
-  thetaC <- 1 - p2
-
   # ===== FISHER'S EXACT TEST (MONTE CARLO SIMULATION) =====
   if (Test == "Fisher") {
 
@@ -241,12 +234,12 @@ power2MixedContinuousBinary <- function(n1, n2, delta, sd, p1, p2, rho, alpha, T
 
     # Covariance matrices (biserial correlation structure)
     SigmaT <- matrix(c(
-      sd^2, rho * sd,
+      sd ^ 2, rho * sd,
       rho * sd, 1
     ), nrow = 2, byrow = TRUE)
 
     SigmaC <- matrix(c(
-      sd^2, rho * sd,
+      sd ^ 2, rho * sd,
       rho * sd, 1
     ), nrow = 2, byrow = TRUE)
 
@@ -263,62 +256,59 @@ power2MixedContinuousBinary <- function(n1, n2, delta, sd, p1, p2, rho, alpha, T
     bar_Y_cont_T <- rowMeans(Y_cont_T)
     bar_Y_cont_C <- rowMeans(Y_cont_C)
     hat_delta <- bar_Y_cont_T - bar_Y_cont_C
-    S2 <- (rowSums((Y_cont_T - bar_Y_cont_T)^2) +
-             rowSums((Y_cont_C - bar_Y_cont_C)^2)) / (n1 + n2 - 2)
+    S2 <- '+'(
+      rowSums((Y_cont_T - bar_Y_cont_T) ^ 2),
+      rowSums((Y_cont_C - bar_Y_cont_C) ^ 2)
+    ) / (n1 + n2 - 2)
     T_stat <- hat_delta / sqrt(S2 * (1 / n1 + 1 / n2))
-    p_cont <- pt(T_stat, df = n1 + n2 - 2, lower.tail = FALSE)
+    crt_ttest <- qt(alpha, df = n1 + n2 - 2, lower.tail = FALSE)
 
     # Binary endpoint (second column, dichotomized at g = 0)
-    Y_bin_T <- rowSums(matrix(as.numeric(XT[, 2] >= g), nrow = nMC, ncol = n1, byrow = TRUE))
-    Y_bin_C <- rowSums(matrix(as.numeric(XC[, 2] >= g), nrow = nMC, ncol = n2, byrow = TRUE))
+    Y_bin_T <- rowSums(
+      matrix(as.numeric(XT[, 2] >= g), nrow = nMC, ncol = n1, byrow = TRUE)
+    )
+    Y_bin_C <- rowSums(
+      matrix(as.numeric(XC[, 2] >= g), nrow = nMC, ncol = n2, byrow = TRUE)
+    )
 
     # Fisher's exact test p-values using hypergeometric distribution
     # P(X >= Y_bin_T | margins fixed) = P(X > Y_bin_T - 1)
     p_bin <- phyper(Y_bin_T - 1, n1, n2, Y_bin_T + Y_bin_C, lower.tail = FALSE)
 
     # Calculate empirical power
-    powerCont <- sum(p_cont < alpha) / nMC
+    powerCont <- sum(T_stat > crt_ttest) / nMC
     powerBin <- sum(p_bin < alpha) / nMC
-    powerCoprimary <- sum((p_cont < alpha) & (p_bin < alpha)) / nMC
+    powerCoprimary <- sum((T_stat > crt_ttest) & (p_bin < alpha)) / nMC
 
-    # Return results
-    result <- data.frame(
-      n1 = n1,
-      n2 = n2,
-      delta = delta,
-      sd = sd,
-      p1 = p1,
-      p2 = p2,
-      rho = rho,
-      alpha = alpha,
-      Test = Test,
-      nMC = nMC,
-      powerCont = powerCont,
-      powerBin = powerBin,
-      powerCoprimary = powerCoprimary
-    )
-
-    return(result)
   }
 
   # ===== ASYMPTOTIC METHODS (AN, ANc, AS, ASc) =====
+  # Set nMC to NA for asymptotic methods
+  nMC <- NA
+
+  # Calculate allocation ratio
+  kappa <- n2 / n1  # κ = n2/n1
+
+  # Standard normal quantiles
+  z_alpha <- qnorm(1 - alpha)
 
   # ===== CONTINUOUS ENDPOINT =====
   # Standardized effect size (equation 5 in Sozu et al. 2012)
-  Z_cont <- delta * sqrt(kappa * n1 / (1 + kappa)) / sd
+  Z_cont <- delta / sd * sqrt(kappa * n1 / (1 + kappa))
 
   # Standardized critical value (equation 5)
-  c_cont_star <- qnorm(1 - alpha) - Z_cont
+  c_val_cont <- -z_alpha + Z_cont
 
-  # For pmvnorm, use negative value
-  c_cont <- -c_cont_star
-
-  # Power for continuous endpoint: P(Z* > c_cont_star) = P(Z* < -c_cont_star)
-  powerCont <- pnorm(c_cont)
+  # Power for continuous endpoint
+  powerCont <- pnorm(c_val_cont)
 
   # ===== BINARY ENDPOINT =====
   # Calculate xi (density at cutoff point) for biserial correlation
   # Assuming standardized latent variables: mu = 0, sigma = 1
+  # Calculate non-response probabilities
+  thetaT <- 1 - p1
+  thetaC <- 1 - p2
+
   # Cutoff point: g = Φ^(-1)(1 - π)
   xiT <- dnorm(qnorm(1 - p1))
   xiC <- dnorm(qnorm(1 - p2))
@@ -332,23 +322,22 @@ power2MixedContinuousBinary <- function(n1, n2, delta, sd, p1, p2, rho, alpha, T
     vk0 <- sqrt((p1 + kappa * p2) * (thetaT + kappa * thetaC) / (kappa * (1 + kappa)))
     vk <- sqrt((kappa * p1 * thetaT + p2 * thetaC) / kappa)
 
-    # Standardized critical value for binary endpoint (Table 1)
-    c_bin_star <- (vk0 * qnorm(1 - alpha) - sqrt(n1) * delta_bin) / vk
+    # Standardized critical value for binary endpoint (Table 1 in Supporting Info)
+    c_val_binary <- (sqrt(n1) * delta_bin - vk0 * z_alpha) / vk
 
-    # Correlation between continuous and binary test statistics (Table 2)
+    # Correlation between continuous and binary test statistics (Table 2 in Supporting Info)
     # γ = (κ * Corr(YTj1,YTj2) * √(πT2θT2) + Corr(YCj1,YCj2) * √(πC2θC2)) /
     #     (√(1+κ) * √(κπT2θT2 + πC2θC2))
     # where Corr(YTjk,YTjk') = ρ * ξTk' / √(πTk'θTk')
-    gamma <- (kappa * rho * xiT + rho * xiC) /
-      (sqrt(1 + kappa) * sqrt(kappa * p1 * thetaT + p2 * thetaC))
+    gamma <- '/'(
+      kappa * rho * xiT + rho * xiC,
+      sqrt(1 + kappa) * sqrt(kappa * p1 * thetaT + p2 * thetaC)
+    )
 
     if (Test == "ANc") {
-      # Apply continuity correction (Table 1)
-      c_bin_star <- c_bin_star + (1 + kappa) / (2 * kappa * vk * sqrt(n1))
+      # Apply continuity correction (Table 1 in Supporting Info)
+      c_val_binary <- c_val_binary - (1 + kappa) / (2 * kappa * vk * sqrt(n1))
     }
-
-    # For pmvnorm, use negative value
-    c_bin <- -c_bin_star
 
   } else {  # Test == "AS" or "ASc"
 
@@ -357,17 +346,16 @@ power2MixedContinuousBinary <- function(n1, n2, delta, sd, p1, p2, rho, alpha, T
 
     if (Test == "AS") {
 
-      # Standardized critical value for binary endpoint (Table 1)
-      c_bin_star <- qnorm(1 - alpha) - sqrt(n1) * (asin(sqrt(p1)) - asin(sqrt(p2))) / v
+      # Standardized critical value for binary endpoint (Table 1 in Supporting Info)
+      c_val_binary <- -z_alpha + sqrt(n1) * (asin(sqrt(p1)) - asin(sqrt(p2))) / v
 
-      # Correlation between continuous and binary test statistics (Table 2)
+      # Correlation between continuous and binary test statistics (Table 2 in Supporting Info)
       # For Arcsine method (k ≤ km < k'): γ = (κ * Corr + Corr) / (1+κ)
       # where Corr(YTj1,YTj2) = ρ * ξT / √(πTθT)
-      gamma <- (kappa * rho * xiT / sqrt(p1 * thetaT) +
-                  rho * xiC / sqrt(p2 * thetaC)) / (1 + kappa)
-
-      # For pmvnorm, use negative value
-      c_bin <- -c_bin_star
+      gamma <- '+'(
+        kappa * rho * xiT / sqrt(p1 * thetaT),
+        rho * xiC / sqrt(p2 * thetaC)
+      ) / (1 + kappa)
 
     } else {  # Test == "ASc"
 
@@ -381,38 +369,45 @@ power2MixedContinuousBinary <- function(n1, n2, delta, sd, p1, p2, rho, alpha, T
       p2C <- p2 + 1 / (2 * kappa * n1)
       thetacC <- thetaC - 1 / (2 * kappa * n1)
 
-      # Modified variance parameter (Table 1)
+      # Modified variance parameter (Table 1 in Supporting Info)
       vk_prime <- 0.5 * sqrt(
-        p1 * thetaT / ((p1 + cT) * (thetaT - cT)) +
+        '+'(
+          p1 * thetaT / ((p1 + cT) * (thetaT - cT)),
           p2 * thetaC / (kappa * (p2 + cC) * (thetaC - cC))
+        )
       )
 
       # Standardized critical value with continuity correction (Table 1)
-      c_bin_star <- (v * qnorm(1 - alpha) -
-                       sqrt(n1) * (asin(sqrt(p1 + cT)) - asin(sqrt(p2 + cC)))) / vk_prime
+      c_val_binary <- '-'(
+        sqrt(n1) * (asin(sqrt(p1 + cT)) - asin(sqrt(p2 + cC))),
+        v * qnorm(1 - alpha)
+      ) / vk_prime
 
       # Correlation between continuous and binary test statistics (Table 2)
       # Complex formula for Arcsine(CC) with k ≤ km < k'
       # Note: Explicit Corr() structure for clarity
       # Note: Paper has typo - second term should use πCk'θCk' not πTk'θTk'
-      gamma <- (kappa * rho * xiT / sqrt(p1 * thetaT) * sqrt(p1 * thetaT * p2C * thetacC) +
-                  rho * xiC / sqrt(p2 * thetaC) * sqrt(p2T * thetacT * p2 * thetaC)) /
-        (sqrt(1 + kappa) * sqrt(kappa * p1 * thetaT * p2C * thetacC +
-                                  p2T * thetacT * p2 * thetaC))
-
-      # For pmvnorm, use negative value
-      c_bin <- -c_bin_star
+      gamma <- '/'(
+        '+'(
+          kappa * rho * xiT * sqrt(p2C * thetacC),
+          rho * xiC * sqrt(p2T * thetacT)
+        ),
+        '*'(
+          sqrt(1 + kappa),
+          sqrt(kappa * p1 * thetaT * p2C * thetacC + p2T * thetacT * p2 * thetaC)
+        )
+      )
     }
   }
 
-  # Power for binary endpoint: P(Z* > c_bin_star) = P(Z* < -c_bin_star)
-  powerBin <- pnorm(c_bin)
+  # Power for binary endpoint
+  powerBin <- pnorm(c_val_binary)
 
   # ===== CO-PRIMARY POWER =====
   # Calculate power for co-primary endpoints using bivariate normal distribution
   powerCoprimary <- pmvnorm(
     lower = c(-Inf, -Inf),
-    upper = c(c_cont, c_bin),
+    upper = c(c_val_cont, c_val_binary),
     mean = c(0, 0),
     corr = matrix(c(1, gamma, gamma, 1), ncol = 2),
     algorithm = GenzBretz(maxpts = 25000, abseps = 0.001, releps = 0),
@@ -421,19 +416,8 @@ power2MixedContinuousBinary <- function(n1, n2, delta, sd, p1, p2, rho, alpha, T
 
   # Return results as a data frame
   result <- data.frame(
-    n1 = n1,
-    n2 = n2,
-    delta = delta,
-    sd = sd,
-    p1 = p1,
-    p2 = p2,
-    rho = rho,
-    alpha = alpha,
-    Test = Test,
-    powerCont = powerCont,
-    powerBin = powerBin,
-    powerCoprimary = powerCoprimary
+    n1, n2, delta, sd, p1, p2, rho, alpha, Test, nMC,
+    powerCont, powerBin, powerCoprimary
   )
-
   return(result)
 }
