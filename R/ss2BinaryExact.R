@@ -34,23 +34,27 @@
 #'   \item{N}{Total sample size (n1 + n2)}
 #'
 #' @details
-#' This function implements the exact sample size calculation algorithm described
-#' in Appendix C of Homma and Yoshida (2025):
+#' This function uses a sequential search algorithm to find the minimum sample size
+#' that achieves the target power:
 #'
-#' \strong{Step 1:} Initialize with sample size from approximate method (AN)
+#' \strong{Step 1:} Initialize with sample size from approximate method (AN).
+#' This provides a good starting point for the exact calculation.
 #'
-#' \strong{Step 2:} Calculate exact power at current sample size
+#' \strong{Step 2:} Calculate exact power at current sample size using
+#' \code{\link{power2BinaryExact}}.
 #'
-#' \strong{Step 3:} Adjust sample size:
+#' \strong{Step 3:} Adjust sample size to achieve target power:
 #' \itemize{
-#'   \item If power >= 1 - beta: decrease n2 until power drops below target, then add 1
-#'   \item If power < 1 - beta: increase n2 until power reaches target
+#'   \item If power is greater than or equal to target: decrease n2 by 1 until power drops below target, then add 1 back
+#'   \item If power is less than target: increase n2 by 1 until power reaches target
 #' }
 #'
-#' \strong{Step 4:} Return final sample size
+#' \strong{Step 4:} Return final sample sizes.
 #'
-#' The required sample size is calculated as equation (10):
-#' \deqn{N_2 = \arg\min_{N_2 \in \mathbb{Z}} \{power_A(\theta) \geq 1 - \beta\}}
+#' Note: Due to the saw-tooth nature of exact power (power does not increase
+#' monotonically with sample size), linear extrapolation is not appropriate.
+#' This function uses sequential search to ensure the minimum sample size that
+#' achieves the target power.
 #'
 #' @references
 #' Homma, G., & Yoshida, T. (2025). Exact power and sample size in clinical
@@ -106,6 +110,43 @@
 #' @import fpCompare
 ss2BinaryExact <- function(p11, p12, p21, p22, rho1, rho2, r, alpha, beta, Test) {
 
+  # Input validation
+  if (length(p11) != 1 || length(p12) != 1 || length(p21) != 1 ||
+      length(p22) != 1 || length(rho1) != 1 || length(rho2) != 1 ||
+      length(r) != 1 || length(alpha) != 1 || length(beta) != 1) {
+    stop("All parameters must be scalar values")
+  }
+  if (p11 <= 0 || p11 >= 1 || p12 <= 0 || p12 >= 1 ||
+      p21 <= 0 || p21 >= 1 || p22 <= 0 || p22 >= 1) {
+    stop("All probabilities must be in (0, 1)")
+  }
+  if (r <= 0) {
+    stop("r must be positive")
+  }
+  if (alpha <= 0 || alpha >= 1) {
+    stop("alpha must be in (0, 1)")
+  }
+  if (beta <= 0 || beta >= 1) {
+    stop("beta must be in (0, 1)")
+  }
+  if (!Test %in% c("Chisq", "Fisher", "Fisher-midP", "Z-pool", "Boschloo")) {
+    stop("Test must be one of: Chisq, Fisher, Fisher-midP, Z-pool, Boschloo")
+  }
+
+  # Check that rho1 is within valid bounds
+  bounds1 <- corrbound2Binary(p11, p12)
+  if (rho1 < bounds1[1] | rho1 > bounds1[2]) {
+    stop(paste0("rho1 must be within [", round(bounds1[1], 4), ", ",
+                round(bounds1[2], 4), "]"))
+  }
+
+  # Check that rho2 is within valid bounds
+  bounds2 <- corrbound2Binary(p21, p22)
+  if (rho2 < bounds2[1] | rho2 > bounds2[2]) {
+    stop(paste0("rho2 must be within [", round(bounds2[1], 4), ", ",
+                round(bounds2[2], 4), "]"))
+  }
+
   # Step 1: Initialize sample size using approximate method (AN)
   # This provides a good starting point for the exact calculation
   n2 <- ss2BinaryApprox(p11, p12, p21, p22, rho1, rho2, r, alpha, beta, "AN")[["n2"]]
@@ -147,5 +188,7 @@ ss2BinaryExact <- function(p11, p12, p21, p22, rho1, rho2, r, alpha, beta, Test)
     p11, p12, p21, p22, rho1, rho2, r, alpha, beta, Test,
     n1, n2, N
   )
+  class(result) <- c("twoCoprimary", "data.frame")
+
   return(result)
 }

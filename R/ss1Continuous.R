@@ -42,16 +42,43 @@
 #' @importFrom stats qnorm
 ss1Continuous <- function(delta, sd, r, alpha, beta) {
 
-  # Calculate the required sample size for group 2
-  n2 <- ceiling((1 + 1 / r) * sd ^ 2 * (qnorm(1 - alpha) + qnorm(1 - beta)) ^ 2 / (delta ^ 2))
+  # Input validation
+  if (length(delta) != 1 || length(sd) != 1 || length(r) != 1 ||
+      length(alpha) != 1 || length(beta) != 1) {
+    stop("All parameters must be scalar values")
+  }
+  if (delta <= 0) {
+    stop("delta must be positive")
+  }
+  if (sd <= 0) {
+    stop("sd must be positive")
+  }
+  if (r <= 0) {
+    stop("r must be positive")
+  }
+  if (alpha <= 0 || alpha >= 1) {
+    stop("alpha must be in (0, 1)")
+  }
+  if (beta <= 0 || beta >= 1) {
+    stop("beta must be in (0, 1)")
+  }
 
-  # Calculate the required sample size for group 1
+  # Calculate z-scores for alpha and beta
+  za <- qnorm(alpha)
+  zb <- qnorm(beta)
+
+  # Calculate required sample size for group 2
+  n2 <- ceiling((1 + 1 / r) / delta ^ 2 * (za + zb) ^ 2 * sd ^ 2)
+
+  # Calculate sample size for group 1
   n1 <- ceiling(r * n2)
 
-  # Calculate total sample size
+  # Total sample size
   N <- n1 + n2
 
   # Return result as a data frame
   result <- data.frame(delta, sd, r, alpha, beta, n1, n2, N)
+  class(result) <- c("twoCoprimary", "data.frame")
+
   return(result)
 }

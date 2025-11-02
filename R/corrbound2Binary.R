@@ -37,6 +37,18 @@
 #'
 #' @export
 corrbound2Binary <- function(p1, p2) {
+
+  # Input validation
+  if (length(p1) != 1 || length(p2) != 1) {
+    stop("p1 and p2 must be scalar values")
+  }
+  if (p1 <= 0 || p1 >= 1) {
+    stop("p1 must be in (0, 1)")
+  }
+  if (p2 <= 0 || p2 >= 1) {
+    stop("p2 must be in (0, 1)")
+  }
+
   # Calculate boundary of rho (see Prentice (1988))
   boundary <- c(
     max(

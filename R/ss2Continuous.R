@@ -33,15 +33,14 @@
 #' @details
 #' This function uses different algorithms depending on the variance assumption:
 #'
-#' **For known variance (known_var = TRUE):**
+#' \strong{For known variance (known_var = TRUE):}
 #' Uses a linear extrapolation algorithm to efficiently determine the required sample size.
 #'
 #' \strong{Step 1:} Initialize with sample sizes from single endpoint formulas.
-#' The initial values use the same testing method specified in the Test argument
-#' to ensure consistency. Two initial values are calculated:
+#' Two initial values are calculated:
 #' \itemize{
-#'   \item n2_0: Based on target power 1 - β
-#'   \item n2_1: Based on adjusted power 1 - √(1-β) to provide a bracket
+#'   \item n2_0: Based on target power 1 - beta
+#'   \item n2_1: Based on adjusted power 1 - sqrt(1-beta) to provide a bracket
 #' }
 #'
 #' \strong{Step 2-4:} Iteratively refine using linear extrapolation until convergence:
@@ -50,7 +49,7 @@
 #'
 #' The algorithm converges when \eqn{n_2^{(1)} = n_2^{(0)}}.
 #'
-#' **For unknown variance (known_var = FALSE):**
+#' \strong{For unknown variance (known_var = FALSE):}
 #' Uses sequential search starting from initial sample size, incrementing by 1 until
 #' target power is achieved. This approach is more stable for Monte Carlo simulation
 #' where power estimates have random variation.
@@ -115,6 +114,11 @@ ss2Continuous <- function(delta1, delta2, sd1, sd2, rho, r, alpha, beta,
                           known_var = TRUE, nMC = 1e+4) {
 
   # Input validation
+  if (length(delta1) != 1 || length(delta2) != 1 || length(sd1) != 1 ||
+      length(sd2) != 1 || length(rho) != 1 || length(r) != 1 ||
+      length(alpha) != 1 || length(beta) != 1) {
+    stop("All parameters must be scalar values")
+  }
   if (delta1 <= 0 | delta2 <= 0) {
     stop("delta1 and delta2 must be positive")
   }
@@ -133,6 +137,9 @@ ss2Continuous <- function(delta1, delta2, sd1, sd2, rho, r, alpha, beta,
   if (beta <= 0 | beta >= 1) {
     stop("beta must be in (0, 1)")
   }
+  if (!is.logical(known_var)) {
+    stop("known_var must be logical (TRUE or FALSE)")
+  }
 
   if (known_var) {
     # ===== KNOWN VARIANCE: Use linear extrapolation =====
@@ -146,7 +153,7 @@ ss2Continuous <- function(delta1, delta2, sd1, sd2, rho, r, alpha, beta,
 
     # For the second initial value, use adjusted target power
     # This provides a bracket for the linear extrapolation
-    # The adjusted power 1 - √(1-β) is typically higher than 1 - β
+    # The adjusted power 1 - sqrt(1-beta) is typically higher than 1 - beta
     n2_1 <- max(
       ss1Continuous(delta1, sd1, r, alpha, 1 - (1 - beta) ^ (1 / 2))[["n2"]],
       ss1Continuous(delta2, sd2, r, alpha, 1 - (1 - beta) ^ (1 / 2))[["n2"]]
@@ -222,5 +229,7 @@ ss2Continuous <- function(delta1, delta2, sd1, sd2, rho, r, alpha, beta,
     delta1, delta2, sd1, sd2, rho, r, alpha, beta, known_var, nMC,
     n1, n2, N
   )
+  class(result) <- c("twoCoprimary", "data.frame")
+
   return(result)
 }

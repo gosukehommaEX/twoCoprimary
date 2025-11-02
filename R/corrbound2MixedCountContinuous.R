@@ -2,25 +2,22 @@
 #'
 #' Computes the lower and upper bounds of the correlation coefficient between
 #' an overdispersed count outcome (negative binomial) and a continuous outcome
-#' using Frechet-Hoeffding bounds, as described in Homma and Yoshida (2024).
+#' (normal), as described in Homma and Yoshida (2024).
 #'
-#' @param lambda Expected number of events for the count outcome (lambda = rate * time)
+#' @param lambda Mean parameter for the negative binomial distribution (lambda > 0)
 #' @param nu Dispersion parameter for the negative binomial distribution (nu > 0)
-#' @param mu Mean of the continuous outcome
-#' @param sd Standard deviation of the continuous outcome
+#' @param mu Mean for the continuous outcome
+#' @param sd Standard deviation for the continuous outcome (sd > 0)
 #'
 #' @return A named numeric vector with two elements:
 #'   \item{L_bound}{Lower bound of the correlation}
 #'   \item{U_bound}{Upper bound of the correlation}
 #'
 #' @details
-#' For a count outcome Y1 ~ NB(lambda, nu) and a continuous outcome Y2 ~ N(mu, sd^2),
-#' the correlation coefficient rho is bounded by Frechet-Hoeffding bounds:
-#' \deqn{L(\rho) = \frac{\int [H^-(F_1(y_1), F_2(y_2)) - F_1(y_1)F_2(y_2)] dy_2}
-#'       {\sd_{Y_1} \times \sd_{Y_2}}}
-#' \deqn{U(\rho) = \frac{\int [H^+(F_1(y_1), F_2(y_2)) - F_1(y_1)F_2(y_2)] dy_2}
-#'       {\sd_{Y_1} \times \sd_{Y_2}}}
-#' where H^- and H^+ are the lower and upper Frechet-Hoeffding bounds, respectively.
+#' The correlation bounds are calculated using the Frechet-Hoeffding bounds for
+#' copulas, as described in Trivedi and Zimmer (2007). The negative binomial
+#' distribution has mean lambda and variance:
+#' \deqn{Var(Y_1) = \lambda + \frac{\lambda^2}{\nu}}
 #'
 #' The variance of the negative binomial distribution is: Var(Y1) = lambda + lambda^2/nu
 #'
@@ -45,6 +42,20 @@
 #' @export
 #' @importFrom stats pnbinom pnorm integrate
 corrbound2MixedCountContinuous <- function(lambda, nu, mu, sd) {
+
+  # Input validation
+  if (length(lambda) != 1 || length(nu) != 1 || length(mu) != 1 || length(sd) != 1) {
+    stop("All parameters must be scalar values")
+  }
+  if (lambda <= 0) {
+    stop("lambda must be positive")
+  }
+  if (nu <= 0) {
+    stop("nu must be positive")
+  }
+  if (sd <= 0) {
+    stop("sd must be positive")
+  }
 
   # Calculate variance of count outcome: Var(Y1) = lambda + lambda^2/nu
   var_count <- lambda + lambda ^ 2 / nu

@@ -2,8 +2,7 @@
 #'
 #' Determines the sample size for a two-arm superiority trial with two co-primary
 #' endpoints where one is continuous and one is binary, to achieve a specified
-#' power at a given significance level. This function is specifically designed
-#' for mixed continuous-binary endpoint combinations.
+#' power at a given significance level.
 #'
 #' @param delta Mean difference for the continuous endpoint (group 1 - group 2)
 #' @param sd Common standard deviation for the continuous endpoint
@@ -40,33 +39,18 @@
 #'
 #' @details
 #' This function implements the sample size calculation for mixed continuous-binary
-#' co-primary endpoints following the methodology in Sozu et al. (2012)
-#' using linear extrapolation approach.
+#' co-primary endpoints following the methodology in Sozu et al. (2012).
 #'
-#' **Endpoint Types:**
-#' \itemize{
-#'   \item \strong{Continuous Endpoint}: Analyzed using t-test for comparing means
-#'   \item \strong{Binary Endpoint}: Analyzed using one of several methods (AN, ANc, AS, ASc, or Fisher)
-#' }
+#' **For Fisher's exact test**, sequential search is used because the saw-tooth
+#' nature of exact power makes linear extrapolation inappropriate.
 #'
-#' **Biserial Correlation Model:**
-#' The binary endpoint is assumed to arise from dichotomizing a latent continuous
-#' variable at a threshold. The correlation parameter ρ (rho) represents the biserial
-#' correlation between the observed continuous endpoint and this latent continuous
-#' variable underlying the binary endpoint.
-#'
-#' **Algorithm:**
+#' **For asymptotic methods (AN, ANc, AS, ASc)**, linear extrapolation is used:
 #'
 #' \strong{Step 1:} Initialize with sample sizes from single endpoint formulas.
-#' The initial value is the maximum of:
-#' \itemize{
-#'   \item Sample size for continuous endpoint (from ss1Continuous)
-#'   \item Sample size for binary endpoint (from ss1BinaryApprox with Test method)
-#' }
 #' Two initial values are calculated:
 #' \itemize{
-#'   \item n2_0: Based on target power 1 - β
-#'   \item n2_1: Based on adjusted power 1 - √(1-β) to provide a bracket
+#'   \item n2_0: Based on target power 1 - beta
+#'   \item n2_1: Based on adjusted power 1 - sqrt(1-beta) to provide a bracket
 #' }
 #'
 #' \strong{Step 2-4:} Iteratively refine using linear extrapolation until convergence:
@@ -75,84 +59,51 @@
 #'
 #' The algorithm converges when \eqn{n_2^{(1)} = n_2^{(0)}}.
 #'
-#' **For Fisher's Exact Test:**
-#' When Test = "Fisher", Monte Carlo simulation is used in the power calculation.
-#' Due to random variation in Monte Carlo estimates, sequential search (incrementing
-#' sample size by 1) is used instead of linear extrapolation for more stable convergence.
-#'
 #' @references
 #' Sozu, T., Sugimoto, T., & Hamasaki, T. (2012). Sample size determination in
 #' clinical trials with multiple co-primary endpoints including mixed continuous
 #' and binary variables. \emph{Biometrical Journal}, 54(5), 716-729.
 #'
 #' @examples
-#' # Example 1: Based on PREMIER study (Table 2 in Sozu et al. 2012)
-#' # mTSS (continuous) and ACR50 (binary) with ρ = 0.5
+#' # Sample size calculation using asymptotic normal method
 #' ss2MixedContinuousBinary(
-#'   delta = 4.4,
-#'   sd = 19.0,
-#'   p1 = 0.59,
-#'   p2 = 0.46,
-#'   rho = 0.5,
-#'   r = 1,
-#'   alpha = 0.025,
-#'   beta = 0.2,
-#'   Test = "AN"
-#' )
-#'
-#' # Example 2: With continuity correction
-#' ss2MixedContinuousBinary(
-#'   delta = 5.0,
-#'   sd = 20.0,
-#'   p1 = 0.65,
-#'   p2 = 0.50,
-#'   rho = 0.3,
-#'   r = 1,
-#'   alpha = 0.025,
-#'   beta = 0.1,
-#'   Test = "ANc"
-#' )
-#'
-#' # Example 3: Arcsine transformation
-#' ss2MixedContinuousBinary(
-#'   delta = 4.5,
-#'   sd = 18.0,
-#'   p1 = 0.70,
-#'   p2 = 0.55,
-#'   rho = 0.4,
-#'   r = 1,
-#'   alpha = 0.025,
-#'   beta = 0.1,
-#'   Test = "AS"
-#' )
-#'
-#' # Example 4: Unequal allocation
-#' ss2MixedContinuousBinary(
-#'   delta = 0.3,
-#'   sd = 1.0,
+#'   delta = 0.5,
+#'   sd = 1,
 #'   p1 = 0.6,
 #'   p2 = 0.4,
 #'   rho = 0.5,
-#'   r = 2,
-#'   alpha = 0.025,
-#'   beta = 0.1,
-#'   Test = "AS"
-#' )
-#'
-#' \donttest{
-#' # Example 5: Fisher's exact test (uses sequential search, computationally intensive)
-#' set.seed(12345)
-#' ss2MixedContinuousBinary(
-#'   delta = 0.5,
-#'   sd = 1.0,
-#'   p1 = 0.4,
-#'   p2 = 0.2,
-#'   rho = 0.3,
 #'   r = 1,
 #'   alpha = 0.025,
 #'   beta = 0.1,
-#'   Test = "Fisher",
-#'   nMC = 10000
+#'   Test = 'AN'
+#' )
+#'
+#' # With continuity correction
+#' ss2MixedContinuousBinary(
+#'   delta = 0.5,
+#'   sd = 1,
+#'   p1 = 0.6,
+#'   p2 = 0.4,
+#'   rho = 0.5,
+#'   r = 1,
+#'   alpha = 0.025,
+#'   beta = 0.1,
+#'   Test = 'ANc'
+#' )
+#'
+#' \donttest{
+#' # Fisher's exact test (computationally intensive)
+#' ss2MixedContinuousBinary(
+#'   delta = 0.5,
+#'   sd = 1,
+#'   p1 = 0.6,
+#'   p2 = 0.4,
+#'   rho = 0.5,
+#'   r = 1,
+#'   alpha = 0.025,
+#'   beta = 0.1,
+#'   Test = 'Fisher',
+#'   nMC = 5000
 #' )
 #' }
 #'
@@ -160,6 +111,11 @@
 ss2MixedContinuousBinary <- function(delta, sd, p1, p2, rho, r, alpha, beta, Test, nMC = 10000) {
 
   # Input validation
+  if (length(delta) != 1 || length(sd) != 1 || length(p1) != 1 ||
+      length(p2) != 1 || length(rho) != 1 || length(r) != 1 ||
+      length(alpha) != 1 || length(beta) != 1) {
+    stop("All parameters must be scalar values")
+  }
   if (delta <= 0) {
     stop("delta must be positive")
   }
@@ -190,8 +146,8 @@ ss2MixedContinuousBinary <- function(delta, sd, p1, p2, rho, r, alpha, beta, Tes
 
   if (Test == "Fisher") {
     # ===== FISHER'S EXACT TEST: Use sequential search =====
-    # Monte Carlo simulation has random variation, so linear extrapolation
-    # may not converge reliably. Instead, use sequential search.
+    # Monte Carlo simulation has random variation and exact power has saw-tooth pattern
+    # Instead, use sequential search.
 
     # Step 1: Initialize with sample size from single endpoint formulas
     n2 <- max(
@@ -229,7 +185,7 @@ ss2MixedContinuousBinary <- function(delta, sd, p1, p2, rho, r, alpha, beta, Tes
 
     # For the second initial value, use adjusted target power
     # This provides a bracket for the linear extrapolation
-    # The adjusted power 1 - √(1-β) is typically higher than 1 - β
+    # The adjusted power 1 - sqrt(1-beta) is typically higher than 1 - beta
     n2_1 <- max(
       ss1Continuous(delta, sd, r, alpha, 1 - (1 - beta) ^ (1/2))[["n2"]],
       ss1BinaryApprox(p1, p2, r, alpha, 1 - (1 - beta) ^ (1/2), Test = Test)[["n2"]]
@@ -276,5 +232,7 @@ ss2MixedContinuousBinary <- function(delta, sd, p1, p2, rho, r, alpha, beta, Tes
     delta, sd, p1, p2, rho, r, alpha, beta, Test, nMC,
     n1, n2, N
   )
+  class(result) <- c("twoCoprimary", "data.frame")
+
   return(result)
 }

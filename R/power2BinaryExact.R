@@ -22,9 +22,15 @@
 #'     \item \code{"Boschloo"}: Boschloo exact unconditional test
 #'   }
 #'
-#' @return A named numeric vector with three elements:
-#'   \item{Power1}{Power for the first endpoint alone}
-#'   \item{Power2}{Power for the second endpoint alone}
+#' @return A data frame with the following columns:
+#'   \item{n1}{Sample size for group 1}
+#'   \item{n2}{Sample size for group 2}
+#'   \item{p11, p12, p21, p22}{Response probabilities}
+#'   \item{rho1, rho2}{Correlations}
+#'   \item{alpha}{One-sided significance level}
+#'   \item{Test}{Testing method used}
+#'   \item{power1}{Power for the first endpoint alone}
+#'   \item{power2}{Power for the second endpoint alone}
 #'   \item{powerCoprimary}{Exact power for both co-primary endpoints}
 #'
 #' @details
@@ -95,6 +101,31 @@
 #' @importFrom stats dbinom pbinom
 power2BinaryExact <- function(n1, n2, p11, p12, p21, p22, rho1, rho2, alpha, Test) {
 
+  # Input validation
+  if (length(n1) != 1 || length(n2) != 1) {
+    stop("n1 and n2 must be scalar values")
+  }
+  if (n1 <= 0 || n1 != round(n1)) {
+    stop("n1 must be a positive integer")
+  }
+  if (n2 <= 0 || n2 != round(n2)) {
+    stop("n2 must be a positive integer")
+  }
+  if (length(p11) != 1 || length(p12) != 1 || length(p21) != 1 ||
+      length(p22) != 1 || length(rho1) != 1 || length(rho2) != 1 || length(alpha) != 1) {
+    stop("All parameters must be scalar values")
+  }
+  if (p11 <= 0 || p11 >= 1 || p12 <= 0 || p12 >= 1 ||
+      p21 <= 0 || p21 >= 1 || p22 <= 0 || p22 >= 1) {
+    stop("All probabilities must be in (0, 1)")
+  }
+  if (alpha <= 0 || alpha >= 1) {
+    stop("alpha must be in (0, 1)")
+  }
+  if (!Test %in% c("Chisq", "Fisher", "Fisher-midP", "Z-pool", "Boschloo")) {
+    stop("Test must be one of: Chisq, Fisher, Fisher-midP, Z-pool, Boschloo")
+  }
+
   # Check that rho1 is within valid bounds
   bounds1 <- corrbound2Binary(p11, p12)
   if (rho1 < bounds1[1] | rho1 > bounds1[2]) {
@@ -135,11 +166,12 @@ power2BinaryExact <- function(n1, n2, p11, p12, p21, p22, rho1, rho2, alpha, Tes
     )
   )
 
-  # Return power as a named vector
   # Return results as a data frame
   result <- data.frame(
     n1, n2, p11, p12, p21, p22, rho1, rho2, alpha, Test,
     power1, power2, powerCoprimary
   )
+  class(result) <- c("twoCoprimary", "data.frame")
+
   return(result)
 }

@@ -11,6 +11,7 @@
 #' @param mu1 Mean for group 1 (continuous endpoint)
 #' @param mu2 Mean for group 2 (continuous endpoint)
 #' @param sd Common standard deviation for the continuous endpoint
+#' @param r Allocation ratio of group 1 to group 2 (group 1:group 2 = r:1, where r > 0)
 #' @param rho1 Correlation between count and continuous outcomes for treatment group
 #' @param rho2 Correlation between count and continuous outcomes for control group
 #' @param alpha One-sided significance level (typically 0.025 or 0.05)
@@ -24,6 +25,7 @@
 #'   \item{mu1}{Mean in group 1 for continuous endpoint}
 #'   \item{mu2}{Mean in group 2 for continuous endpoint}
 #'   \item{sd}{Standard deviation for continuous endpoint}
+#'   \item{r}{Allocation ratio}
 #'   \item{rho1}{Correlation for group 1}
 #'   \item{rho2}{Correlation for group 2}
 #'   \item{alpha}{One-sided significance level}
@@ -37,11 +39,10 @@
 #' sample size iteratively:
 #'
 #' \strong{Step 1:} Initialize with sample sizes from single endpoint formulas.
-#' The initial values use the same testing method specified in the Test argument
-#' to ensure consistency. Two initial values are calculated:
+#' Two initial values are calculated:
 #' \itemize{
-#'   \item n2_0: Based on target power 1 - β
-#'   \item n2_1: Based on adjusted power 1 - √(1-β) to provide a bracket
+#'   \item n2_0: Based on target power 1 - beta
+#'   \item n2_1: Based on adjusted power 1 - sqrt(1-beta) to provide a bracket
 #' }
 #'
 #' \strong{Step 2-4:} Iteratively refine using linear extrapolation until convergence:
@@ -51,7 +52,7 @@
 #' The algorithm converges when \eqn{n_2^{(1)} = n_2^{(0)}}.
 #'
 #' The correlation bounds are automatically checked using \code{\link{corrbound2MixedContinuousCount}}.
-#' If the specified correlation is outside the valid range, a warning is issued.
+#' If the specified correlation is outside the valid range, an error is issued.
 #'
 #' @references
 #' Homma, G., & Yoshida, T. (2024). Sample size calculation in clinical trials
@@ -85,21 +86,50 @@
 #'
 #' @export
 ss2MixedCountContinuous <- function(r1, r2, nu, t, mu1, mu2, sd, r,
-                                     rho1, rho2, alpha, beta) {
+                                    rho1, rho2, alpha, beta) {
+
+  # Input validation
+  if (length(r1) != 1 || length(r2) != 1 || length(nu) != 1 ||
+      length(t) != 1 || length(mu1) != 1 || length(mu2) != 1 ||
+      length(sd) != 1 || length(r) != 1 || length(rho1) != 1 ||
+      length(rho2) != 1 || length(alpha) != 1 || length(beta) != 1) {
+    stop("All parameters must be scalar values")
+  }
+  if (r1 <= 0 || r2 <= 0) {
+    stop("r1 and r2 must be positive")
+  }
+  if (nu <= 0) {
+    stop("nu must be positive")
+  }
+  if (t <= 0) {
+    stop("t must be positive")
+  }
+  if (sd <= 0) {
+    stop("sd must be positive")
+  }
+  if (r <= 0) {
+    stop("r must be positive")
+  }
+  if (alpha <= 0 || alpha >= 1) {
+    stop("alpha must be in (0, 1)")
+  }
+  if (beta <= 0 || beta >= 1) {
+    stop("beta must be in (0, 1)")
+  }
 
   # Step 1: Initialize sample sizes using single endpoint formula
   # Calculate sample size for each endpoint separately, then take the maximum
   n2_0 <- max(
     ss1Count(r1, r2, nu, t, r, alpha, beta)[["n2"]],
-    ss1Continuous(mu1 - mu2, sd, r, alpha, beta)[["n2"]]
+    ss1Continuous(-(mu1 - mu2), sd, r, alpha, beta)[["n2"]]
   )
 
   # For the second initial value, use adjusted target power
   # This provides a bracket for the linear extrapolation
-  # The adjusted power 1 - √(1-β) is typically higher than 1 - β
+  # The adjusted power 1 - sqrt(1-beta) is typically higher than 1 - beta
   n2_1 <- max(
     ss1Count(r1, r2, nu, t, r, alpha, 1 - (1 - beta) ^ (1 / 2))[["n2"]],
-    ss1Continuous(mu1 - mu2, sd, r, alpha, 1 - (1 - beta) ^ (1 / 2))[["n2"]]
+    ss1Continuous(-(mu1 - mu2), sd, r, alpha, 1 - (1 - beta) ^ (1 / 2))[["n2"]]
   )
 
   # Step 2-4: Iterative refinement using linear extrapolation
@@ -139,5 +169,7 @@ ss2MixedCountContinuous <- function(r1, r2, nu, t, mu1, mu2, sd, r,
     r1, r2, nu, t, mu1, mu2, sd, r, rho1, rho2, alpha, beta,
     n1, n2, N
   )
+  class(result) <- c("twoCoprimary", "data.frame")
+
   return(result)
 }

@@ -8,7 +8,7 @@
 #' @param y2 Observed value(s) of the second random variable (0 to N)
 #' @param p1 True probability of responders for the first outcome (0 < p1 < 1)
 #' @param p2 True probability of responders for the second outcome (0 < p2 < 1)
-#' @param rho Correlation coefficient between the two binary outcomes (must be NULL if gamma is specified)
+#' @param rho Correlation coefficient between the two binary outcomes
 #'
 #' @return Probability mass function value(s) for the bivariate binomial distribution.
 #'   If y1 and y2 are vectors, returns a vector of probabilities.
@@ -43,9 +43,33 @@
 #' @export
 dbibinom <- function(N, y1, y2, p1, p2, rho) {
 
-  # Check that y1 and y2 have the same length
+  # Input validation
+  if (length(N) != 1) {
+    stop("N must be a scalar value")
+  }
+  if (N <= 0 || N != round(N)) {
+    stop("N must be a positive integer")
+  }
   if (length(y1) != length(y2)) {
-    stop('y1 and y2 must have the same length')
+    stop("y1 and y2 must have the same length")
+  }
+  if (any(y1 < 0 | y1 > N | y1 != round(y1))) {
+    stop("y1 must contain integers between 0 and N")
+  }
+  if (any(y2 < 0 | y2 > N | y2 != round(y2))) {
+    stop("y2 must contain integers between 0 and N")
+  }
+  if (length(p1) != 1 || length(p2) != 1) {
+    stop("p1 and p2 must be scalar values")
+  }
+  if (p1 <= 0 || p1 >= 1) {
+    stop("p1 must be in (0, 1)")
+  }
+  if (p2 <= 0 || p2 >= 1) {
+    stop("p2 must be in (0, 1)")
+  }
+  if (length(rho) != 1) {
+    stop("rho must be a scalar value")
   }
 
   # Check that rho is within valid bounds
@@ -54,6 +78,7 @@ dbibinom <- function(N, y1, y2, p1, p2, rho) {
     stop(paste0("rho must be within [", round(bounds[1], 4), ", ",
                 round(bounds[2], 4), "]"))
   }
+
   # Convert rho to gamma
   gamma <- '/'(
     rho * sqrt(p2 * (1 - p2) / (p1 * (1 - p1))),

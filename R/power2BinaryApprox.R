@@ -247,5 +247,7 @@ power2BinaryApprox <- function(n1, n2, p11, p12, p21, p22, rho1, rho2, alpha, Te
     n1, n2, p11, p12, p21, p22, rho1, rho2, alpha, Test,
     power1 = power1and2[1], power2 = power1and2[2], powerCoprimary
   )
+  class(result) <- c("twoCoprimary", "data.frame")
+
   return(result)
 }

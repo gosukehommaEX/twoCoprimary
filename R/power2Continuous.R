@@ -170,7 +170,9 @@ power2Continuous <- function(n1, n2, delta1, delta2, sd1, sd2, rho, alpha,
   # Return results as a data frame
   result <- data.frame(
     n1, n2, delta1, delta2, sd1, sd2, rho, alpha, known_var, nMC,
-    power1and2[1], power1and2[2], powerCoprimary
+    power1 = power1and2[1], power2 = power1and2[2], powerCoprimary
   )
+  class(result) <- c("twoCoprimary", "data.frame")
+
   return(result)
 }

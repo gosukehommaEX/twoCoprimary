@@ -38,10 +38,10 @@
 #'
 #' **Notation:**
 #' - r = n1/n2: allocation ratio (group 1 to group 2)
-#' - κ = 1/r = n2/n1: inverse allocation ratio
-#' - π1, π2: response probabilities
-#' - θ1 = 1 - π1, θ2 = 1 - π2: non-response probabilities
-#' - δ = π1 - π2: treatment effect
+#' - kappa = 1/r = n2/n1: inverse allocation ratio
+#' - p1, p2: response probabilities
+#' - theta1 = 1 - p1, theta2 = 1 - p2: non-response probabilities
+#' - delta = p1 - p2: treatment effect
 #'
 #' **AN (Asymptotic Normal) Method:**
 #' Uses the standard normal approximation with pooled variance under H0:
@@ -53,7 +53,7 @@
 #' **ANc Method:**
 #' Adds continuity correction to the AN method. Uses iterative calculation because
 #' the correction term depends on sample size. Converges when the difference between
-#' successive iterations is ≤ 1.
+#' successive iterations is less than or equal to 1.
 #'
 #' **AS (Arcsine) Method:**
 #' Uses the variance-stabilizing arcsine transformation:
@@ -68,7 +68,7 @@
 #' 1. Starts with the AN method's sample size as initial value
 #' 2. Incrementally increases n2 by 1
 #' 3. Calculates exact power using hypergeometric distribution
-#' 4. Stops when power ≥ 1 - β
+#' 4. Stops when power is greater than or equal to 1 - beta
 #'
 #' Note: Due to the saw-tooth nature of exact power (power does not increase
 #' monotonically with sample size), linear extrapolation is inappropriate for
@@ -96,25 +96,20 @@
 #' # Fisher's exact test
 #' ss1BinaryApprox(p1 = 0.6, p2 = 0.4, r = 2, alpha = 0.025, beta = 0.1, Test = "Fisher")
 #'
-#' # Compare all methods
-#' methods <- c("AN", "ANc", "AS", "ASc", "Fisher")
-#' do.call(rbind, lapply(methods, function(m) {
-#'   ss1BinaryApprox(p1 = 0.6, p2 = 0.4, r = 1, alpha = 0.025, beta = 0.1, Test = m)
-#' }))
-#'
 #' @export
 #' @importFrom stats qnorm dbinom pbinom
 ss1BinaryApprox <- function(p1, p2, r, alpha, beta, Test = "AN") {
 
   # Input validation
-  if (any(p1 <= 0) || any(p1 >= 1)) {
+  if (length(p1) != 1 || length(p2) != 1 || length(r) != 1 ||
+      length(alpha) != 1 || length(beta) != 1) {
+    stop("All parameters must be scalar values")
+  }
+  if (p1 <= 0 || p1 >= 1) {
     stop("p1 must be in (0, 1)")
   }
-  if (any(p2 <= 0) || any(p2 >= 1)) {
+  if (p2 <= 0 || p2 >= 1) {
     stop("p2 must be in (0, 1)")
-  }
-  if (length(p1) != 1 || length(p2) != 1) {
-    stop("p1 and p2 must be scalar values. For co-primary endpoints, use ss2BinaryApprox().")
   }
   if (r <= 0) {
     stop("r must be positive")
@@ -128,116 +123,85 @@ ss1BinaryApprox <- function(p1, p2, r, alpha, beta, Test = "AN") {
   if (!Test %in% c("AN", "ANc", "AS", "ASc", "Fisher")) {
     stop("Test must be one of: AN, ANc, AS, ASc, Fisher")
   }
+  if (p1 <= p2) {
+    stop("p1 must be greater than p2 for superiority trial")
+  }
 
-  # Calculate basic quantities
-  kappa <- 1 / r  # κ = n2/n1
+  # Calculate parameters
+  kappa <- 1 / r
+  delta <- p1 - p2
   theta1 <- 1 - p1
   theta2 <- 1 - p2
-  delta <- p1 - p2
+  z_alpha <- qnorm(alpha)
+  z_beta <- qnorm(beta)
 
-  # Standard normal quantiles
-  z_alpha <- qnorm(1 - alpha)
-  z_beta <- qnorm(1 - beta)
-
-  if (Test == "AN") {
-    # Asymptotic Normal method without continuity correction
-    # Pooled proportion under H0
+  if (Test == "AN" | Test == "ANc") {
+    # Pooled proportion
     p_pooled <- (r * p1 + p2) / (1 + r)
-
-    # Variance under H0
     v0 <- sqrt(p_pooled * (1 - p_pooled))
-
-    # Variance under H1
     v1 <- sqrt((p1 * theta1 / r + p2 * theta2) / (1 + 1 / r))
 
-    # Sample size for group 2
+    # Initial sample size (AN method)
     n2 <- ceiling((1 + 1 / r) / delta ^ 2 * (z_alpha * v0 + z_beta * v1) ^ 2)
 
-  } else if (Test == "ANc") {
-    # Asymptotic Normal method with continuity correction
-    # This requires iterative calculation because the correction depends on n
+    if (Test == "ANc") {
+      # Iterative calculation for continuity correction
+      n2_prev <- 0
 
-    # Initial estimate (without correction)
-    p_pooled <- (r * p1 + p2) / (1 + r)
-    v0 <- sqrt(p_pooled * (1 - p_pooled))
-    v1 <- sqrt((p1 * theta1 / r + p2 * theta2) / (1 + 1 / r))
-    n2_initial <- ceiling((1 + 1 / r) / delta ^ 2 * (z_alpha * v0 + z_beta * v1) ^ 2)
+      while (abs(n2 - n2_prev) > 1) {
+        n2_prev <- n2
+        n1 <- ceiling(r * n2)
 
-    # Iterative refinement using while loop
-    n2 <- n2_initial
-    n2_prev <- n2 + 10  # Initialize to force at least one iteration
-    max_iter <- 100
-    iter <- 0
+        # Continuity correction term
+        cc <- 1 / (2 * n1) + 1 / (2 * n2)
 
-    while (abs(n2 - n2_prev) > 1 && iter < max_iter) {
-      iter <- iter + 1
-      n2_prev <- n2
+        # Check if correction leads to valid values
+        if (delta - cc <= 0) {
+          # Correction leads to invalid values, use previous value
+          n2 <- n2_prev
+          break
+        }
 
-      # Continuity correction term
-      cc <- (1 + kappa) / (2 * kappa * n2)
+        # Adjusted treatment effect
+        delta_adj <- delta - cc
 
-      # Adjusted effect size
-      delta_adj <- delta - cc
-
-      if (delta_adj <= 0) {
-        # Correction is too large, use previous value
-        n2 <- n2_prev
-        break
+        # Recalculate n2
+        n2 <- ceiling((1 + 1 / r) / delta_adj ^ 2 * (z_alpha * v0 + z_beta * v1) ^ 2)
       }
-
-      # Recalculate n2
-      n2 <- ceiling((1 + 1 / r) / delta_adj ^ 2 * (z_alpha * v0 + z_beta * v1) ^ 2)
     }
 
-  } else if (Test == "AS") {
-    # Arcsine transformation without continuity correction
-    # The arcsine transformation stabilizes the variance
-
-    # Transformed difference
+  } else if (Test == "AS" | Test == "ASc") {
+    # Arcsine transformation
     delta_as <- asin(sqrt(p1)) - asin(sqrt(p2))
 
-    # Sample size (variance is approximately 1/(4n) for arcsine-transformed proportions)
+    # Initial sample size (AS method)
     n2 <- ceiling((z_alpha + z_beta) ^ 2 / (4 * delta_as ^ 2) * (1 + kappa) / kappa)
 
-  } else if (Test == "ASc") {
-    # Arcsine transformation with continuity correction
+    if (Test == "ASc") {
+      # Iterative calculation for continuity correction
+      n2_prev <- 0
 
-    # Initial estimate
-    delta_as <- asin(sqrt(p1)) - asin(sqrt(p2))
-    n2_initial <- ceiling((z_alpha + z_beta) ^ 2 / (4 * delta_as ^ 2) * (1 + kappa) / kappa)
+      while (abs(n2 - n2_prev) > 1) {
+        n2_prev <- n2
+        n1 <- ceiling(r * n2)
 
-    # Iterative refinement using while loop
-    n2 <- n2_initial
-    n2_prev <- n2 + 10  # Initialize to force at least one iteration
-    max_iter <- 100
-    iter <- 0
+        # Transformed proportions with continuity correction
+        p1_c <- (n1 * p1 + 0.5) / (n1 + 1)
+        p2_c <- (n2 * p2 - 0.5) / (n2 + 1)
 
-    while (abs(n2 - n2_prev) > 1 && iter < max_iter) {
-      iter <- iter + 1
-      n2_prev <- n2
+        # Check if correction leads to valid values
+        if (p1_c <= 0 || p1_c >= 1 || p2_c <= 0 || p2_c >= 1) {
+          # Correction leads to invalid values, use previous value
+          n2 <- n2_prev
+          break
+        }
 
-      n1_temp <- ceiling(r * n2)
+        # Adjusted transformed difference
+        delta_as_adj <- asin(sqrt(p1_c)) - asin(sqrt(p2_c))
 
-      # Continuity correction terms
-      c1 <- -1 / (2 * n1_temp)
-      c2 <- 1 / (2 * n2)
-
-      # Corrected values
-      p1_c <- p1 + c1
-      p2_c <- p2 + c2
-
-      # Check validity
-      if (p1_c <= 0 || p1_c >= 1 || p2_c <= 0 || p2_c >= 1) {
-        # Correction leads to invalid values, use previous value
-        n2 <- n2_prev
-        break
+        # Recalculate n2
+        n2 <- ceiling((z_alpha + z_beta) ^ 2 / (4 * delta_as_adj ^ 2) * (1 + kappa) / kappa)
       }
-
-      # Adjusted transformed difference
-      delta_as_adj <- asin(sqrt(p1_c)) - asin(sqrt(p2_c))
-
-      # Recalculate n2
-      n2 <- ceiling((z_alpha + z_beta) ^ 2 / (4 * delta_as_adj ^ 2) * (1 + kappa) / kappa)
     }
 
   } else {  # Test == "Fisher"
@@ -278,5 +242,7 @@ ss1BinaryApprox <- function(p1, p2, r, alpha, beta, Test = "AN") {
 
   # Return result as a data frame
   result <- data.frame(p1, p2, r, alpha, beta, Test, n1, n2, N)
+  class(result) <- c("twoCoprimary", "data.frame")
+
   return(result)
 }

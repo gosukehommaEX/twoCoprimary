@@ -1,3 +1,4 @@
+
 #' Power Calculation for Two Co-Primary Endpoints (Count and Continuous)
 #'
 #' Calculates the power for a two-arm superiority trial with one overdispersed
@@ -17,7 +18,7 @@
 #' @param rho2 Correlation between count and continuous outcomes for control group
 #' @param alpha One-sided significance level (typically 0.025 or 0.05)
 #'
-#'#' @return A data frame with the following columns:
+#' @return A data frame with the following columns:
 #'   \item{n1}{Sample size for group 1}
 #'   \item{n2}{Sample size for group 2}
 #'   \item{r1}{Mean rate in group 1 for count endpoint}
@@ -108,6 +109,37 @@
 power2MixedCountContinuous <- function(n1, n2, r1, r2, nu, t, mu1, mu2, sd,
                                        rho1, rho2, alpha) {
 
+  # Input validation
+  if (length(n1) != 1 || length(n2) != 1) {
+    stop("n1 and n2 must be scalar values")
+  }
+  if (n1 <= 0 || n1 != round(n1)) {
+    stop("n1 must be a positive integer")
+  }
+  if (n2 <= 0 || n2 != round(n2)) {
+    stop("n2 must be a positive integer")
+  }
+  if (length(r1) != 1 || length(r2) != 1 || length(nu) != 1 ||
+      length(t) != 1 || length(mu1) != 1 || length(mu2) != 1 ||
+      length(sd) != 1 || length(rho1) != 1 || length(rho2) != 1 || length(alpha) != 1) {
+    stop("All parameters must be scalar values")
+  }
+  if (r1 <= 0 || r2 <= 0) {
+    stop("r1 and r2 must be positive")
+  }
+  if (nu <= 0) {
+    stop("nu must be positive")
+  }
+  if (t <= 0) {
+    stop("t must be positive")
+  }
+  if (sd <= 0) {
+    stop("sd must be positive")
+  }
+  if (alpha <= 0 || alpha >= 1) {
+    stop("alpha must be in (0, 1)")
+  }
+
   # Calculate allocation ratio
   kappa <- n1 / n2
 
@@ -116,14 +148,14 @@ power2MixedCountContinuous <- function(n1, n2, r1, r2, nu, t, mu1, mu2, sd,
   lambda2 <- r2 * t
 
   # Check that rho1 is within valid bounds
-  bounds1 <- corrbound2MixedContinuousCount(lambda1, nu, mu1, sd)
+  bounds1 <- corrbound2MixedCountContinuous(lambda1, nu, mu1, sd)
   if (rho1 < bounds1[1] | rho1 > bounds1[2]) {
     stop(paste0("rho1 must be within [", round(bounds1[1], 4), ", ",
                 round(bounds1[2], 4), "]"))
   }
 
   # Check that rho2 is within valid bounds
-  bounds2 <- corrbound2MixedContinuousCount(lambda2, nu, mu2, sd)
+  bounds2 <- corrbound2MixedCountContinuous(lambda2, nu, mu2, sd)
   if (rho2 < bounds2[1] | rho2 > bounds2[2]) {
     stop(paste0("rho2 must be within [", round(bounds2[1], 4), ", ",
                 round(bounds2[2], 4), "]"))
@@ -181,5 +213,7 @@ power2MixedCountContinuous <- function(n1, n2, r1, r2, nu, t, mu1, mu2, sd,
     n1, n2, r1, r2, nu, t, mu1, mu2, sd, rho1, rho2, alpha,
     powerCount = power1and2[1], powerCont = power1and2[2], powerCoprimary
   )
+  class(result) <- c("twoCoprimary", "data.frame")
+
   return(result)
 }

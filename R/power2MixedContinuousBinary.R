@@ -43,54 +43,18 @@
 #' binary variable is derived from a latent continuous variable via dichotomization
 #' at a threshold point.
 #'
-#' **Notation:**
-#' - Group 1 corresponds to test group (T), Group 2 corresponds to control group (C)
-#' - κ (kappa) = n2/n1: allocation ratio (control/test)
-#' - n = n1: sample size in test group
-#' - π1, π2: response probabilities in groups 1 and 2
-#' - θ1 = 1 - π1, θ2 = 1 - π2: non-response probabilities
+#' **For Fisher's exact test**, Monte Carlo simulation is used because exact calculation
+#' is computationally intensive. The continuous endpoint is analyzed using t-test,
+#' and the binary endpoint uses Fisher's exact test.
 #'
-#' For the continuous endpoint, the standardized test statistic is:
-#' \deqn{Z_{cont} = \frac{\delta}{\sigma} \sqrt{\frac{\kappa n}{1+\kappa}}}
+#' **For asymptotic methods (AN, ANc, AS, ASc)**, analytical formulas are used based
+#' on bivariate normal approximation. The correlation between test statistics depends
+#' on the biserial correlation rho and the specific testing method.
 #'
-#' For the binary endpoint (AN method), the test statistic uses:
-#' \deqn{v_{k0} = \sqrt{\frac{(\pi_1 + \kappa\pi_2)(\theta_1 + \kappa\theta_2)}{\kappa(1+\kappa)}}}
-#' \deqn{v_k = \sqrt{\frac{\kappa\pi_1\theta_1 + \pi_2\theta_2}{\kappa}}}
-#'
-#' The correlation between the two test statistics (continuous and binary) is:
-#' \deqn{\gamma = \frac{\kappa \rho \xi_1 + \rho \xi_2}{\sqrt{1+\kappa}\sqrt{\kappa\pi_1\theta_1 + \pi_2\theta_2}}}
-#' where ξ_1 = φ(Φ^{-1}(1-π_1)) and ξ_2 = φ(Φ^{-1}(1-π_2)) are the standard normal
-#' density values at the dichotomization thresholds. This γ represents the correlation
-#' between the standardized test statistics Z*_cont and Z*_bin (Equation 1 in paper).
-#'
-#' Note: ρ is the biserial correlation between the latent continuous variable
-#' underlying the binary endpoint and the observed continuous endpoint, not the
-#' point-biserial correlation between the observed binary and continuous variables.
-#' The observed correlation is given by Equation (1): Corr(Y_cont, Y_bin) = ρξ/√(πθ),
-#' which is always smaller than ρ in absolute value.
-#'
-#' **Fisher's Exact Test:**
-#' When Test = "Fisher", Monte Carlo simulation is used to estimate power. For each
-#' replication, latent bivariate normal variables are generated using rmvnorm(), the
-#' binary variable is dichotomized, and both t-test (for continuous) and Fisher's
-#' exact test (for binary) are performed. The overall power is the proportion of
-#' replications where both tests are significant at the α level. Use set.seed()
-#' before calling this function for reproducible results with Fisher's method.
-#'
-#' The implementation uses a fixed cutoff point (g = 0) and varies the means of
-#' latent variables to achieve different response probabilities. This is equivalent
-#' to using varying cutoff points with fixed means, and is the standard approach
-#' in biserial correlation models. For group i with response probability πᵢ,
-#' the latent variable has mean μᵢ = Φ⁻¹(πᵢ) and variance 1, with P(X ≥ 0) = Φ(μᵢ) = πᵢ.
-#'
-#' **Note on Table 2 in Supporting Information:**
-#' There is a typographical error in the original paper's Table 2 for Arcsine(CC)
-#' method. The second term in the numerator should use πCk'θCk' instead of πTk'θTk'.
-#' This implementation uses the corrected formula.
-#'
-#' **Note on Ratios:**
-#' In the paper, c*₁/c*₂ represents the ratio of critical values for the two endpoints.
-#' When c*₁/c*₂ ≈ 1, the individual powers of the two endpoints are approximately equal
+#' **Biserial Correlation:**
+#' The biserial correlation rho represents the correlation between the latent continuous
+#' variable underlying the binary endpoint and the observed continuous endpoint. This is
+#' not the same as the point-biserial correlation observed in the data.
 #'
 #' @references
 #' Sozu, T., Sugimoto, T., & Hamasaki, T. (2012). Sample size determination in
@@ -98,98 +62,53 @@
 #' and binary variables. \emph{Biometrical Journal}, 54(5), 716-729.
 #'
 #' @examples
-#' # Example 1: Reproduce Table 2 from Sozu et al. (2012)
-#' # mTSS (continuous) and ACR50 (binary) with correlation ρ = 0.0
-#' power2MixedContinuousBinary(
-#'   n1 = 346,
-#'   n2 = 346,
-#'   delta = 4.4,
-#'   sd = 19.0,
-#'   p1 = 0.59,
-#'   p2 = 0.46,
-#'   rho = 0.0,
-#'   alpha = 0.025,
-#'   Test = "AN"
-#' )
-#'
-#' # Example 2: Same setting with correlation ρ = 0.8
-#' power2MixedContinuousBinary(
-#'   n1 = 323,
-#'   n2 = 323,
-#'   delta = 4.4,
-#'   sd = 19.0,
-#'   p1 = 0.59,
-#'   p2 = 0.46,
-#'   rho = 0.8,
-#'   alpha = 0.025,
-#'   Test = "AN"
-#' )
-#'
-#' # Example 3: Normal approximation with continuity correction
-#' power2MixedContinuousBinary(
-#'   n1 = 150,
-#'   n2 = 150,
-#'   delta = 0.3,
-#'   sd = 1.0,
-#'   p1 = 0.65,
-#'   p2 = 0.50,
-#'   rho = 0.5,
-#'   alpha = 0.025,
-#'   Test = "ANc"
-#' )
-#'
-#' # Example 4: Arcsine transformation without continuity correction
-#' power2MixedContinuousBinary(
-#'   n1 = 180,
-#'   n2 = 120,
-#'   delta = 4.5,
-#'   sd = 18.0,
-#'   p1 = 0.70,
-#'   p2 = 0.55,
-#'   rho = 0.4,
-#'   alpha = 0.025,
-#'   Test = "AS"
-#' )
-#'
-#' # Example 5: Arcsine transformation with continuity correction
+#' # Power calculation using asymptotic normal method
 #' power2MixedContinuousBinary(
 #'   n1 = 100,
 #'   n2 = 100,
-#'   delta = 0.4,
-#'   sd = 1.2,
-#'   p1 = 0.55,
-#'   p2 = 0.40,
-#'   rho = 0.3,
+#'   delta = 0.5,
+#'   sd = 1,
+#'   p1 = 0.6,
+#'   p2 = 0.4,
+#'   rho = 0.5,
 #'   alpha = 0.025,
-#'   Test = "ASc"
+#'   Test = 'AN'
 #' )
 #'
 #' \donttest{
-#' # Example 6: Fisher's exact test (Monte Carlo simulation)
-#' # Useful for small sample sizes or rare events
-#' set.seed(12345)  # for reproducibility
+#' # Power calculation with Fisher's exact test (computationally intensive)
 #' power2MixedContinuousBinary(
 #'   n1 = 50,
 #'   n2 = 50,
 #'   delta = 0.5,
-#'   sd = 1.0,
-#'   p1 = 0.4,
-#'   p2 = 0.2,
-#'   rho = 0.3,
+#'   sd = 1,
+#'   p1 = 0.6,
+#'   p2 = 0.4,
+#'   rho = 0.5,
 #'   alpha = 0.025,
-#'   Test = "Fisher",
-#'   nMC = 10000
+#'   Test = 'Fisher',
+#'   nMC = 5000
 #' )
 #' }
 #'
 #' @export
-#' @importFrom mvtnorm pmvnorm GenzBretz rmvnorm
-#' @importFrom stats qnorm pnorm dnorm phyper pt
+#' @importFrom mvtnorm pmvnorm rmvnorm GenzBretz
+#' @importFrom stats qnorm pnorm qt pt dhyper phyper
 power2MixedContinuousBinary <- function(n1, n2, delta, sd, p1, p2, rho, alpha, Test, nMC = 10000) {
 
   # Input validation
-  if (n1 <= 0 || n2 <= 0) {
-    stop("Sample sizes must be positive")
+  if (length(n1) != 1 || length(n2) != 1) {
+    stop("n1 and n2 must be scalar values")
+  }
+  if (n1 <= 0 || n1 != round(n1)) {
+    stop("n1 must be a positive integer")
+  }
+  if (n2 <= 0 || n2 != round(n2)) {
+    stop("n2 must be a positive integer")
+  }
+  if (length(delta) != 1 || length(sd) != 1 || length(p1) != 1 ||
+      length(p2) != 1 || length(rho) != 1 || length(alpha) != 1) {
+    stop("All parameters must be scalar values")
   }
   if (delta <= 0) {
     stop("delta must be positive")
@@ -212,9 +131,6 @@ power2MixedContinuousBinary <- function(n1, n2, delta, sd, p1, p2, rho, alpha, T
   if (!Test %in% c("AN", "ANc", "AS", "ASc", "Fisher")) {
     stop("Test must be one of: AN, ANc, AS, ASc, Fisher")
   }
-  if (Test == "Fisher" && nMC < 1000) {
-    warning("nMC should be at least 1000 for reliable results with Fisher's exact test")
-  }
 
   # ===== FISHER'S EXACT TEST (MONTE CARLO SIMULATION) =====
   if (Test == "Fisher") {
@@ -225,23 +141,16 @@ power2MixedContinuousBinary <- function(n1, n2, delta, sd, p1, p2, rho, alpha, T
     muT_binary <- qnorm(p1)  # mean for group 1 latent binary variable
     muC_binary <- qnorm(p2)  # mean for group 2 latent binary variable
 
-    # Fixed cutoff point for dichotomization
-    g <- 0
+    # Dichotomy point for latent variable
+    g <- qnorm(1 - p2)
 
-    # Mean vectors for latent variables under alternative hypothesis
-    muT <- c(delta, muT_binary)  # continuous has mean delta, binary has mean μT
-    muC <- c(0, muC_binary)      # continuous has mean 0, binary has mean μC
+    # Mean vectors for test and control groups
+    muT <- c(delta, qnorm(1 - p1))
+    muC <- c(0, qnorm(1 - p2))
 
-    # Covariance matrices (biserial correlation structure)
-    SigmaT <- matrix(c(
-      sd ^ 2, rho * sd,
-      rho * sd, 1
-    ), nrow = 2, byrow = TRUE)
-
-    SigmaC <- matrix(c(
-      sd ^ 2, rho * sd,
-      rho * sd, 1
-    ), nrow = 2, byrow = TRUE)
+    # Covariance matrices (latent scale)
+    SigmaT <- matrix(c(sd ^ 2, rho * sd, rho * sd, 1), nrow = 2)
+    SigmaC <- matrix(c(sd ^ 2, rho * sd, rho * sd, 1), nrow = 2)
 
     # Monte Carlo simulation (vectorized for efficiency)
     # Generate all latent variables at once
@@ -419,5 +328,7 @@ power2MixedContinuousBinary <- function(n1, n2, delta, sd, p1, p2, rho, alpha, T
     n1, n2, delta, sd, p1, p2, rho, alpha, Test, nMC,
     powerCont, powerBin, powerCoprimary
   )
+  class(result) <- c("twoCoprimary", "data.frame")
+
   return(result)
 }

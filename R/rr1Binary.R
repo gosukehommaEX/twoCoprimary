@@ -68,6 +68,26 @@
 #' @importFrom stats pnorm dbinom phyper dhyper
 rr1Binary <- function(n1, n2, alpha, Test) {
 
+  # Input validation
+  if (length(n1) != 1 || length(n2) != 1) {
+    stop("n1 and n2 must be scalar values")
+  }
+  if (n1 <= 0 || n1 != round(n1)) {
+    stop("n1 must be a positive integer")
+  }
+  if (n2 <= 0 || n2 != round(n2)) {
+    stop("n2 must be a positive integer")
+  }
+  if (length(alpha) != 1) {
+    stop("alpha must be a scalar value")
+  }
+  if (alpha <= 0 || alpha >= 1) {
+    stop("alpha must be in (0, 1)")
+  }
+  if (!Test %in% c("Chisq", "Fisher", "Fisher-midP", "Z-pool", "Boschloo")) {
+    stop("Test must be one of: Chisq, Fisher, Fisher-midP, Z-pool, Boschloo")
+  }
+
   if ((Test == 'Chisq') | (Test == 'Z-pool')) {
 
     # Calculate test statistics for chi-squared test over all combinations
