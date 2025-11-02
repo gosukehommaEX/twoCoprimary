@@ -5,15 +5,15 @@ Version: 0.1.0
 Authors@R: person(given = "Gosuke",
                   family = "Homma",
                   role = c("aut", "cre"),
-                  email = "my.name.is.gosuke@gmail.com",
-                  comment = c(ORCID = "YOUR-ORCID-ID"))
+                  email = "my.name.is.gosuke@gmail.com")
 Description: Provides functions to calculate sample size and power for clinical 
-    trials with two co-primary endpoints. Supports both continuous endpoints 
-    (Sozu et al. 2011 <doi:10.1080/10543406.2011.551329>) and binary endpoints 
+    trials with two co-primary endpoints. Supports continuous endpoints 
+    (Sozu et al. 2011 <doi:10.1080/10543406.2011.551329>), binary endpoints 
     using approximate methods (Sozu et al. 2010 <doi:10.1002/sim.3972>) and 
-    exact methods (Homma and Yoshida 2025 <doi:10.1177/09622802251368697>). 
-    Implements linear extrapolation approach (Hamasaki et al. 2013 
-    <doi:10.1002/pst.1545>) for iterative sample size determination.
+    exact methods (Homma and Yoshida 2025 <doi:10.1177/09622802251368697>), 
+    mixed continuous and binary endpoints (Sozu et al. 2012 
+    <doi:10.1002/bimj.201100221>), and mixed count and continuous endpoints 
+    (Homma and Yoshida 2024 <doi:10.1002/pst.2337>).
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
