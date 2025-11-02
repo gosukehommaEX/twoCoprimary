@@ -1,0 +1,154 @@
+---
+title: "Sample Size for Two Binary Co-Primary Endpoints (Approximate Methods)"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Sample Size for Two Binary Co-Primary Endpoints (Approximate Methods)}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(twoCoprimary)
+library(dplyr)
+library(tibble)
+```
+
+## Overview
+
+This vignette demonstrates sample size calculations for clinical trials with two binary co-primary endpoints using approximate methods (asymptotic normal approximation), following Sozu et al. (2011, Table 4).
+
+## Replication of Published Results
+
+We replicate selected results from **Table 4** of Sozu et al. (2011) for equal proportions between endpoints.
+
+### Settings
+
+- **Design**: Two-arm trial with equal allocation (r = 1)
+- **Significance level**: α = 0.025 (one-sided)
+- **Target power**: 1 - β = 0.80
+- **Method**: Normal approximation without continuity correction
+
+### Sample Size Calculations
+
+```{r table4_replication}
+# Parameters from Sozu et al. (2011) Table 4 - Equal proportions
+scenarios <- tribble(
+  ~p11, ~p21, ~p12, ~p22, ~rho12,
+  0.55, 0.50, 0.55, 0.50, 0.0,
+  0.55, 0.50, 0.55, 0.50, 0.3,
+  0.55, 0.50, 0.55, 0.50, 0.5,
+  0.55, 0.50, 0.55, 0.50, 0.8,
+  0.70, 0.65, 0.70, 0.65, 0.0,
+  0.70, 0.65, 0.70, 0.65, 0.5,
+  0.70, 0.65, 0.70, 0.65, 0.8
+)
+
+# Calculate sample sizes
+results <- scenarios %>%
+  rowwise() %>%
+  mutate(
+    ss_result = list(ss2BinaryApprox(
+      p11 = p11,
+      p12 = p12,
+      p21 = p21,
+      p22 = p22,
+      rho1 = rho12,
+      rho2 = rho12,
+      r = 1,
+      alpha = 0.025,
+      beta = 0.2,
+      Test = "AN"
+    )),
+    n_per_group = ss_result$n2,
+    N = ss_result$N
+  ) %>%
+  ungroup() %>%
+  select(p11, p21, p12, p22, rho12, n_per_group, N)
+
+# Display results
+results %>%
+  mutate(
+    across(c(p11, p21, p12, p22), ~sprintf("%.2f", .)),
+    rho12 = sprintf("%.1f", rho12)
+  ) %>%
+  knitr::kable(
+    col.names = c("π₁₁", "π₂₁", "π₁₂", "π₂₂", "ρ₁₂", "n per group", "Total N"),
+    caption = "Sample size per group for two binary co-primary endpoints (equal proportions)",
+    align = "c"
+  )
+```
+
+### Comparison with Published Values
+
+Expected values from Sozu et al. (2011) Table 4:
+- (0.55, 0.50), ρ = 0.0: n = 2055
+- (0.55, 0.50), ρ = 0.3: n = 2003
+- (0.55, 0.50), ρ = 0.5: n = 1951
+- (0.55, 0.50), ρ = 0.8: n = 1826
+- (0.70, 0.65), ρ = 0.0: n = 1807
+- (0.70, 0.65), ρ = 0.5: n = 1716
+- (0.70, 0.65), ρ = 0.8: n = 1606
+
+Our implementation closely matches the published values.
+
+### Unequal Proportions
+
+```{r unequal_proportions}
+# Unequal proportions scenarios
+scenarios_unequal <- tribble(
+  ~p11, ~p21, ~p12, ~p22, ~rho12,
+  0.60, 0.50, 0.60, 0.50, 0.0,
+  0.60, 0.50, 0.60, 0.50, 0.5,
+  0.60, 0.50, 0.60, 0.50, 0.8,
+  0.75, 0.65, 0.75, 0.65, 0.0,
+  0.75, 0.65, 0.75, 0.65, 0.5,
+  0.75, 0.65, 0.75, 0.65, 0.8
+)
+
+results_unequal <- scenarios_unequal %>%
+  rowwise() %>%
+  mutate(
+    ss_result = list(ss2BinaryApprox(
+      p11 = p11, p12 = p12,
+      p21 = p21, p22 = p22,
+      rho1 = rho12, rho2 = rho12,
+      r = 1, alpha = 0.025, beta = 0.2,
+      Test = "AN"
+    )),
+    n_per_group = ss_result$n2
+  ) %>%
+  ungroup() %>%
+  select(p11, p21, p12, p22, rho12, n_per_group)
+
+results_unequal %>%
+  mutate(
+    across(c(p11, p21, p12, p22), ~sprintf("%.2f", .)),
+    rho12 = sprintf("%.1f", rho12)
+  ) %>%
+  knitr::kable(
+    col.names = c("π₁₁", "π₂₁", "π₁₂", "π₂₂", "ρ₁₂", "n per group"),
+    caption = "Sample size per group (larger treatment differences)",
+    align = "c"
+  )
+```
+
+Expected values: (0.60, 0.50) with ρ = 0.0: n = 509; ρ = 0.8: n = 452
+
+### Key Findings
+
+1. **Effect of correlation**: Similar to continuous endpoints, higher correlation reduces required sample size by approximately 11% when proportions are equal.
+
+2. **Larger treatment differences**: When the treatment effect is larger (e.g., 0.10 vs. 0.05 difference), required sample sizes are much smaller.
+
+## References
+
+Sozu, T., Sugimoto, T., & Hamasaki, T. (2010). Sample size determination in clinical trials with multiple co-primary binary endpoints. *Statistics in Medicine*, 29(21), 2169-2179.
+
+Sozu, T., Sugimoto, T., & Hamasaki, T. (2011). Sample size determination in superiority clinical trials with multiple co-primary correlated endpoints. *Journal of Biopharmaceutical Statistics*, 21(4), 650-668.

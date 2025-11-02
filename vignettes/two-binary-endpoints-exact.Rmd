@@ -1,0 +1,176 @@
+---
+title: "Sample Size for Two Binary Co-Primary Endpoints (Exact Methods)"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Sample Size for Two Binary Co-Primary Endpoints (Exact Methods)}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(twoCoprimary)
+library(dplyr)
+library(tibble)
+```
+
+## Overview
+
+This vignette demonstrates exact sample size and power calculations for clinical trials with two binary co-primary endpoints, following the methodology described in Homma and Yoshida (2025).
+
+## Replication of Published Results
+
+We replicate selected results from **Table 4** of Homma and Yoshida (2025), which provides required sample sizes for different exact testing methods.
+
+### Settings
+
+- **Response probabilities**: p₁₁ = p₁₂ = 0.54, p₂₁ = p₂₂ = 0.25
+- **Design**: Balanced design (r = 1)
+- **Significance level**: α = 0.025 (one-sided)
+- **Target power**: 1 - β = 0.90
+
+### Sample Size Calculations
+
+**Note**: These calculations may take several minutes to complete due to the exact nature of the methods.
+
+```{r table4_replication, cache=TRUE}
+# Parameters from Homma and Yoshida (2025) Table 4
+p11 <- 0.54
+p12 <- 0.54
+p21 <- 0.25
+p22 <- 0.25
+
+# Correlation scenarios
+rho_values <- c(0.0, 0.3, 0.5, 0.8)
+
+# Testing methods
+test_methods <- c("Chisq", "Fisher", "Boschloo")
+
+# Calculate sample sizes for each combination
+results <- expand.grid(
+  rho = rho_values,
+  Test = test_methods,
+  stringsAsFactors = FALSE
+) %>%
+  rowwise() %>%
+  mutate(
+    ss_result = list(ss2BinaryExact(
+      p11 = p11, p12 = p12,
+      p21 = p21, p22 = p22,
+      rho1 = rho, rho2 = rho,
+      r = 1,
+      alpha = 0.025,
+      beta = 0.1,
+      Test = Test
+    )),
+    N = ss_result$N,
+    # Calculate actual power
+    power = power2BinaryExact(
+      n1 = ss_result$n1,
+      n2 = ss_result$n2,
+      p11 = p11, p12 = p12,
+      p21 = p21, p22 = p22,
+      rho1 = rho, rho2 = rho,
+      alpha = 0.025,
+      Test = Test
+    )$powerCoprimary
+  ) %>%
+  ungroup() %>%
+  select(rho, Test, N, power)
+
+# Display results
+results %>%
+  mutate(
+    rho = sprintf("%.1f", rho),
+    power = sprintf("%.3f", power)
+  ) %>%
+  knitr::kable(
+    col.names = c("ρ", "Test", "Total N", "Exact Power"),
+    caption = "Required sample size and exact power for two binary co-primary endpoints",
+    align = "c"
+  )
+```
+
+### Comparison with Published Values
+
+Expected values from Homma and Yoshida (2025) Table 4 (r = 1, α = 0.025):
+
+| ρ   | Chisq       | Fisher      | Boschloo    |
+|-----|-------------|-------------|-------------|
+| 0.0 | 142 (0.902) | 152 (0.901) | 144 (0.905) |
+| 0.3 | 142 (0.906) | 150 (0.901) | 142 (0.903) |
+| 0.5 | 140 (0.905) | 150 (0.906) | 140 (0.902) |
+| 0.8 | 128 (0.900) | 144 (0.901) | 134 (0.901) |
+
+Our implementation closely matches the published values.
+
+### Key Findings
+
+1. **Test method comparison**: 
+   - Chisq and Boschloo tests typically require similar or slightly smaller sample sizes compared to Fisher's exact test
+   - All methods achieve the target power of 0.90
+
+2. **Effect of correlation**: Higher correlation reduces required sample size, but the reduction is limited (approximately 10% from ρ = 0 to ρ = 0.8)
+
+3. **Recommendation**: Homma and Yoshida (2025) recommend using **Boschloo's exact unconditional test** for clinical trials with two co-primary binary endpoints, especially for small to moderate sample sizes (total N < 400)
+
+## Power Calculation Example
+
+Calculate exact power for a given sample size using Boschloo test:
+
+```{r power_example}
+power_result <- power2BinaryExact(
+  n1 = 71,
+  n2 = 71,
+  p11 = 0.54,
+  p12 = 0.54,
+  p21 = 0.25,
+  p22 = 0.25,
+  rho1 = 0.5,
+  rho2 = 0.5,
+  alpha = 0.025,
+  Test = "Boschloo"
+)
+
+print(power_result)
+```
+
+## Comparison: Exact vs. Approximate Methods
+
+```{r comparison}
+# Approximate method
+ss_approx <- ss2BinaryApprox(
+  p11 = 0.54, p12 = 0.54,
+  p21 = 0.25, p22 = 0.25,
+  rho1 = 0.5, rho2 = 0.5,
+  r = 1, alpha = 0.025, beta = 0.1,
+  Test = "AN"
+)
+
+# Exact method (Boschloo)
+ss_exact <- ss2BinaryExact(
+  p11 = 0.54, p12 = 0.54,
+  p21 = 0.25, p22 = 0.25,
+  rho1 = 0.5, rho2 = 0.5,
+  r = 1, alpha = 0.025, beta = 0.1,
+  Test = "Boschloo"
+)
+
+tibble(
+  Method = c("Approximate (AN)", "Exact (Boschloo)"),
+  Total_N = c(ss_approx$N, ss_exact$N)
+) %>%
+  knitr::kable(align = "c", caption = "Sample size comparison: Approximate vs. Exact")
+```
+
+The exact method typically yields slightly different sample sizes compared to the asymptotic normal approximation, with the difference depending on the specific parameter values.
+
+## References
+
+Homma, G., & Yoshida, T. (2025). Exact power and sample size in clinical trials with two co-primary binary endpoints. *Statistical Methods in Medical Research*, 34(1), 1-19. https://doi.org/10.1177/09622802251368697

@@ -1,0 +1,192 @@
+---
+title: "Sample Size for Mixed Continuous and Binary Co-Primary Endpoints"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Sample Size for Mixed Continuous and Binary Co-Primary Endpoints}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(twoCoprimary)
+library(dplyr)
+library(tibble)
+```
+
+## Overview
+
+This vignette demonstrates sample size calculations for clinical trials with one continuous and one binary co-primary endpoint, following the methodology described in Sozu et al. (2012).
+
+## Replication of Published Results
+
+We replicate selected results from **Table 1** and **Table 2** of Sozu et al. (2012).
+
+### Table 1: Equal Individual Power (c₁*/c₂* = 1)
+
+Settings:
+- **Design**: Two-arm trial with equal allocation (κ = 1)
+- **Significance level**: α = 0.025 (one-sided)
+- **Target power**: 1 - β = 0.80
+- **Equal individual power**: c₁*/c₂* = 1
+
+```{r table1_replication}
+# Parameters for equal individual power scenarios
+scenarios_t1 <- tribble(
+  ~delta1_star, ~p_T2, ~p_C2, ~rho12,
+  0.100,        0.55,  0.50,  0.0,
+  0.100,        0.55,  0.50,  0.3,
+  0.100,        0.55,  0.50,  0.5,
+  0.100,        0.55,  0.50,  0.8,
+  0.201,        0.60,  0.50,  0.0,
+  0.201,        0.60,  0.50,  0.5,
+  0.201,        0.60,  0.50,  0.8
+)
+
+# Calculate sample sizes
+results_t1 <- scenarios_t1 %>%
+  rowwise() %>%
+  mutate(
+    ss_result = list(ss2MixedContinuousBinary(
+      delta = delta1_star,
+      sd = 1,  # Standardized effect size
+      p1 = p_T2,
+      p2 = p_C2,
+      rho = rho12,
+      r = 1,
+      alpha = 0.025,
+      beta = 0.2,
+      Test = "AN"
+    )),
+    n_per_group = ss_result$n2,
+    N = ss_result$N
+  ) %>%
+  ungroup() %>%
+  select(delta1_star, p_T2, p_C2, rho12, n_per_group, N)
+
+# Display results
+results_t1 %>%
+  mutate(
+    delta1_star = sprintf("%.3f", delta1_star),
+    p_T2 = sprintf("%.2f", p_T2),
+    p_C2 = sprintf("%.2f", p_C2),
+    rho12 = sprintf("%.1f", rho12)
+  ) %>%
+  knitr::kable(
+    col.names = c("δ₁*", "π_T2", "π_C2", "ρ₁₂", "n per group", "Total N"),
+    caption = "Sample size for mixed endpoints with equal individual power (c₁*/c₂* = 1)",
+    align = "c"
+  )
+```
+
+### Comparison with Published Values (Table 1)
+
+Expected values from Sozu et al. (2012) Table 1:
+- δ₁* = 0.100, (0.55, 0.50), ρ = 0.0: n = 2055
+- δ₁* = 0.100, (0.55, 0.50), ρ = 0.3: n = 2016
+- δ₁* = 0.100, (0.55, 0.50), ρ = 0.5: n = 1980
+- δ₁* = 0.100, (0.55, 0.50), ρ = 0.8: n = 1904
+- δ₁* = 0.201, (0.60, 0.50), ρ = 0.0: n = 509
+- δ₁* = 0.201, (0.60, 0.50), ρ = 0.5: n = 490
+- δ₁* = 0.201, (0.60, 0.50), ρ = 0.8: n = 472
+
+### Table 2: Application Example (PREMIER Study)
+
+The PREMIER study evaluated adalimumab for rheumatoid arthritis with two co-primary endpoints:
+- **mTSS** (modified Total Sharp Score): continuous endpoint measuring radiographic progression
+- **ACR50**: binary endpoint (≥50% improvement per American College of Rheumatology criteria)
+
+```{r table2_replication}
+# Parameters from PREMIER study (Sozu et al. 2012 Table 2)
+# ACR50: (πT2, πC2) = (0.59, 0.46), difference = 0.13
+# mTSS: δ1 = 4.4, σ1 varies
+
+scenarios_t2 <- tribble(
+  ~delta1, ~sd1, ~p_T2, ~p_C2, ~rho12,
+  4.4,     19.0, 0.59,  0.46,  0.0,
+  4.4,     19.0, 0.59,  0.46,  0.3,
+  4.4,     19.0, 0.59,  0.46,  0.5,
+  4.4,     19.0, 0.59,  0.46,  0.8,
+  4.4,     21.0, 0.59,  0.46,  0.0,
+  4.4,     21.0, 0.59,  0.46,  0.5,
+  4.4,     21.0, 0.59,  0.46,  0.8
+)
+
+results_t2 <- scenarios_t2 %>%
+  rowwise() %>%
+  mutate(
+    ss_result = list(ss2MixedContinuousBinary(
+      delta = delta1,
+      sd = sd1,
+      p1 = p_T2,
+      p2 = p_C2,
+      rho = rho12,
+      r = 1,
+      alpha = 0.025,
+      beta = 0.2,
+      Test = "AN"
+    )),
+    n_per_group = ss_result$n2
+  ) %>%
+  ungroup() %>%
+  select(delta1, sd1, p_T2, p_C2, rho12, n_per_group)
+
+results_t2 %>%
+  mutate(
+    p_T2 = sprintf("%.2f", p_T2),
+    p_C2 = sprintf("%.2f", p_C2),
+    rho12 = sprintf("%.1f", rho12)
+  ) %>%
+  knitr::kable(
+    col.names = c("δ₁ (mTSS)", "σ₁", "π_T2 (ACR50)", "π_C2", "ρ₁₂", "n per group"),
+    caption = "Sample size for PREMIER study parameters",
+    align = "c"
+  )
+```
+
+### Comparison with Published Values (Table 2)
+
+Expected values from Sozu et al. (2012) Table 2:
+- σ₁ = 19.0, ρ = 0.0: n = 346
+- σ₁ = 19.0, ρ = 0.3: n = 340
+- σ₁ = 19.0, ρ = 0.5: n = 334
+- σ₁ = 19.0, ρ = 0.8: n = 323
+- σ₁ = 21.0, ρ = 0.0: n = 394
+- σ₁ = 21.0, ρ = 0.5: n = 384
+- σ₁ = 21.0, ρ = 0.8: n = 374
+
+### Key Findings
+
+1. **Effect of correlation**: When endpoints have approximately equal individual power, incorporating correlation into sample size calculation reduces required sample size by 5-7% (comparing ρ = 0.0 vs. ρ = 0.8).
+
+2. **Comparison with continuous-only endpoints**: The sample size reduction is smaller than for two continuous endpoints (~11%) because binary variables lose some information from the underlying latent continuous variable.
+
+3. **Unequal individual power**: When individual powers differ substantially (c₁*/c₂* = 3), the sample size is primarily determined by the endpoint with smaller individual power, and correlation has minimal impact.
+
+## Power Calculation Example
+
+```{r power_example}
+power_result <- power2MixedContinuousBinary(
+  n1 = 334,
+  n2 = 334,
+  delta = 4.4,
+  sd = 19.0,
+  p1 = 0.59,
+  p2 = 0.46,
+  rho = 0.5,
+  alpha = 0.025,
+  Test = "AN"
+)
+
+print(power_result)
+```
+
+## References
+
+Sozu, T., Sugimoto, T., & Hamasaki, T. (2012). Sample size determination in clinical trials with multiple co-primary endpoints including mixed continuous and binary variables. *Biometrical Journal*, 54(5), 716-729. https://doi.org/10.1002/bimj.201100221

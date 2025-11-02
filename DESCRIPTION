@@ -25,3 +25,11 @@ Imports:
     stats
 URL: https://github.com/gosukehommaEX/twoCoprimary
 BugReports: https://github.com/gosukehommaEX/twoCoprimary/issues
+Suggests: 
+    dplyr,
+    knitr,
+    rmarkdown,
+    testthat (>= 3.0.0),
+    tibble
+Config/testthat/edition: 3
+VignetteBuilder: knitr

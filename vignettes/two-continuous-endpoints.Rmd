@@ -1,0 +1,132 @@
+---
+title: "Sample Size and Power for Two Continuous Co-Primary Endpoints"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Sample Size and Power for Two Continuous Co-Primary Endpoints}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(twoCoprimary)
+library(dplyr)
+library(tibble)
+```
+
+## Overview
+
+This vignette demonstrates sample size and power calculations for clinical trials with two continuous co-primary endpoints, following the methodology described in Sozu et al. (2011).
+
+## Replication of Published Results
+
+We replicate selected results from **Table 1** of Sozu et al. (2011) to verify the accuracy of our implementation.
+
+### Settings
+
+- **Design**: Two-arm trial with equal allocation (r = 1)
+- **Significance level**: α = 0.025 (one-sided)
+- **Target power**: 1 - β = 0.80
+- **Analysis**: Variance assumed to be known
+
+### Sample Size Calculations
+
+```{r table1_replication}
+# Parameters from Sozu et al. (2011) Table 1
+scenarios <- tribble(
+  ~delta1_star, ~delta2_star, ~rho,
+  0.20,         0.20,         0.0,
+  0.20,         0.20,         0.3,
+  0.20,         0.20,         0.5,
+  0.20,         0.20,         0.8,
+  0.30,         0.30,         0.0,
+  0.30,         0.30,         0.5,
+  0.30,         0.30,         0.8
+)
+
+# Calculate sample sizes
+results <- scenarios %>%
+  rowwise() %>%
+  mutate(
+    # Calculate sample size (assuming sd1 = sd2 = 1 for standardized effect size)
+    ss_result = list(ss2Continuous(
+      delta1 = delta1_star,
+      delta2 = delta2_star,
+      sd1 = 1,
+      sd2 = 1,
+      rho = rho,
+      r = 1,
+      alpha = 0.025,
+      beta = 0.2,
+      known_var = TRUE
+    )),
+    n_per_group = ss_result$n2,
+    N = ss_result$N
+  ) %>%
+  ungroup() %>%
+  select(delta1_star, delta2_star, rho, n_per_group, N)
+
+# Display results
+results %>%
+  mutate(
+    delta1_star = sprintf("%.2f", delta1_star),
+    delta2_star = sprintf("%.2f", delta2_star),
+    rho = sprintf("%.1f", rho)
+  ) %>%
+  knitr::kable(
+    col.names = c("δ₁*", "δ₂*", "ρ", "n per group", "Total N"),
+    caption = "Sample size per group for two continuous co-primary endpoints",
+    align = "c"
+  )
+```
+
+### Comparison with Published Values
+
+Expected values from Sozu et al. (2011) Table 1:
+- δ₁* = δ₂* = 0.20, ρ = 0.0: n = 516
+- δ₁* = δ₂* = 0.20, ρ = 0.3: n = 503
+- δ₁* = δ₂* = 0.20, ρ = 0.5: n = 490
+- δ₁* = δ₂* = 0.20, ρ = 0.8: n = 458
+- δ₁* = δ₂* = 0.30, ρ = 0.0: n = 230
+- δ₁* = δ₂* = 0.30, ρ = 0.5: n = 218
+- δ₁* = δ₂* = 0.30, ρ = 0.8: n = 204
+
+Our implementation closely matches the published values.
+
+### Key Findings
+
+1. **Effect of correlation**: When standardized effect sizes are equal (δ₁* = δ₂*), higher correlation between endpoints reduces the required sample size by approximately 11%.
+
+2. **Sample size reduction**: Comparing ρ = 0.0 vs. ρ = 0.8:
+   - For δ* = 0.20: reduction from 516 to 458 (11.2% decrease)
+   - For δ* = 0.30: reduction from 230 to 204 (11.3% decrease)
+
+## Power Calculation Example
+
+Calculate power for a given sample size:
+
+```{r power_example}
+power_result <- power2Continuous(
+  n1 = 230,
+  n2 = 230,
+  delta1 = 0.30,
+  delta2 = 0.30,
+  sd1 = 1,
+  sd2 = 1,
+  rho = 0.5,
+  alpha = 0.025,
+  known_var = TRUE
+)
+
+print(power_result)
+```
+
+## References
+
+Sozu, T., Sugimoto, T., & Hamasaki, T. (2011). Sample size determination in superiority clinical trials with multiple co-primary correlated endpoints. *Journal of Biopharmaceutical Statistics*, 21(4), 650-668.

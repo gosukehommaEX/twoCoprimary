@@ -1,0 +1,275 @@
+---
+title: "Mixed Count and Continuous Co-Primary Endpoints"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Mixed Count and Continuous Co-Primary Endpoints}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## Overview
+
+This vignette demonstrates sample size calculation and power analysis for clinical trials with two co-primary endpoints: an overdispersed count outcome (following negative binomial distribution) and a continuous outcome (following normal distribution). The methodology is based on Homma and Yoshida (2024).
+```{r setup}
+library(copriPower)
+```
+
+## Background
+
+In clinical trials for treating asthma and chronic obstructive pulmonary disease (COPD), regulatory agencies require evaluation of both:
+
+1. **Count endpoint**: Number of exacerbations (overdispersed count data)
+2. **Continuous endpoint**: Lung function measure such as FEV₁ (forced expiratory volume)
+
+The negative binomial distribution is used for count data with overdispersion, where the variance exceeds the mean. The correlation between the two endpoints must be considered in sample size calculation.
+
+## Correlation Bounds
+
+The correlation between a negative binomial outcome and a continuous normal outcome must satisfy certain bounds. We can calculate these bounds using Fréchet-Hoeffding copula bounds:
+```{r correlation_bounds}
+# Calculate correlation bounds for NB(λ=1.25, ν=0.8) and N(0, 250)
+# where λ = r × t = 1.25 × 1
+bounds <- corrbound2MixedCountContinuous(lambda = 1.25, nu = 0.8, mu = 0, sd = 250)
+bounds
+```
+
+## Sample Size Calculation
+
+### Example 1: Balanced Design (Case A, ν=0.8)
+
+Consider a trial comparing an active treatment to control with:
+
+- Count endpoint: Control rate r₂ = 1.25, Treatment rate r₁ = 1.0 events per year
+- Dispersion parameter: ν = 0.8
+- Follow-up time: t = 1 year
+- Continuous endpoint: Control mean μ₂ = 0, Treatment mean μ₁ = -50 (negative indicates benefit)
+- Standard deviation: σ = 250
+- Correlation: ρ₁ = ρ₂ = 0.4
+- Balanced allocation: r = 1 (1:1 ratio)
+- Significance level: α = 0.025 (one-sided)
+- Target power: 1 - β = 0.8
+```{r sample_size_balanced}
+result_balanced <- ss2MixedCountContinuous(
+  r1 = 1.0,
+  r2 = 1.25,
+  nu = 0.8,
+  t = 1,
+  mu1 = -50,
+  mu2 = 0,
+  sd = 250,
+  r = 1,
+  rho1 = 0.4,
+  rho2 = 0.4,
+  alpha = 0.025,
+  beta = 0.2
+)
+result_balanced
+```
+
+The required sample size is n₂ = `r result_balanced$n2` per group, with total N = `r result_balanced$N`.
+
+### Example 2: Unbalanced Design (Case A, ν=0.8)
+
+For an unbalanced allocation with r = 2 (2:1 ratio, treatment:control):
+```{r sample_size_unbalanced}
+result_unbalanced <- ss2MixedCountContinuous(
+  r1 = 1.0,
+  r2 = 1.25,
+  nu = 0.8,
+  t = 1,
+  mu1 = -50,
+  mu2 = 0,
+  sd = 250,
+  r = 2,
+  rho1 = 0.4,
+  rho2 = 0.4,
+  alpha = 0.025,
+  beta = 0.2
+)
+result_unbalanced
+```
+
+For unbalanced design, n₂ = `r result_unbalanced$n2` (control), n₁ = `r result_unbalanced$n1` (treatment), total N = `r result_unbalanced$N`.
+
+### Example 3: Higher Dispersion (Case B, ν=3)
+
+For a scenario with higher dispersion parameter:
+```{r sample_size_high_dispersion}
+result_high_disp <- ss2MixedCountContinuous(
+  r1 = 1.0,
+  r2 = 2.0,
+  nu = 3,
+  t = 1,
+  mu1 = -50,
+  mu2 = 0,
+  sd = 75,
+  r = 1,
+  rho1 = 0.4,
+  rho2 = 0.4,
+  alpha = 0.025,
+  beta = 0.2
+)
+result_high_disp
+```
+
+With higher dispersion and larger treatment effect, the required sample size is smaller: n₂ = `r result_high_disp$n2` per group.
+
+## Power Calculation
+
+We can verify the power for calculated sample sizes:
+```{r power_verification}
+# Verify power for balanced design
+power_balanced <- power2MixedCountContinuous(
+  n1 = result_balanced$n1,
+  n2 = result_balanced$n2,
+  r1 = 1.0,
+  r2 = 1.25,
+  nu = 0.8,
+  t = 1,
+  mu1 = -50,
+  mu2 = 0,
+  sd = 250,
+  rho1 = 0.4,
+  rho2 = 0.4,
+  alpha = 0.025
+)
+power_balanced
+```
+
+The power for both co-primary endpoints is `r round(power_balanced$powerCoprimary, 3)`, confirming it achieves the target of 0.8.
+
+## Impact of Correlation
+
+Let's examine how correlation affects required sample size:
+```{r correlation_impact}
+# Test different correlation values
+correlations <- c(0, 0.2, 0.4, 0.6, 0.8)
+sample_sizes <- sapply(correlations, function(rho) {
+  result <- ss2MixedCountContinuous(
+    r1 = 1.0,
+    r2 = 1.25,
+    nu = 0.8,
+    t = 1,
+    mu1 = -50,
+    mu2 = 0,
+    sd = 250,
+    r = 1,
+    rho1 = rho,
+    rho2 = rho,
+    alpha = 0.025,
+    beta = 0.2
+  )
+  result$N
+})
+
+correlation_results <- data.frame(
+  Correlation = correlations,
+  Total_N = sample_sizes
+)
+correlation_results
+```
+
+As correlation increases, the required total sample size decreases, demonstrating the efficiency gain from accounting for the correlation structure.
+
+## Simulation Results from Homma and Yoshida (2024)
+
+### Table 1: Operating Characteristics (Balanced Design, κ=1)
+
+The following table shows simulation results for Case A (ν=0.8, ρ=0, 0.4, 0.8) from the paper:
+
+| ν | ρ | γ | n₀ | n₁ | N | H₁₁ (Count) | H₁₂ (Cont) | H₁ (Both) | Copula |
+|---|---|---|-----|-----|------|-------------|-----------|-----------|---------|
+| 0.8 | 0.0 | 0.0 | 935 | 935 | 1870 | 0.912 | 0.993 | 0.906 | Clayton |
+| 0.8 | 0.0 | 0.0 | 935 | 935 | 1870 | 0.905 | 0.990 | 0.896 | Frank |
+| 0.8 | 0.4 | 0.4 | 927 | 927 | 1854 | 0.901 | 0.991 | 0.896 | Clayton |
+| 0.8 | 0.4 | 0.4 | 927 | 927 | 1854 | 0.907 | 0.991 | 0.902 | Frank |
+| 0.8 | 0.8 | 0.8 | 911 | 911 | 1822 | 0.897 | 0.990 | 0.896 | Clayton |
+| 0.8 | 0.8 | 0.8 | 911 | 911 | 1822 | 0.902 | 0.990 | 0.901 | Frank |
+
+**Interpretation**: 
+- H₁₁: Power for count endpoint alone (target > 0.8)
+- H₁₂: Power for continuous endpoint alone (target > 0.8)
+- H₁: Power for both co-primary endpoints (target = 0.8)
+
+All scenarios achieve the target power of 0.8, confirming the accuracy of the proposed method.
+
+### Table 2: Operating Characteristics (Unbalanced Design, κ=2)
+
+Results for Case A (ν=0.8, unbalanced 2:1 allocation):
+
+| ν | ρ | γ | n₀ | n₁ | N | H₁₁ (Count) | H₁₂ (Cont) | H₁ (Both) | Copula |
+|---|---|---|-----|-----|------|-------------|-----------|-----------|---------|
+| 0.8 | 0.0 | 0.0 | 692 | 1384 | 2076 | 0.905 | 0.989 | 0.895 | Clayton |
+| 0.8 | 0.0 | 0.0 | 692 | 1384 | 2076 | 0.909 | 0.989 | 0.899 | Frank |
+| 0.8 | 0.4 | 0.4 | 686 | 1372 | 2058 | 0.905 | 0.990 | 0.898 | Clayton |
+| 0.8 | 0.4 | 0.4 | 686 | 1372 | 2058 | 0.905 | 0.988 | 0.898 | Frank |
+| 0.8 | 0.8 | 0.8 | 673 | 1346 | 2019 | 0.898 | 0.987 | 0.897 | Clayton |
+| 0.8 | 0.8 | 0.8 | 673 | 1346 | 2019 | 0.898 | 0.990 | 0.897 | Frank |
+
+Results for Case B (ν=3, unbalanced 2:1 allocation):
+
+| ν | ρ | γ | n₀ | n₁ | N | H₁₁ (Count) | H₁₂ (Cont) | H₁ (Both) | Copula |
+|---|---|---|-----|-----|------|-------------|-----------|-----------|---------|
+| 3 | 0.0 | 0.0 | 42 | 84 | 126 | 0.951 | 0.939 | 0.892 | Clayton |
+| 3 | 0.0 | 0.0 | 42 | 84 | 126 | 0.950 | 0.941 | 0.895 | Frank |
+| 3 | 0.4 | 0.397 | 42 | 84 | 126 | 0.949 | 0.941 | 0.901 | Clayton |
+| 3 | 0.4 | 0.397 | 42 | 84 | 126 | 0.949 | 0.940 | 0.900 | Frank |
+| 3 | 0.8 | 0.795 | 39 | 78 | 117 | 0.932 | 0.923 | 0.894 | Clayton |
+| 3 | 0.8 | 0.795 | 39 | 78 | 117 | 0.931 | 0.918 | 0.888 | Frank |
+
+**Key Findings**:
+- The proposed method achieves target power across different copula specifications (Clayton and Frank)
+- Sample size decreases as correlation increases
+- Higher dispersion parameter (ν) leads to smaller sample sizes when treatment effect is large
+- Unbalanced allocation requires larger total sample size compared to balanced design
+
+## Clinical Application: COPD Trial Design
+
+For a COPD trial similar to the TRISTAN study:
+```{r copd_example}
+# Assume moderate correlation based on meta-analysis (ρ ≈ 0.45)
+copd_design <- ss2MixedCountContinuous(
+  r1 = 1.0,          # Treatment: 1.0 exacerbations per year
+  r2 = 1.25,         # Control: 1.25 exacerbations per year  
+  nu = 1.0,          # Moderate overdispersion
+  t = 1,             # 1-year follow-up
+  mu1 = -0.1,        # Treatment: +0.1L improvement in FEV₁
+  mu2 = 0,           # Control: no change
+  sd = 0.35,         # SD = 0.35L for FEV₁
+  r = 1,             # Balanced allocation
+  rho1 = 0.45,       # Moderate correlation
+  rho2 = 0.45,
+  alpha = 0.025,     # One-sided 2.5%
+  beta = 0.1         # 90% power
+)
+copd_design
+```
+
+This design requires approximately `r copd_design$N` total patients to demonstrate superiority on both the exacerbation rate and lung function endpoints.
+
+## Summary
+
+The `copriPower` package provides functions for:
+
+1. **Correlation bounds** (`corrbound2MixedCountContinuous`): Determine feasible correlation range
+2. **Sample size calculation** (`ss2MixedCountContinuous`): Calculate required sample size
+3. **Power calculation** (`power2MixedCountContinuous`): Verify power for given sample size
+
+Key considerations:
+
+- Accounting for correlation reduces sample size requirements
+- Higher dispersion parameters may reduce sample size when treatment effects are large
+- The method is robust across different copula specifications
+- Unbalanced allocation increases total sample size but may be preferred for practical reasons
+
+## References
+
+Homma, G., & Yoshida, T. (2024). Sample size calculation in clinical trials with two co-primary endpoints including overdispersed count and continuous outcomes. *Pharmaceutical Statistics*, 23(1), 46-59.
+
+Trivedi, P. K., & Zimmer, D. M. (2007). Copula modeling: an introduction for practitioners. *Foundations and Trends in Econometrics*, 1(1), 1-111.
