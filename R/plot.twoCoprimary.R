@@ -186,7 +186,7 @@ plot_power_curve <- function(x, endpoint_type, n_points, n_range,
     xlab <- if (abs(r - 1) < 0.01) {
       "Sample Size per Group (n)"
     } else {
-      sprintf("Control Group Sample Size (n2, with r=%.2f)", r)
+      bquote("Control Group Sample Size (" ~ n[2] ~ "), r = " ~ .(r))
     }
   }
   if (is.null(ylab)) {
@@ -216,11 +216,21 @@ plot_power_curve <- function(x, endpoint_type, n_points, n_range,
     if ("n2" %in% names(x)) {
       abline(v = x$n2, col = "darkgreen", lty = 2)
       points(x$n2, x$powerCoprimary, pch = 19, col = "darkgreen", cex = 1.5)
-      # Use bquote() with proper plotmath syntax
-      label_text <- if (abs(r - 1) < 0.01) {
-        bquote(n == .(x$n2) * ',' ~ power == .(sprintf("%.3f", x$powerCoprimary)))
+      # Calculate total N
+      total_N <- x$n1 + x$n2
+      # Create label with allocation ratio and total N
+      if (abs(r - 1) < 0.01) {
+        # Balanced design
+        label_text <- bquote(n == .(x$n2) * ',' ~ N == .(total_N) * ',' ~
+                               power == .(sprintf("%.3f", x$powerCoprimary)))
       } else {
-        bquote(n[2] == .(x$n2) * ',' ~ power == .(sprintf("%.3f", x$powerCoprimary)))
+        # Unbalanced design
+        label_text <- bquote(
+          atop(
+            n[2] == .(x$n2) * ',' ~ r == .(sprintf("%.2f", r)) * ',',
+            N == .(total_N) * ',' ~ power == .(sprintf("%.3f", x$powerCoprimary))
+          )
+        )
       }
       text(x$n2, x$powerCoprimary, label_text,
            pos = 4, col = "darkgreen", cex = 0.8)
@@ -230,11 +240,21 @@ plot_power_curve <- function(x, endpoint_type, n_points, n_range,
       idx <- which.min(abs(n2_seq - current_n2))
       abline(v = current_n2, col = "red", lty = 2)
       points(current_n2, power_seq[idx], pch = 19, col = "red", cex = 1.5)
-      # Use bquote() with proper plotmath syntax
-      label_text <- if (abs(r - 1) < 0.01) {
-        bquote(n == .(current_n2) * ',' ~ power == .(sprintf("%.3f", power_seq[idx])))
+      # Calculate total N
+      total_N <- x$N
+      # Create label with allocation ratio and total N
+      if (abs(r - 1) < 0.01) {
+        # Balanced design
+        label_text <- bquote(n == .(current_n2) * ',' ~ N == .(total_N) * ',' ~
+                               power == .(sprintf("%.3f", power_seq[idx])))
       } else {
-        bquote(n[2] == .(current_n2) * ',' ~ power == .(sprintf("%.3f", power_seq[idx])))
+        # Unbalanced design
+        label_text <- bquote(
+          atop(
+            n[2] == .(current_n2) * ',' ~ r == .(sprintf("%.2f", r)) * ',',
+            N == .(total_N) * ',' ~ power == .(sprintf("%.3f", power_seq[idx]))
+          )
+        )
       }
       text(current_n2, power_seq[idx], label_text,
            pos = 4, col = "red", cex = 0.8)
@@ -254,6 +274,13 @@ plot_power_curve <- function(x, endpoint_type, n_points, n_range,
 plot_sample_size_rho <- function(x, endpoint_type, n_points, rho_range,
                                  col, lwd, main, xlab, ylab,
                                  show_reference, ...) {
+
+  # Get allocation ratio
+  if ("r" %in% names(x)) {
+    r <- x$r
+  } else {
+    r <- 1
+  }
 
   # (4) Determine correlation range based on endpoint type
   if (is.null(rho_range)) {
@@ -301,11 +328,11 @@ plot_sample_size_rho <- function(x, endpoint_type, n_points, rho_range,
     xlab <- "Correlation (\u03C1)"  # Greek rho
   }
   if (is.null(ylab)) {
-    ylab <- if ("r" %in% names(x) && abs(x$r - 1) < 0.01) {
+    ylab <- if (abs(r - 1) < 0.01) {
       "Sample Size per Group (n)"
     } else {
-      # Use expression() for subscript in axis label
-      expression(paste("Control Group Sample Size (", n[2], ")"))
+      # Include allocation ratio in the label
+      bquote("Control Group Sample Size (" ~ n[2] ~ "), r = " ~ .(r))
     }
   }
 
@@ -320,8 +347,21 @@ plot_sample_size_rho <- function(x, endpoint_type, n_points, rho_range,
     abline(v = x$rho, col = "darkgreen", lty = 2)
     abline(h = x$n2, col = "darkgreen", lty = 2)
     points(x$rho, x$n2, pch = 19, col = "darkgreen", cex = 1.5)
-    # Use bquote() with proper plotmath syntax
-    label_text <- bquote(rho == .(sprintf("%.2f", x$rho)) * ',' ~ n[2] == .(x$n2))
+    # Calculate total N and create label
+    total_N <- x$N
+    if (abs(r - 1) < 0.01) {
+      # Balanced design
+      label_text <- bquote(rho == .(sprintf("%.2f", x$rho)) * ',' ~ n == .(x$n2) * ',' ~
+                             N == .(total_N))
+    } else {
+      # Unbalanced design
+      label_text <- bquote(
+        atop(
+          rho == .(sprintf("%.2f", x$rho)) * ',' ~ n[2] == .(x$n2) * ',',
+          r == .(sprintf("%.2f", r)) * ',' ~ N == .(total_N)
+        )
+      )
+    }
     text(x$rho, max(n2_seq) * 0.95, label_text,
          pos = 4, col = "darkgreen", cex = 0.8)
   } else if (show_reference && "rho1" %in% names(x) && "rho2" %in% names(x)) {
@@ -330,8 +370,21 @@ plot_sample_size_rho <- function(x, endpoint_type, n_points, rho_range,
     abline(v = avg_rho, col = "darkgreen", lty = 2)
     abline(h = x$n2, col = "darkgreen", lty = 2)
     points(avg_rho, x$n2, pch = 19, col = "darkgreen", cex = 1.5)
-    # Use bquote() with proper plotmath syntax
-    label_text <- bquote(rho == .(sprintf("%.2f", avg_rho)) * ',' ~ n[2] == .(x$n2))
+    # Calculate total N and create label
+    total_N <- x$N
+    if (abs(r - 1) < 0.01) {
+      # Balanced design
+      label_text <- bquote(rho == .(sprintf("%.2f", avg_rho)) * ',' ~ n == .(x$n2) * ',' ~
+                             N == .(total_N))
+    } else {
+      # Unbalanced design
+      label_text <- bquote(
+        atop(
+          rho == .(sprintf("%.2f", avg_rho)) * ',' ~ n[2] == .(x$n2) * ',',
+          r == .(sprintf("%.2f", r)) * ',' ~ N == .(total_N)
+        )
+      )
+    }
     text(avg_rho, max(n2_seq) * 0.95, label_text,
          pos = 4, col = "darkgreen", cex = 0.8)
   }
