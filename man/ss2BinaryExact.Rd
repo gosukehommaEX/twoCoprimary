@@ -58,21 +58,18 @@ that achieves the target power:
 \strong{Step 1:} Initialize with sample size from approximate method (AN).
 This provides a good starting point for the exact calculation.
 
-\strong{Step 2:} Calculate exact power at current sample size using
-\code{\link{power2BinaryExact}}.
-
-\strong{Step 3:} Adjust sample size to achieve target power:
+\strong{Step 2:} Use sequential search algorithm (Homma and Yoshida 2025, Algorithm 1):
 \itemize{
-\item If power is greater than or equal to target: decrease n2 by 1 until power drops below target, then add 1 back
-\item If power is less than target: increase n2 by 1 until power reaches target
+\item Calculate power at initial sample size
+\item If power >= target: decrease n2 until power < target, then add 1 back
+\item If power < target: increase n2 until power >= target
 }
 
-\strong{Step 4:} Return final sample sizes.
+\strong{Step 3:} Return final sample sizes.
 
 Note: Due to the saw-tooth nature of exact power (power does not increase
-monotonically with sample size), linear extrapolation is not appropriate.
-This function uses sequential search to ensure the minimum sample size that
-achieves the target power.
+monotonically with sample size), this sequential search ensures the minimum
+sample size that achieves the target power.
 }
 \examples{
 # Exact sample size calculation using Boschloo test

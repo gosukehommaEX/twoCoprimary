@@ -35,8 +35,8 @@ ss2Continuous(
 \item{beta}{Target type II error rate (typically 0.1 or 0.2)}
 
 \item{known_var}{Logical value indicating whether variance is known (TRUE) or
-unknown (FALSE). If TRUE, power is calculated analytically using linear
-extrapolation; if FALSE, Monte Carlo simulation with sequential search is used}
+unknown (FALSE). If TRUE, power is calculated analytically; if FALSE,
+Monte Carlo simulation is used}
 
 \item{nMC}{Number of Monte Carlo simulations when known_var = FALSE (default is 10000)}
 }
@@ -56,32 +56,22 @@ A data frame with the following columns:
 }
 \description{
 Calculates the required sample size for a two-arm superiority trial with two
-co-primary continuous endpoints using linear extrapolation approach (for known
-variance) or sequential search (for unknown variance).
+co-primary continuous endpoints using sequential search algorithm.
 }
 \details{
-This function uses different algorithms depending on the variance assumption:
-
-\strong{For known variance (known_var = TRUE):}
-Uses a linear extrapolation algorithm to efficiently determine the required sample size.
+This function uses a sequential search algorithm (Homma and Yoshida 2025,
+Algorithm 1) for both known and unknown variance cases:
 
 \strong{Step 1:} Initialize with sample sizes from single endpoint formulas.
-Two initial values are calculated:
+
+\strong{Step 2:} Use sequential search:
 \itemize{
-\item n2_0: Based on target power 1 - beta
-\item n2_1: Based on adjusted power 1 - sqrt(1-beta) to provide a bracket
+\item Calculate power at initial sample size
+\item If power >= target: decrease n2 until power < target, then add 1 back
+\item If power < target: increase n2 until power >= target
 }
 
-\strong{Step 2-4:} Iteratively refine using linear extrapolation until convergence:
-\deqn{n_2^{new} = \frac{n_2^{(0)}(power^{(1)} - (1-\beta)) - n_2^{(1)}(power^{(0)} - (1-\beta))}
-      {power^{(1)} - power^{(0)}}}
-
-The algorithm converges when \eqn{n_2^{(1)} = n_2^{(0)}}.
-
-\strong{For unknown variance (known_var = FALSE):}
-Uses sequential search starting from initial sample size, incrementing by 1 until
-target power is achieved. This approach is more stable for Monte Carlo simulation
-where power estimates have random variation.
+\strong{Step 3:} Return final sample sizes.
 
 For known variance, the standardized test statistics are:
 \deqn{Z_k = \frac{\delta_k}{\sigma_k \sqrt{1/n_1 + 1/n_2}}}
@@ -137,4 +127,8 @@ ss2Continuous(
 Sozu, T., Sugimoto, T., & Hamasaki, T. (2011). Sample size determination in
 superiority clinical trials with multiple co-primary correlated endpoints.
 \emph{Journal of Biopharmaceutical Statistics}, 21(4), 650-668.
+
+Homma, G., & Yoshida, T. (2025). Exact power and sample size in clinical
+trials with two co-primary binary endpoints. \emph{Statistical Methods in
+Medical Research}, 34(1), 1-19.
 }

@@ -57,6 +57,7 @@ A data frame with the following columns:
 \item{alpha}{One-sided significance level}
 \item{beta}{Type II error rate}
 \item{Test}{Testing method used for binary endpoint}
+\item{nMC}{Number of Monte Carlo replications (NA if Test != "Fisher")}
 \item{n1}{Required sample size for group 1}
 \item{n2}{Required sample size for group 2}
 \item{N}{Total sample size (n1 + n2)}
@@ -70,23 +71,24 @@ power at a given significance level.
 This function implements the sample size calculation for mixed continuous-binary
 co-primary endpoints following the methodology in Sozu et al. (2012).
 
-\strong{For Fisher's exact test}, sequential search is used because the saw-tooth
-nature of exact power makes linear extrapolation inappropriate.
-
-\strong{For asymptotic methods (AN, ANc, AS, ASc)}, linear extrapolation is used:
+The sequential search algorithm (Homma and Yoshida 2025, Algorithm 1) is used
+for all testing methods:
 
 \strong{Step 1:} Initialize with sample sizes from single endpoint formulas.
-Two initial values are calculated:
+
+\strong{Step 2:} Use sequential search:
 \itemize{
-\item n2_0: Based on target power 1 - beta
-\item n2_1: Based on adjusted power 1 - sqrt(1-beta) to provide a bracket
+\item Calculate power at initial sample size
+\item If power >= target: decrease n2 until power < target, then add 1 back
+\item If power < target: increase n2 until power >= target
 }
 
-\strong{Step 2-4:} Iteratively refine using linear extrapolation until convergence:
-\deqn{n_2^{new} = \frac{n_2^{(0)}(power^{(1)} - (1-\beta)) - n_2^{(1)}(power^{(0)} - (1-\beta))}
-      {power^{(1)} - power^{(0)}}}
+\strong{Step 3:} Return final sample sizes.
 
-The algorithm converges when \eqn{n_2^{(1)} = n_2^{(0)}}.
+\strong{Biserial Correlation:}
+The biserial correlation rho represents the correlation between the latent continuous
+variable underlying the binary endpoint and the observed continuous endpoint. This is
+not the same as the point-biserial correlation observed in the data.
 }
 \examples{
 # Sample size calculation using asymptotic normal method
@@ -136,4 +138,8 @@ ss2MixedContinuousBinary(
 Sozu, T., Sugimoto, T., & Hamasaki, T. (2012). Sample size determination in
 clinical trials with multiple co-primary endpoints including mixed continuous
 and binary variables. \emph{Biometrical Journal}, 54(5), 716-729.
+
+Homma, G., & Yoshida, T. (2025). Exact power and sample size in clinical
+trials with two co-primary binary endpoints. \emph{Statistical Methods in
+Medical Research}, 34(1), 1-19.
 }

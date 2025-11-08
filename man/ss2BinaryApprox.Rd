@@ -2,7 +2,7 @@
 % Please edit documentation in R/ss2BinaryApprox.R
 \name{ss2BinaryApprox}
 \alias{ss2BinaryApprox}
-\title{Sample Size Calculation for Two Co-Primary Binary Endpoints (Approximate)}
+\title{Sample Size Calculation for Two Co-Primary Binary Endpoints (Asymptotic Approximation)}
 \usage{
 ss2BinaryApprox(p11, p12, p21, p22, rho1, rho2, r, alpha, beta, Test)
 }
@@ -47,30 +47,27 @@ A data frame with the following columns:
 }
 \description{
 Calculates the required sample size for a two-arm superiority trial with two
-co-primary binary endpoints using the linear extrapolation approach.
+co-primary binary endpoints using asymptotic normal approximation or arcsine
+transformation, as described in Sozu et al. (2010).
 }
 \details{
-This function uses the linear extrapolation approach to find the required
-sample size iteratively:
+This function uses a sequential search algorithm (Homma and Yoshida 2025,
+Algorithm 1) to find the minimum sample size:
 
 \strong{Step 1:} Initialize with sample sizes from single endpoint formulas.
-The initial values use the same testing method specified in the Test argument
-to ensure consistency. Two initial values are calculated:
+
+\strong{Step 2:} Use sequential search:
 \itemize{
-\item n2_0: Based on target power 1 - beta
-\item n2_1: Based on adjusted power 1 - sqrt(1-beta) to provide a bracket
+\item Calculate power at initial sample size
+\item If power >= target: decrease n2 until power < target, then add 1 back
+\item If power < target: increase n2 until power >= target
 }
 
-\strong{Step 2-4:} Iteratively refine using linear extrapolation until convergence:
-\deqn{n_2^{new} = \frac{n_2^{(0)}(power^{(1)} - (1-\beta)) - n_2^{(1)}(power^{(0)} - (1-\beta))}
-      {power^{(1)} - power^{(0)}}}
+\strong{Step 3:} Return final sample sizes.
 
-The algorithm converges when \eqn{n_2^{(1)} = n_2^{(0)}}.
-
-\strong{Note on Fisher's Exact Test:}
-Fisher's exact test is not supported in this function because the saw-tooth
-nature of exact power makes linear extrapolation inappropriate. For Fisher's
-exact test with co-primary endpoints, use \code{\link{ss2BinaryExact}} instead.
+The asymptotic normal (AN) and arcsine (AS) methods use normal approximation
+with or without continuity correction. For small sample sizes or extreme
+probabilities, consider using exact methods via \code{\link{ss2BinaryExact}}.
 }
 \examples{
 # Sample size calculation using asymptotic normal method
@@ -79,20 +76,34 @@ ss2BinaryApprox(
   p12 = 0.4,
   p21 = 0.3,
   p22 = 0.2,
-  rho1 = 0.7,
-  rho2 = 0.7,
-  r = 2,
+  rho1 = 0.5,
+  rho2 = 0.5,
+  r = 1,
   alpha = 0.025,
-  beta = 0.1,
+  beta = 0.2,
   Test = 'AN'
 )
 
-# Balanced design with arcsine method
+# With continuity correction
 ss2BinaryApprox(
-  p11 = 0.6,
-  p12 = 0.5,
-  p21 = 0.4,
-  p22 = 0.3,
+  p11 = 0.5,
+  p12 = 0.4,
+  p21 = 0.3,
+  p22 = 0.2,
+  rho1 = 0.5,
+  rho2 = 0.5,
+  r = 1,
+  alpha = 0.025,
+  beta = 0.2,
+  Test = 'ANc'
+)
+
+# Using arcsine transformation
+ss2BinaryApprox(
+  p11 = 0.5,
+  p12 = 0.4,
+  p21 = 0.3,
+  p22 = 0.2,
   rho1 = 0.5,
   rho2 = 0.5,
   r = 1,
@@ -101,23 +112,13 @@ ss2BinaryApprox(
   Test = 'AS'
 )
 
-# With continuity correction
-ss2BinaryApprox(
-  p11 = 0.55,
-  p12 = 0.45,
-  p21 = 0.35,
-  p22 = 0.25,
-  rho1 = 0.6,
-  rho2 = 0.6,
-  r = 1,
-  alpha = 0.025,
-  beta = 0.1,
-  Test = 'ANc'
-)
-
 }
 \references{
 Sozu, T., Sugimoto, T., & Hamasaki, T. (2010). Sample size determination in
-clinical trials with multiple co-primary binary endpoints. \emph{Statistics in
-Medicine}, 29(21), 2169-2179.
+clinical trials with multiple co-primary binary endpoints. \emph{Statistics
+in Medicine}, 29(21), 2169-2179.
+
+Homma, G., & Yoshida, T. (2025). Exact power and sample size in clinical
+trials with two co-primary binary endpoints. \emph{Statistical Methods in
+Medical Research}, 34(1), 1-19.
 }
