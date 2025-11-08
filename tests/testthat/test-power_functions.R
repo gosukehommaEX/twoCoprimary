@@ -1,6 +1,9 @@
 # Test power calculation functions
 
+# ==============================================================================
 # power2Continuous tests
+# ==============================================================================
+
 test_that("power2Continuous returns valid power with known variance", {
   result <- power2Continuous(
     n1 = 50, n2 = 50,
@@ -36,7 +39,27 @@ test_that("power2Continuous increases with sample size", {
   expect_true(all(diff(powers) > 0))
 })
 
+test_that("power2Continuous returns valid power with unknown variance (large effect)", {
+  # Use large effect size for fast computation
+  result <- power2Continuous(
+    n1 = 20, n2 = 20,
+    delta1 = 2.0, delta2 = 2.0,  # Large effect size
+    sd1 = 1, sd2 = 1,
+    rho = 0.3, alpha = 0.025,
+    known_var = FALSE,
+    nMC = 1000  # Reduced number of simulations for speed
+  )
+
+  expect_s3_class(result, "twoCoprimary")
+  expect_true(all(c("power1", "power2", "powerCoprimary") %in% names(result)))
+  expect_true(result$powerCoprimary >= 0 && result$powerCoprimary <= 1)
+  expect_true(result$powerCoprimary <= min(result$power1, result$power2))
+})
+
+# ==============================================================================
 # power2BinaryApprox tests
+# ==============================================================================
+
 test_that("power2BinaryApprox returns valid power", {
   result <- power2BinaryApprox(
     n1 = 100, n2 = 50,
@@ -69,11 +92,15 @@ test_that("power2BinaryApprox works with different test methods", {
   }
 })
 
-# power2BinaryExact tests (use small samples for efficiency)
-test_that("power2BinaryExact returns valid power", {
+# ==============================================================================
+# power2BinaryExact tests (use large effect sizes for efficiency)
+# ==============================================================================
+
+test_that("power2BinaryExact returns valid power with large effect", {
+  # Use large treatment effect to reduce sample size and computation time
   result <- power2BinaryExact(
-    n1 = 20, n2 = 20,  # Small sample for efficiency
-    p11 = 0.5, p12 = 0.4,
+    n1 = 15, n2 = 15,  # Small sample with large effect
+    p11 = 0.7, p12 = 0.6,  # Large differences
     p21 = 0.3, p22 = 0.2,
     rho1 = 0.5, rho2 = 0.5,
     alpha = 0.025, Test = "Chisq"
@@ -85,7 +112,10 @@ test_that("power2BinaryExact returns valid power", {
   expect_true(result$powerCoprimary <= min(result$power1, result$power2))
 })
 
-# power2MixedContinuousBinary tests
+# ==============================================================================
+# power2MixedContinuousBinary tests (excluding Fisher test)
+# ==============================================================================
+
 test_that("power2MixedContinuousBinary returns valid power for AN", {
   result <- power2MixedContinuousBinary(
     n1 = 50, n2 = 50,
@@ -101,7 +131,28 @@ test_that("power2MixedContinuousBinary returns valid power for AN", {
   expect_true(result$powerCoprimary <= min(result$powerCont, result$powerBin))
 })
 
+test_that("power2MixedContinuousBinary works with different test methods", {
+  # Test approximate methods only (excluding Fisher for speed)
+  tests <- c("AN", "ANc", "AS", "ASc")
+
+  for (test in tests) {
+    result <- power2MixedContinuousBinary(
+      n1 = 40, n2 = 40,
+      delta = 0.6, sd = 1,
+      p1 = 0.65, p2 = 0.35,
+      rho = 0.4, alpha = 0.025,
+      Test = test
+    )
+
+    expect_s3_class(result, "twoCoprimary")
+    expect_true(result$powerCoprimary >= 0 && result$powerCoprimary <= 1)
+  }
+})
+
+# ==============================================================================
 # power2MixedCountContinuous tests
+# ==============================================================================
+
 test_that("power2MixedCountContinuous returns valid power", {
   result <- power2MixedCountContinuous(
     n1 = 100, n2 = 100,
@@ -118,7 +169,71 @@ test_that("power2MixedCountContinuous returns valid power", {
   expect_true(result$powerCoprimary <= min(result$powerCount, result$powerCont))
 })
 
-# General validation tests
+# ==============================================================================
+# Unified interface tests (twoCoprimary2*)
+# ==============================================================================
+
+test_that("twoCoprimary2Continuous power calculation mode works", {
+  result <- twoCoprimary2Continuous(
+    n1 = 100, n2 = 100,
+    delta1 = 0.5, delta2 = 0.5,
+    sd1 = 1, sd2 = 1,
+    rho = 0.3, alpha = 0.025,
+    known_var = TRUE
+  )
+
+  expect_s3_class(result, "twoCoprimary")
+  expect_true("powerCoprimary" %in% names(result))
+  expect_true(result$powerCoprimary >= 0 && result$powerCoprimary <= 1)
+})
+
+test_that("twoCoprimary2BinaryApprox power calculation mode works", {
+  result <- twoCoprimary2BinaryApprox(
+    n1 = 100, n2 = 100,
+    p11 = 0.5, p12 = 0.4,
+    p21 = 0.3, p22 = 0.2,
+    rho1 = 0.5, rho2 = 0.5,
+    alpha = 0.025, Test = "AN"
+  )
+
+  expect_s3_class(result, "twoCoprimary")
+  expect_true("powerCoprimary" %in% names(result))
+  expect_true(result$powerCoprimary >= 0 && result$powerCoprimary <= 1)
+})
+
+test_that("twoCoprimary2MixedContinuousBinary power calculation mode works", {
+  result <- twoCoprimary2MixedContinuousBinary(
+    n1 = 80, n2 = 80,
+    delta = 0.5, sd = 1,
+    p1 = 0.6, p2 = 0.4,
+    rho = 0.5, alpha = 0.025,
+    Test = "AN"
+  )
+
+  expect_s3_class(result, "twoCoprimary")
+  expect_true("powerCoprimary" %in% names(result))
+  expect_true(result$powerCoprimary >= 0 && result$powerCoprimary <= 1)
+})
+
+test_that("twoCoprimary2MixedCountContinuous power calculation mode works", {
+  result <- twoCoprimary2MixedCountContinuous(
+    n1 = 200, n2 = 200,
+    r1 = 1.0, r2 = 1.25,
+    nu = 0.8, t = 1,
+    mu1 = -50, mu2 = 0, sd = 250,
+    rho1 = 0.5, rho2 = 0.5,
+    alpha = 0.025
+  )
+
+  expect_s3_class(result, "twoCoprimary")
+  expect_true("powerCoprimary" %in% names(result))
+  expect_true(result$powerCoprimary >= 0 && result$powerCoprimary <= 1)
+})
+
+# ==============================================================================
+# Validation tests
+# ==============================================================================
+
 test_that("power functions validate correlation bounds", {
   # Binary endpoints
   expect_error(power2BinaryApprox(

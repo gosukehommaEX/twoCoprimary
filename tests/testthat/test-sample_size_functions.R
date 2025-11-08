@@ -1,6 +1,9 @@
 # Test sample size calculation functions
 
+# ==============================================================================
 # ss1Continuous tests
+# ==============================================================================
+
 test_that("ss1Continuous returns valid sample size", {
   result <- ss1Continuous(delta = 0.5, sd = 1, r = 1, alpha = 0.025, beta = 0.1)
 
@@ -18,7 +21,10 @@ test_that("ss1Continuous sample size increases with smaller effect", {
   expect_true(n2 > n1)
 })
 
+# ==============================================================================
 # ss1BinaryApprox tests
+# ==============================================================================
+
 test_that("ss1BinaryApprox returns valid sample size", {
   result <- ss1BinaryApprox(p1 = 0.5, p2 = 0.3, r = 1, alpha = 0.025, beta = 0.1, Test = "AN")
 
@@ -38,7 +44,10 @@ test_that("ss1BinaryApprox works with different test methods", {
   }
 })
 
+# ==============================================================================
 # ss1Count tests
+# ==============================================================================
+
 test_that("ss1Count returns valid sample size", {
   result <- ss1Count(r1 = 1.0, r2 = 1.25, nu = 0.8, t = 1, r = 1, alpha = 0.025, beta = 0.1)
 
@@ -48,7 +57,10 @@ test_that("ss1Count returns valid sample size", {
   expect_true(result$n2 > 0)
 })
 
+# ==============================================================================
 # ss2Continuous tests
+# ==============================================================================
+
 test_that("ss2Continuous returns valid sample size with known variance", {
   result <- ss2Continuous(
     delta1 = 0.5, delta2 = 0.5,
@@ -65,7 +77,7 @@ test_that("ss2Continuous returns valid sample size with known variance", {
 })
 
 test_that("ss2Continuous sample size decreases with correlation", {
-  # Higher correlation should reduce required sample size (with equal individual power)
+  # Higher correlation should reduce required sample size
   n_rho0 <- ss2Continuous(
     delta1 = 0.5, delta2 = 0.5, sd1 = 1, sd2 = 1,
     rho = 0, r = 1, alpha = 0.025, beta = 0.1, known_var = TRUE
@@ -79,7 +91,27 @@ test_that("ss2Continuous sample size decreases with correlation", {
   expect_true(n_rho05 < n_rho0)
 })
 
+test_that("ss2Continuous returns valid sample size with unknown variance (large effect)", {
+  # Use large effect size for fast computation
+  result <- ss2Continuous(
+    delta1 = 1.5, delta2 = 1.5,  # Large effect size
+    sd1 = 1, sd2 = 1,
+    rho = 0.4, r = 1,
+    alpha = 0.025, beta = 0.1,
+    known_var = FALSE,
+    nMC = 1000  # Reduced number of simulations for speed
+  )
+
+  expect_s3_class(result, "twoCoprimary")
+  expect_true(all(c("n1", "n2", "N") %in% names(result)))
+  expect_true(result$n1 > 0)
+  expect_true(result$n2 > 0)
+})
+
+# ==============================================================================
 # ss2BinaryApprox tests
+# ==============================================================================
+
 test_that("ss2BinaryApprox returns valid sample size", {
   result <- ss2BinaryApprox(
     p11 = 0.5, p12 = 0.4,
@@ -95,12 +127,15 @@ test_that("ss2BinaryApprox returns valid sample size", {
   expect_true(result$n2 > 0)
 })
 
-# ss2BinaryExact tests (use larger tolerances for target power)
-test_that("ss2BinaryExact returns valid sample size", {
-  # Use simpler parameters for efficiency
+# ==============================================================================
+# ss2BinaryExact tests (use large effect sizes for efficiency)
+# ==============================================================================
+
+test_that("ss2BinaryExact returns valid sample size with large effect", {
+  # Use large treatment effect to reduce sample size and computation time
   result <- ss2BinaryExact(
-    p11 = 0.6, p12 = 0.5,
-    p21 = 0.4, p22 = 0.3,
+    p11 = 0.7, p12 = 0.6,  # Large differences
+    p21 = 0.3, p22 = 0.2,
     rho1 = 0.3, rho2 = 0.3,
     r = 1, alpha = 0.025, beta = 0.2,  # Use beta=0.2 for smaller sample
     Test = "Chisq"
@@ -112,7 +147,10 @@ test_that("ss2BinaryExact returns valid sample size", {
   expect_true(result$n2 > 0)
 })
 
-# ss2MixedContinuousBinary tests
+# ==============================================================================
+# ss2MixedContinuousBinary tests (excluding Fisher test)
+# ==============================================================================
+
 test_that("ss2MixedContinuousBinary returns valid sample size", {
   result <- ss2MixedContinuousBinary(
     delta = 0.5, sd = 1,
@@ -128,7 +166,10 @@ test_that("ss2MixedContinuousBinary returns valid sample size", {
   expect_true(result$n2 > 0)
 })
 
+# ==============================================================================
 # ss2MixedCountContinuous tests
+# ==============================================================================
+
 test_that("ss2MixedCountContinuous returns valid sample size", {
   result <- ss2MixedCountContinuous(
     r1 = 1.0, r2 = 1.25,
@@ -144,7 +185,73 @@ test_that("ss2MixedCountContinuous returns valid sample size", {
   expect_true(result$n2 > 0)
 })
 
+# ==============================================================================
+# Unified interface tests (twoCoprimary2*)
+# ==============================================================================
+
+test_that("twoCoprimary2Continuous sample size calculation mode works", {
+  result <- twoCoprimary2Continuous(
+    delta1 = 0.5, delta2 = 0.5,
+    sd1 = 1, sd2 = 1,
+    rho = 0.3, power = 0.8, r = 1,
+    alpha = 0.025, known_var = TRUE
+  )
+
+  expect_s3_class(result, "twoCoprimary")
+  expect_true(all(c("n1", "n2", "N") %in% names(result)))
+  expect_true(result$n1 > 0)
+  expect_true(result$n2 > 0)
+})
+
+test_that("twoCoprimary2BinaryApprox sample size calculation mode works", {
+  result <- twoCoprimary2BinaryApprox(
+    p11 = 0.5, p12 = 0.4,
+    p21 = 0.3, p22 = 0.2,
+    rho1 = 0.5, rho2 = 0.5,
+    power = 0.8, r = 1,
+    alpha = 0.025, Test = "AN"
+  )
+
+  expect_s3_class(result, "twoCoprimary")
+  expect_true(all(c("n1", "n2", "N") %in% names(result)))
+  expect_true(result$n1 > 0)
+  expect_true(result$n2 > 0)
+})
+
+test_that("twoCoprimary2MixedContinuousBinary sample size calculation mode works", {
+  result <- twoCoprimary2MixedContinuousBinary(
+    delta = 0.5, sd = 1,
+    p1 = 0.6, p2 = 0.4,
+    rho = 0.5, power = 0.8, r = 1,
+    alpha = 0.025, Test = "AN"
+  )
+
+  expect_s3_class(result, "twoCoprimary")
+  expect_true(all(c("n1", "n2", "N") %in% names(result)))
+  expect_true(result$n1 > 0)
+  expect_true(result$n2 > 0)
+})
+
+test_that("twoCoprimary2MixedCountContinuous sample size calculation mode works", {
+  result <- twoCoprimary2MixedCountContinuous(
+    r1 = 1.0, r2 = 1.25,
+    nu = 0.8, t = 1,
+    mu1 = -50, mu2 = 0, sd = 250,
+    rho1 = 0.5, rho2 = 0.5,
+    power = 0.8, r = 1,
+    alpha = 0.025
+  )
+
+  expect_s3_class(result, "twoCoprimary")
+  expect_true(all(c("n1", "n2", "N") %in% names(result)))
+  expect_true(result$n1 > 0)
+  expect_true(result$n2 > 0)
+})
+
+# ==============================================================================
 # Validation tests
+# ==============================================================================
+
 test_that("sample size functions validate input parameters", {
   # Invalid alpha
   expect_error(ss1Continuous(delta = 0.5, sd = 1, r = 1, alpha = 1.5, beta = 0.1))
