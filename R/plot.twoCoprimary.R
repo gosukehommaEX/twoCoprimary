@@ -1,7 +1,3 @@
-# ============================================================================
-# File: plot.twoCoprimary.R
-# ============================================================================
-
 #' Plot Method for twoCoprimary Objects
 #'
 #' Visualizes power or sample size relationships for two co-primary endpoints
