@@ -3,7 +3,6 @@
 S3method(plot,twoCoprimary)
 S3method(print,twoCoprimary)
 S3method(print,twoCoprimary_table)
-S3method(summary,twoCoprimary)
 export(corrbound2Binary)
 export(corrbound2MixedCountContinuous)
 export(dbibinom)
