@@ -89,9 +89,9 @@ Fisher's exact test does not have a closed-form sample size formula. This method
 }
 
 Note: Due to the saw-tooth nature of exact power (power does not increase
-monotonically with sample size), linear extrapolation is inappropriate for
-Fisher's method. The incremental approach ensures the minimum sample size
-that achieves the target power.
+monotonically with sample size), a sequential search approach is used.
+The incremental approach ensures the minimum sample size that achieves the
+target power.
 }
 \examples{
 # Balanced design with 1:1 allocation (AN method)

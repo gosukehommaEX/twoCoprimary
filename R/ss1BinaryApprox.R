@@ -71,9 +71,9 @@
 #' 4. Stops when power is greater than or equal to 1 - beta
 #'
 #' Note: Due to the saw-tooth nature of exact power (power does not increase
-#' monotonically with sample size), linear extrapolation is inappropriate for
-#' Fisher's method. The incremental approach ensures the minimum sample size
-#' that achieves the target power.
+#' monotonically with sample size), a sequential search approach is used.
+#' The incremental approach ensures the minimum sample size that achieves the
+#' target power.
 #'
 #' @references
 #' Sozu, T., Sugimoto, T., & Hamasaki, T. (2010). Sample size determination in
