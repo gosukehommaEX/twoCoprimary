@@ -312,7 +312,7 @@ calculate_power_design_table <- function(params, rho, endpoint_type,
 
   } else if (endpoint_type == "binary") {
     # Use exact method for Chisq or Fisher, approximate otherwise
-    if (Test %in% c("Chisq", "Fisher")) {
+    if (Test %in% c("Chisq", "Fisher", "Fisher-midP", "Z-pool", "Boschloo")) {
       power2BinaryExact(
         n1 = params$n1, n2 = params$n2,
         p11 = params$p11, p12 = params$p12,
@@ -370,7 +370,7 @@ calculate_ss_design_table <- function(params, rho, r, alpha, beta,
 
   } else if (endpoint_type == "binary") {
     # Use exact method for Chisq or Fisher, approximate otherwise
-    if (Test %in% c("Chisq", "Fisher")) {
+    if (Test %in% c("Chisq", "Fisher", "Fisher-midP", "Z-pool", "Boschloo")) {
       ss2BinaryExact(
         p11 = params$p11, p12 = params$p12,
         p21 = params$p21, p22 = params$p22,
