@@ -38,7 +38,7 @@ test_that("corrbound2Binary validates input", {
 test_that("corrbound2Binary returns symmetric bounds for symmetric inputs", {
   # For p1 = p2, bounds should be symmetric around 0
   result <- corrbound2Binary(p1 = 0.5, p2 = 0.5)
-  expect_equal(unname(result[1]), unname(-result[2]), tolerance = 1e-10)
+  expect_equal(unname(result[1]), -unname(result[2]), tolerance = 1e-10)
 })
 
 # ==============================================================================
