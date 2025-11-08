@@ -14,13 +14,11 @@
 #' @param alpha One-sided significance level (typically 0.025 or 0.05)
 #' @param beta Type II error rate (typically 0.1 or 0.2). Power = 1 - beta
 #' @param Test Statistical testing method for the binary endpoint. One of:
-#'   \itemize{
-#'     \item \code{"AN"}: Asymptotic normal method without continuity correction
-#'     \item \code{"ANc"}: Asymptotic normal method with continuity correction
-#'     \item \code{"AS"}: Arcsine method without continuity correction
-#'     \item \code{"ASc"}: Arcsine method with continuity correction
-#'     \item \code{"Fisher"}: Fisher's exact test (uses sequential search)
-#'   }
+#'   * `"AN"`: Asymptotic normal method without continuity correction
+#'   * `"ANc"`: Asymptotic normal method with continuity correction
+#'   * `"AS"`: Arcsine method without continuity correction
+#'   * `"ASc"`: Arcsine method with continuity correction
+#'   * `"Fisher"`: Fisher's exact test (uses sequential search)
 #' @param nMC Number of Monte Carlo replications when Test = "Fisher" (default: 10000)
 #'
 #' @return A data frame with the following columns:
@@ -33,6 +31,7 @@
 #'   \item{alpha}{One-sided significance level}
 #'   \item{beta}{Type II error rate}
 #'   \item{Test}{Testing method used for binary endpoint}
+#'   \item{nMC}{Number of Monte Carlo replications (NA if Test != "Fisher")}
 #'   \item{n1}{Required sample size for group 1}
 #'   \item{n2}{Required sample size for group 2}
 #'   \item{N}{Total sample size (n1 + n2)}
@@ -41,28 +40,33 @@
 #' This function implements the sample size calculation for mixed continuous-binary
 #' co-primary endpoints following the methodology in Sozu et al. (2012).
 #'
-#' **For Fisher's exact test**, sequential search is used because the saw-tooth
-#' nature of exact power makes linear extrapolation inappropriate.
-#'
-#' **For asymptotic methods (AN, ANc, AS, ASc)**, linear extrapolation is used:
+#' The sequential search algorithm (Homma and Yoshida 2025, Algorithm 1) is used
+#' for all testing methods:
 #'
 #' \strong{Step 1:} Initialize with sample sizes from single endpoint formulas.
-#' Two initial values are calculated:
+#'
+#' \strong{Step 2:} Use sequential search:
 #' \itemize{
-#'   \item n2_0: Based on target power 1 - beta
-#'   \item n2_1: Based on adjusted power 1 - sqrt(1-beta) to provide a bracket
+#'   \item Calculate power at initial sample size
+#'   \item If power >= target: decrease n2 until power < target, then add 1 back
+#'   \item If power < target: increase n2 until power >= target
 #' }
 #'
-#' \strong{Step 2-4:} Iteratively refine using linear extrapolation until convergence:
-#' \deqn{n_2^{new} = \frac{n_2^{(0)}(power^{(1)} - (1-\beta)) - n_2^{(1)}(power^{(0)} - (1-\beta))}
-#'       {power^{(1)} - power^{(0)}}}
+#' \strong{Step 3:} Return final sample sizes.
 #'
-#' The algorithm converges when \eqn{n_2^{(1)} = n_2^{(0)}}.
+#' \strong{Biserial Correlation:}
+#' The biserial correlation rho represents the correlation between the latent continuous
+#' variable underlying the binary endpoint and the observed continuous endpoint. This is
+#' not the same as the point-biserial correlation observed in the data.
 #'
 #' @references
 #' Sozu, T., Sugimoto, T., & Hamasaki, T. (2012). Sample size determination in
 #' clinical trials with multiple co-primary endpoints including mixed continuous
 #' and binary variables. \emph{Biometrical Journal}, 54(5), 716-729.
+#'
+#' Homma, G., & Yoshida, T. (2025). Exact power and sample size in clinical
+#' trials with two co-primary binary endpoints. \emph{Statistical Methods in
+#' Medical Research}, 34(1), 1-19.
 #'
 #' @examples
 #' # Sample size calculation using asymptotic normal method
@@ -144,86 +148,29 @@ ss2MixedContinuousBinary <- function(delta, sd, p1, p2, rho, r, alpha, beta, Tes
     stop("Test must be one of: AN, ANc, AS, ASc, Fisher")
   }
 
-  if (Test == "Fisher") {
-    # ===== FISHER'S EXACT TEST: Use sequential search =====
-    # Monte Carlo simulation has random variation and exact power has saw-tooth pattern
-    # Instead, use sequential search.
+  # Step 1: Calculate initial sample size
+  # Use AN for binary endpoint initial value for consistency
+  n2_initial <- max(
+    ss1Continuous(delta, sd, r, alpha, beta)[["n2"]],
+    ss1BinaryApprox(p1, p2, r, alpha, beta, Test = "AN")[["n2"]]
+  )
 
-    # Step 1: Initialize with sample size from single endpoint formulas
-    n2 <- max(
-      ss1Continuous(delta, sd, r, alpha, beta)[["n2"]],
-      ss1BinaryApprox(p1, p2, r, alpha, beta, Test = "AN")[["n2"]]
-    )
-    n1 <- ceiling(r * n2)
+  # Step 2: Sequential search to find minimum sample size
+  result_ss <- .ss_sequential_search(
+    initial_n2 = n2_initial,
+    r = r,
+    target_power = 1 - beta,
+    power_fun = power2MixedContinuousBinary,
+    delta = delta, sd = sd, p1 = p1, p2 = p2,
+    rho = rho, alpha = alpha, Test = Test, nMC = nMC
+  )
 
-    # Step 2: Calculate power at initial sample size
-    power <- power2MixedContinuousBinary(
-      n1, n2, delta, sd, p1, p2, rho, alpha, Test, nMC
-    )[["powerCoprimary"]]
+  n1 <- result_ss$n1
+  n2 <- result_ss$n2
+  N <- result_ss$N
 
-    # Step 3: Sequential search - increment n2 by 1 until target power is achieved
-    while (power < 1 - beta) {
-      n2 <- n2 + 1
-      n1 <- ceiling(r * n2)
-      power <- power2MixedContinuousBinary(
-        n1, n2, delta, sd, p1, p2, rho, alpha, Test, nMC
-      )[["powerCoprimary"]]
-    }
-
-    # Final sample sizes
-    N <- n1 + n2
-
-  } else {
-    # ===== ASYMPTOTIC METHODS: Use linear extrapolation =====
-
-    # Step 1: Initialize sample sizes using single endpoint formula
-    # Calculate sample size for each endpoint separately, then take the maximum
-    n2_0 <- max(
-      ss1Continuous(delta, sd, r, alpha, beta)[["n2"]],
-      ss1BinaryApprox(p1, p2, r, alpha, beta, Test = Test)[["n2"]]
-    )
-
-    # For the second initial value, use adjusted target power
-    # This provides a bracket for the linear extrapolation
-    # The adjusted power 1 - sqrt(1-beta) is typically higher than 1 - beta
-    n2_1 <- max(
-      ss1Continuous(delta, sd, r, alpha, 1 - (1 - beta) ^ (1/2))[["n2"]],
-      ss1BinaryApprox(p1, p2, r, alpha, 1 - (1 - beta) ^ (1/2), Test = Test)[["n2"]]
-    )
-
-    # Step 2-4: Iterative refinement using linear extrapolation
-    while (n2_1 - n2_0 != 0) {
-
-      # Calculate sample sizes for group 1
-      n1_0 <- ceiling(r * n2_0)
-      n1_1 <- ceiling(r * n2_1)
-
-      # Calculate power at two candidate sample sizes
-      power_n2_0 <- power2MixedContinuousBinary(
-        n1_0, n2_0, delta, sd, p1, p2, rho, alpha, Test, nMC
-      )[["powerCoprimary"]]
-      power_n2_1 <- power2MixedContinuousBinary(
-        n1_1, n2_1, delta, sd, p1, p2, rho, alpha, Test, nMC
-      )[["powerCoprimary"]]
-
-      # Linear extrapolation to find sample size that achieves target power
-      # This solves: power = (1 - beta) for n2
-      n2_updated <- '/'(
-        n2_0 * (power_n2_1 - (1 - beta)) - n2_1 * (power_n2_0 - (1 - beta)),
-        power_n2_1 - power_n2_0
-      )
-
-      # Update values for next iteration
-      n2_1 <- n2_0
-      n2_0 <- ceiling(n2_updated)
-    }
-
-    # Final sample sizes
-    n2 <- n2_0
-    n1 <- ceiling(r * n2)
-    N <- n1 + n2
-
-    # Set nMC to NA for known variance
+  # Set nMC to NA for asymptotic methods
+  if (Test != "Fisher") {
     nMC <- NA
   }
 

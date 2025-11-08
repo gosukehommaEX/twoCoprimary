@@ -14,13 +14,11 @@
 #' @param alpha One-sided significance level (typically 0.025 or 0.05)
 #' @param beta Target type II error rate (typically 0.1 or 0.2)
 #' @param Test Statistical testing method. One of:
-#'   \itemize{
-#'     \item \code{"Chisq"}: One-sided Pearson chi-squared test
-#'     \item \code{"Fisher"}: Fisher exact test
-#'     \item \code{"Fisher-midP"}: Fisher mid-p test
-#'     \item \code{"Z-pool"}: Z-pooled exact unconditional test
-#'     \item \code{"Boschloo"}: Boschloo exact unconditional test
-#'   }
+#'   * `"Chisq"`: One-sided Pearson chi-squared test
+#'   * `"Fisher"`: Fisher exact test
+#'   * `"Fisher-midP"`: Fisher mid-p test
+#'   * `"Z-pool"`: Z-pooled exact unconditional test
+#'   * `"Boschloo"`: Boschloo exact unconditional test
 #'
 #' @return A data frame with the following columns:
 #'   \item{p11, p12, p21, p22}{Response probabilities}
@@ -40,21 +38,18 @@
 #' \strong{Step 1:} Initialize with sample size from approximate method (AN).
 #' This provides a good starting point for the exact calculation.
 #'
-#' \strong{Step 2:} Calculate exact power at current sample size using
-#' \code{\link{power2BinaryExact}}.
-#'
-#' \strong{Step 3:} Adjust sample size to achieve target power:
+#' \strong{Step 2:} Use sequential search algorithm (Homma and Yoshida 2025, Algorithm 1):
 #' \itemize{
-#'   \item If power is greater than or equal to target: decrease n2 by 1 until power drops below target, then add 1 back
-#'   \item If power is less than target: increase n2 by 1 until power reaches target
+#'   \item Calculate power at initial sample size
+#'   \item If power >= target: decrease n2 until power < target, then add 1 back
+#'   \item If power < target: increase n2 until power >= target
 #' }
 #'
-#' \strong{Step 4:} Return final sample sizes.
+#' \strong{Step 3:} Return final sample sizes.
 #'
 #' Note: Due to the saw-tooth nature of exact power (power does not increase
-#' monotonically with sample size), linear extrapolation is not appropriate.
-#' This function uses sequential search to ensure the minimum sample size that
-#' achieves the target power.
+#' monotonically with sample size), this sequential search ensures the minimum
+#' sample size that achieves the target power.
 #'
 #' @references
 #' Homma, G., & Yoshida, T. (2025). Exact power and sample size in clinical
@@ -149,39 +144,22 @@ ss2BinaryExact <- function(p11, p12, p21, p22, rho1, rho2, r, alpha, beta, Test)
 
   # Step 1: Initialize sample size using approximate method (AN)
   # This provides a good starting point for the exact calculation
-  n2 <- ss2BinaryApprox(p11, p12, p21, p22, rho1, rho2, r, alpha, beta, "AN")[["n2"]]
-  n1 <- ceiling(r * n2)
+  n2_initial <- ss2BinaryApprox(p11, p12, p21, p22, rho1, rho2, r, alpha, beta, "AN")[["n2"]]
 
-  # Step 2: Calculate exact power at current sample size
-  power <- power2BinaryExact(n1, n2, p11, p12, p21, p22, rho1, rho2, alpha, Test)[["powerCoprimary"]]
+  # Step 2: Sequential search to find minimum sample size
+  result_ss <- .ss_sequential_search(
+    initial_n2 = n2_initial,
+    r = r,
+    target_power = 1 - beta,
+    power_fun = power2BinaryExact,
+    p11 = p11, p12 = p12, p21 = p21, p22 = p22,
+    rho1 = rho1, rho2 = rho2,
+    alpha = alpha, Test = Test
+  )
 
-  # Step 3: Adjust sample size to achieve target power
-
-  if (power %>=% (1 - beta)) {
-
-    # Step 3-1: If power is too high, decrease n2 until power drops below target
-    while (power %>=% (1 - beta)) {
-      n2 <- n2 - 1
-      n1 <- ceiling(r * n2)
-      power <- power2BinaryExact(n1, n2, p11, p12, p21, p22, rho1, rho2, alpha, Test)[["powerCoprimary"]]
-    }
-
-    # Add 1 back to get the minimum sample size that achieves target power
-    n2 <- n2 + 1
-
-  } else {
-
-    # Step 3-2: If power is too low, increase n2 until power reaches target
-    while (power %<<% (1 - beta)) {
-      n2 <- n2 + 1
-      n1 <- ceiling(r * n2)
-      power <- power2BinaryExact(n1, n2, p11, p12, p21, p22, rho1, rho2, alpha, Test)[["powerCoprimary"]]
-    }
-  }
-
-  # Step 4: Determine final sample sizes
-  n1 <- ceiling(r * n2)
-  N <- n1 + n2
+  n1 <- result_ss$n1
+  n2 <- result_ss$n2
+  N <- result_ss$N
 
   # Return result as a data frame
   result <- data.frame(
