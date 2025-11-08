@@ -116,7 +116,7 @@
 #' )
 #'
 #' @export
-#' @importFrom mvtnorm pmvnorm
+#' @importFrom pbivnorm pbivnorm
 #' @importFrom stats qnorm
 power2BinaryApprox <- function(n1, n2, p11, p12, p21, p22, rho1, rho2, alpha, Test) {
 
@@ -232,15 +232,8 @@ power2BinaryApprox <- function(n1, n2, p11, p12, p21, p22, rho1, rho2, alpha, Te
   # Calculate power for individual endpoints
   power1and2 <- pnorm(c_val)
 
-  # Calculate power for co-primary endpoints with continuity correction
-  powerCoprimary <- pmvnorm(
-    lower = c(-Inf, -Inf),
-    upper = c_val,
-    mean = c(0, 0),
-    corr = matrix(c(1, rho, rho, 1), ncol = 2),
-    algorithm = GenzBretz(maxpts = 25000, abseps = 0.001, releps = 0),
-    seed = 1
-  )[[1]]
+  # Calculate power for co-primary endpoints
+  powerCoprimary <- pbivnorm(x = c_val[1], y = c_val[2], rho = rho)
 
   # Return results as a data frame
   result <- data.frame(

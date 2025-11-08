@@ -92,7 +92,8 @@
 #' }
 #'
 #' @export
-#' @importFrom mvtnorm pmvnorm rmvnorm GenzBretz
+#' @importFrom mvtnorm rmvnorm
+#' @importFrom pbivnorm pbivnorm
 #' @importFrom stats qnorm pnorm qt pt dhyper phyper
 power2MixedContinuousBinary <- function(n1, n2, delta, sd, p1, p2, rho, alpha, Test, nMC = 10000) {
 
@@ -314,14 +315,7 @@ power2MixedContinuousBinary <- function(n1, n2, delta, sd, p1, p2, rho, alpha, T
 
   # ===== CO-PRIMARY POWER =====
   # Calculate power for co-primary endpoints using bivariate normal distribution
-  powerCoprimary <- pmvnorm(
-    lower = c(-Inf, -Inf),
-    upper = c(c_val_cont, c_val_binary),
-    mean = c(0, 0),
-    corr = matrix(c(1, gamma, gamma, 1), ncol = 2),
-    algorithm = GenzBretz(maxpts = 25000, abseps = 0.001, releps = 0),
-    seed = 1
-  )[[1]]
+  powerCoprimary <- pbivnorm(x = c_val_cont, y = c_val_binary, rho = gamma)
 
   # Return results as a data frame
   result <- data.frame(

@@ -105,7 +105,7 @@
 #'
 #' @export
 #' @importFrom stats pnorm qnorm
-#' @importFrom mvtnorm pmvnorm GenzBretz
+#' @importFrom pbivnorm pbivnorm
 power2MixedCountContinuous <- function(n1, n2, r1, r2, nu, t, mu1, mu2, sd,
                                        rho1, rho2, alpha) {
 
@@ -199,14 +199,7 @@ power2MixedCountContinuous <- function(n1, n2, r1, r2, nu, t, mu1, mu2, sd,
 
   # Calculate power for co-primary endpoints using bivariate normal distribution
   # (equation 13 in Homma and Yoshida 2024)
-  powerCoprimary <- pmvnorm(
-    lower = c(-Inf, -Inf),
-    upper = c_val,
-    mean = c(0, 0),
-    corr = matrix(c(1, gamma, gamma, 1), ncol = 2),
-    algorithm = GenzBretz(maxpts = 25000, abseps = 0.001, releps = 0),
-    seed = 1
-  )[[1]]
+  powerCoprimary <- pbivnorm(x = c_val[1], y = c_val[2], rho = gamma)
 
   # Return results as a data frame
   result <- data.frame(

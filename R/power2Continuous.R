@@ -93,7 +93,7 @@
 #' }
 #'
 #' @export
-#' @importFrom mvtnorm pmvnorm GenzBretz
+#' @importFrom pbivnorm pbivnorm
 #' @importFrom stats pnorm pt qt rWishart
 power2Continuous <- function(n1, n2, delta1, delta2, sd1, sd2, rho, alpha,
                              known_var = TRUE, nMC = 1e+4) {
@@ -119,14 +119,7 @@ power2Continuous <- function(n1, n2, delta1, delta2, sd1, sd2, rho, alpha,
     power1and2 <- pnorm(c_val)
 
     # Calculate power for co-primary endpoints using bivariate normal distribution
-    powerCoprimary <- pmvnorm(
-      lower = c(-Inf, -Inf),
-      upper = c_val,
-      mean = c(0, 0),
-      corr = matrix(c(1, rho, rho, 1), ncol = 2),
-      algorithm = GenzBretz(maxpts = 25000, abseps = 0.001, releps = 0),
-      seed = 1
-    )[[1]]
+    powerCoprimary <- pbivnorm(x = c_val[1], y = c_val[2], rho = rho)
 
   } else {
 
@@ -143,25 +136,20 @@ power2Continuous <- function(n1, n2, delta1, delta2, sd1, sd2, rho, alpha,
     # Generate Wishart random matrices
     Ws <- rWishart(nMC, df = nu, Sigma = Sigma)
 
-    # Calculate power by averaging over simulated variance-covariance matrices
-    probs <- numeric(nMC)
-    for (i in 1:nMC) {
-      # Extract diagonal elements (variances) from the i-th Wishart matrix
-      Wi <- diag(Ws[, , i])
+    # VECTORIZED: Extract diagonal elements efficiently
+    W11 <- Ws[1, 1, ]
+    W22 <- Ws[2, 2, ]
 
-      # Calculate critical values adjusted by estimated variances
-      c_val <- -qt(1 - alpha, df = nu) * sqrt(Wi / nu) + Z
+    # Pre-compute constants
+    t_alpha <- qt(1 - alpha, df = nu)
+    sqrt_nu_inv <- sqrt(1 / nu)
 
-      # Calculate probability for this iteration
-      probs[i] <- pmvnorm(
-        lower = c(-Inf, -Inf),
-        upper = c_val,
-        mean = c(0, 0),
-        corr = matrix(c(1, rho, rho, 1), ncol = 2),
-        algorithm = GenzBretz(maxpts = 25000, abseps = 0.001, releps = 0),
-        seed = 1
-      )[[1]]
-    }
+    # VECTORIZED: Calculate critical values for all iterations at once
+    c_val1 <- -t_alpha * sqrt(W11) * sqrt_nu_inv + Z[1]
+    c_val2 <- -t_alpha * sqrt(W22) * sqrt_nu_inv + Z[2]
+
+    # VECTORIZED: Use pbivnorm for all iterations at once
+    probs <- pbivnorm(x = c_val1, y = c_val2, rho = rho)
 
     # Average over all Monte Carlo iterations
     powerCoprimary <- mean(probs)
