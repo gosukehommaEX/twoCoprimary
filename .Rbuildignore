@@ -5,3 +5,14 @@
 ^\.github$
 ^cran-comments\.md$
 ^\.git$
+^_pkgdown\.yml$
+^pkgdown$
+^docs$
+^\.github/workflows$
+^codecov\.yml$
+^\.gitignore$
+^\.Rbuildignore$
+^\.DS_Store$
+^vignettes/.*\.html$
+^vignettes/.*_cache$
+^vignettes/.*_files$

@@ -1,0 +1,130 @@
+url: https://gosukehommaEX.github.io/twoCoprimary/
+template:
+  bootstrap: 5
+  bootswatch: flatly
+  bslib:
+    primary: "#0054AD"
+    border-radius: 0.5rem
+    btn-border-radius: 0.25rem
+
+home:
+  title: "twoCoprimary: Sample Size and Power Calculation for Two Co-Primary Endpoints"
+  description: >
+    Comprehensive tools for designing clinical trials with two co-primary endpoints,
+    supporting continuous, binary, and mixed endpoint types with proper correlation handling.
+  links:
+  - text: Browse source code
+    href: https://github.com/gosukehommaEX/twoCoprimary
+
+navbar:
+  structure:
+    left:  [intro, reference, articles, news]
+    right: [search, github]
+  components:
+    home:
+      icon: fas fa-home fa-lg
+      href: index.html
+    reference:
+      text: Reference
+      href: reference/index.html
+    articles:
+      text: Articles
+      menu:
+      - text: Overview
+        href: articles/overview.html
+      - text: -------
+      - text: "Two Continuous Endpoints"
+        href: articles/two-continuous-endpoints.html
+      - text: "Two Binary Endpoints (Asymptotic)"
+        href: articles/two-binary-endpoints-approx.html
+      - text: "Two Binary Endpoints (Exact)"
+        href: articles/two-binary-endpoints-exact.html
+      - text: "Mixed Continuous and Binary"
+        href: articles/mixed-continuous-binary.html
+      - text: "Mixed Count and Continuous"
+        href: articles/mixed-count-continuous.html
+    news:
+      text: News
+      href: news/index.html
+    github:
+      icon: fab fa-github fa-lg
+      href: https://github.com/gosukehommaEX/twoCoprimary
+
+reference:
+- title: "Two Continuous Endpoints"
+  desc: >
+    Functions for clinical trials with two continuous co-primary endpoints
+  contents:
+  - ss2Continuous
+  - power2Continuous
+  - twoCoprimary2Continuous
+  - ss1Continuous
+
+- title: "Two Binary Endpoints (Asymptotic Methods)"
+  desc: >
+    Functions for clinical trials with two binary co-primary endpoints using
+    asymptotic normal approximation
+  contents:
+  - ss2BinaryApprox
+  - power2BinaryApprox
+  - twoCoprimary2BinaryApprox
+  - ss1BinaryApprox
+
+- title: "Two Binary Endpoints (Exact Methods)"
+  desc: >
+    Functions for clinical trials with two binary co-primary endpoints using
+    exact inference methods
+  contents:
+  - ss2BinaryExact
+  - power2BinaryExact
+  - twoCoprimary2BinaryExact
+  - rr1Binary
+  - dbibinom
+
+- title: "Mixed Continuous and Binary Endpoints"
+  desc: >
+    Functions for clinical trials with one continuous and one binary co-primary endpoint
+  contents:
+  - ss2MixedContinuousBinary
+  - power2MixedContinuousBinary
+  - twoCoprimary2MixedContinuousBinary
+
+- title: "Mixed Count and Continuous Endpoints"
+  desc: >
+    Functions for clinical trials with one count (negative binomial) and one
+    continuous co-primary endpoint
+  contents:
+  - ss2MixedCountContinuous
+  - power2MixedCountContinuous
+  - twoCoprimary2MixedCountContinuous
+  - ss1Count
+
+- title: "Utility Functions"
+  desc: >
+    Helper functions for correlation bounds and design comparisons
+  contents:
+  - corrbound2Binary
+  - corrbound2MixedCountContinuous
+  - design_table
+
+- title: "Visualization and Output"
+  desc: >
+    Methods for displaying and visualizing results
+  contents:
+  - print.twoCoprimary
+  - print.twoCoprimary_table
+  - plot.twoCoprimary
+
+authors:
+  Gosuke Homma:
+    href: https://github.com/gosukehommaEX
+
+footer:
+  structure:
+    left: developed_by
+    right: built_with
+  components:
+    developed_by: |
+      Developed by [Gosuke Homma](https://github.com/gosukehommaEX)
+    built_with: |
+      Built with [pkgdown](https://pkgdown.r-lib.org/) and [R](https://www.r-project.org/)

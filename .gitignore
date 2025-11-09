@@ -37,4 +37,31 @@ inst/doc/
 
 # Mac OS
 .DS_Store
-inst/doc
+
+# Windows
+Thumbs.db
+
+# R package build files
+*.tar.gz
+*.zip
+
+# R CMD check results
+*.Rcheck/
+
+# Temporary files
+*~
+*.swp
+*.swo
+
+# pkgdown temp files
+vignettes/*.html
+vignettes/*.R
+
+# testthat output
+tests/testthat/_snaps/
+
+# Coverage reports
+coverage/
+*.gcov
+*.gcda
+*.gcno
