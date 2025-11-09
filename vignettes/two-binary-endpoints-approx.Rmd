@@ -190,7 +190,7 @@ $$\text{Power}_k = \Phi\left(\frac{\delta_k^{ASc} - se \cdot z_{1-\alpha}}{se_k}
 
 Under $\text{H}_{1}$, $(Z_{1}, Z_{2})$ asymptotically follows a bivariate normal distribution:
 
-$$\begin{pmatrix} Z_1 \\ Z_2 \end{pmatrix} \sim \text{BN}\left(\begin{pmatrix} \mu_1 \\ \mu_2 \end{pmatrix}, \begin{pmatrix} 1 & \gamma \\ \gamma & 1 \end{pmatrix}\right)$$
+$$\begin{pmatrix} Z_1 \\ Z_2 \end{pmatrix} \sim \text{BN}\left(\begin{pmatrix} \omega_1 \\ \omega_2 \end{pmatrix}, \begin{pmatrix} 1 & \gamma \\ \gamma & 1 \end{pmatrix}\right)$$
 
 The correlation $\gamma$ between test statistics depends on $\rho_{1}$, $\rho_{2}$, and the marginal probabilities. For details on the derivation and approximation formulas, see Sozu et al. (2010) and Homma and Yoshida (2025). This approximation is implemented in the package functions.
 
@@ -202,7 +202,7 @@ $$1 - \beta = \text{P}(Z_1 > z_{1-\alpha} \text{ and } Z_2 > z_{1-\alpha} \mid \
 
 Using the bivariate normal distribution:
 
-$$1 - \beta = \Phi_2(-z_{1-\alpha} + \mu_1, -z_{1-\alpha} + \mu_2 \mid \gamma)$$
+$$1 - \beta = \Phi_2(-z_{1-\alpha} + \omega_1, -z_{1-\alpha} + \omega_2 \mid \gamma)$$
 
 where $\Phi_{2}(a, b \mid \gamma)$ is the CDF of the standard bivariate normal distribution with correlation $\gamma$.
 

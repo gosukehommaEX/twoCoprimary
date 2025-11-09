@@ -65,3 +65,5 @@ coverage/
 *.gcov
 *.gcda
 *.gcno
+/doc/
+/Meta/

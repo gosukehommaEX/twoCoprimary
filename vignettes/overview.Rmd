@@ -74,11 +74,12 @@ $$1 - \beta = \Pr(Z_{1} > z_{1-\alpha} \text{ and } Z_{2} > z_{1-\alpha} \mid \t
 
 When $(Z_{1}, Z_{2})$ follow a bivariate normal distribution with correlation $\rho$:
 
-$$1 - \beta = \Phi_{2}(-z_{1-\alpha} + \mu_{1}, -z_{1-\alpha} + \mu_{2} \mid \rho)$$
+$$1 - \beta = \Phi_{2}(-z_{1-\alpha} + \omega_{1}, -z_{1-\alpha} + \omega_{2} \mid \rho)$$
 
 where:
+
 - $\Phi_{2}(\cdot, \cdot \mid \rho)$ is the bivariate normal cumulative distribution function with correlation $\rho$
-- $\mu_{1}$ and $\mu_{2}$ are the non-centrality parameters under $\text{H}_{1}$
+- $\omega_{1}$ and $\omega_{2}$ are the non-centrality parameters under $\text{H}_{1}$
 
 ### Impact of Correlation
 

@@ -105,11 +105,11 @@ where $s_{k}$ is the pooled sample standard deviation for endpoint $k$.
 
 Under $\text{H}_{1}$, when variances are known, $(Z_{1}, Z_{2})$ asymptotically follows a bivariate normal distribution:
 
-$$\begin{pmatrix} Z_{1} \\ Z_{2} \end{pmatrix} \sim \text{BN}\left(\begin{pmatrix} \mu_{1} \\ \mu_{2} \end{pmatrix}, \begin{pmatrix} 1 & \gamma \\ \gamma & 1 \end{pmatrix}\right)$$
+$$\begin{pmatrix} Z_{1} \\ Z_{2} \end{pmatrix} \sim \text{BN}\left(\begin{pmatrix} \omega_{1} \\ \omega_{2} \end{pmatrix}, \begin{pmatrix} 1 & \gamma \\ \gamma & 1 \end{pmatrix}\right)$$
 
 where:
 
-- $\mu_{k} = \delta_{k}\sqrt{\frac{r n_{2}}{1 + r}}$ is the non-centrality parameter for endpoint $k$
+- $\omega_{k} = \delta_{k}\sqrt{\frac{r n_{2}}{1 + r}}$ is the non-centrality parameter for endpoint $k$
 - $\gamma = \rho$ is the correlation between test statistics
 
 ### Power Formula
@@ -120,7 +120,7 @@ $$1 - \beta = \Pr(Z_{1} > z_{1-\alpha} \text{ and } Z_{2} > z_{1-\alpha} \mid \t
 
 Using the bivariate normal CDF:
 
-$$1 - \beta = \Phi_{2}(-z_{1-\alpha} + \mu_{1}, -z_{1-\alpha} + \mu_{2} \mid \rho)$$
+$$1 - \beta = \Phi_{2}(-z_{1-\alpha} + \omega_{1}, -z_{1-\alpha} + \omega_{2} \mid \rho)$$
 
 where $\Phi_{2}(\cdot, \cdot \mid \rho)$ is the bivariate normal CDF with correlation $\rho$.
 

@@ -117,12 +117,12 @@ When $\sigma$ is a common known standard deviation.
 
 Under $\text{H}_{1}$, the test statistics $(Z_{1}, Z_{2})$ asymptotically follow a bivariate normal distribution (Appendix B in Homma and Yoshida, 2024):
 
-$$\begin{pmatrix} Z_1 \\ Z_2 \end{pmatrix} \sim \text{BN}\left(\begin{pmatrix} \mu_1 \\ \mu_2 \end{pmatrix}, \begin{pmatrix} 1 & \gamma \\ \gamma & 1 \end{pmatrix}\right)$$
+$$\begin{pmatrix} Z_1 \\ Z_2 \end{pmatrix} \sim \text{BN}\left(\begin{pmatrix} \omega_1 \\ \omega_2 \end{pmatrix}, \begin{pmatrix} 1 & \gamma \\ \gamma & 1 \end{pmatrix}\right)$$
 
 where:
 
-- $\mu_{1} = \frac{\sqrt{n_{2}}\beta_{1}}{\sqrt{V_{a}}}$ with $\beta_{1} = \log(r_{1}) - \log(r_{2})$
-- $\mu_{2} = \frac{\delta}{\sigma\sqrt{\frac{1+r}{r n_{2}}}}$ with $\delta = \mu_{1} - \mu_{2}$
+- $\omega_{1} = \frac{\sqrt{n_{2}}\beta_{1}}{\sqrt{V_{a}}}$ with $\beta_{1} = \log(r_{1}) - \log(r_{2})$
+- $\omega_{2} = \frac{\delta}{\sigma\sqrt{\frac{1+r}{r n_{2}}}}$ with $\delta = \mu_{1} - \mu_{2}$
 
 **Correlation between test statistics** (Equation 11 in Homma and Yoshida, 2024):
 
