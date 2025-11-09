@@ -1,7 +1,7 @@
 Package: twoCoprimary
 Type: Package
 Title: Sample Size and Power Calculation for Two Co-Primary Endpoints
-Version: 0.1.0
+Version: 1.0.0
 Authors@R: person(given = "Gosuke",
                   family = "Homma",
                   role = c("aut", "cre"),
