@@ -18,7 +18,7 @@ knitr::opts_chunk$set(
 
 ## Overview
 
-This vignette demonstrates exact sample size calculation for clinical trials with two co-primary binary endpoints. The methodology is based on Homma and Yoshida (2025).
+This vignette demonstrates exact sample size calculation and power analysis for clinical trials with two co-primary binary endpoints. The methodology is based on Homma and Yoshida (2025), which provides exact inference methods using the bivariate binomial distribution.
 
 ```{r setup, message=FALSE, warning=FALSE}
 library(twoCoprimary)
@@ -33,645 +33,475 @@ library(knitr)
 
 Exact methods are recommended when:
 
-- **Small to medium sample sizes** (N < 200)
-- **Extreme probabilities** (p < 0.10 or p > 0.90)
+- **Small to medium sample sizes** ($N < 200$)
+- **Extreme probabilities** ($p < 0.10$ or $p > 0.90$)
 - **Strict Type I error control** is required
 - **Regulatory requirements** for exact inference
 
-Asymptotic methods may not maintain the nominal Type I error rate in these situations, leading to either overly conservative or anti-conservative tests.
+Asymptotic methods may not maintain the nominal Type I error rate in these situations.
 
 ### Advantages of Exact Methods
 
-1. **Accurate Type I error control**: Exact tests guarantee α ≤ nominal level
+1. **Accurate Type I error control**: Exact tests guarantee $\alpha \leq$ nominal level
 2. **Better small-sample performance**: No reliance on asymptotic approximations
-3. **Valid for extreme probabilities**: No restrictions on p values
+3. **Valid for extreme probabilities**: No restrictions on $p$ values
 4. **Regulatory acceptance**: Often preferred by regulatory agencies
 
 ### Disadvantages
 
 1. **Computational intensity**: Requires enumeration of possible outcomes
-2. **Conservatism**: Discrete nature of tests can lead to conservatism
+2. **Conservatism**: Discrete nature can lead to conservatism
 3. **Implementation complexity**: More complex than asymptotic methods
 
 ## Statistical Framework
 
 ### Model and Assumptions
 
-Consider a two-arm parallel-group superiority trial comparing treatment (group 1) with control (group 2). Let n₁ and n₂ denote the sample sizes.
+Consider a two-arm parallel-group superiority trial comparing treatment (group 1) with control (group 2). Let $n_{1}$ and $n_{2}$ denote the sample sizes in groups 1 and 2, respectively.
 
-For subject i in group j (j = 1: treatment, j = 2: control), we observe two binary endpoints:
+For patient $i$ in group $j$ ($j = 1$: treatment, $j = 2$: control), we observe two binary outcomes:
 
-**Endpoint k** (k = 1, 2):
-$$Y_{ijk} \sim \text{Bernoulli}(p_{jk})$$
+**Endpoint $k$** ($k = 1, 2$):
+$$X_{i,j,k} \in \{0, 1\}$$
 
-**Joint distribution within subjects**: The bivariate outcome follows a multinomial distribution with four cells:
-- π₁₁⁽ʲ⁾: P(Y₁ = 1, Y₂ = 1) in group j
-- π₁₀⁽ʲ⁾: P(Y₁ = 1, Y₂ = 0) in group j  
-- π₀₁⁽ʲ⁾: P(Y₁ = 0, Y₂ = 1) in group j
-- π₀₀⁽ʲ⁾: P(Y₁ = 0, Y₂ = 0) in group j
+where $X_{i,j,k} = 1$ if patient $i$ in group $j$ is a responder for endpoint $k$, and 0 otherwise.
 
-**Marginal probabilities**:
-$$p_{j1} = \pi_{11}^{(j)} + \pi_{10}^{(j)}$$
-$$p_{j2} = \pi_{11}^{(j)} + \pi_{01}^{(j)}$$
+**True response probabilities**:
+$$p_{j,k} = {\rm P}(X_{i,j,k} = 1)$$
+
+where $0 < p_{j,k} < 1$ for each $j$ and $k$.
+
+### Joint Distribution of Binary Outcomes
+
+The paired binary outcomes $(X_{i,j,1}, X_{i,j,2})$ for patient $i$ in group $j$ follow a multinomial distribution with four possible outcomes:
+
+**Per-trial probabilities**:
+
+- $p_{j}^{(1,1)} = \phi_{j}$: Both endpoints successful
+- $p_{j}^{(1,0)} = p_{j,1} - \phi_{j}$: Only endpoint 1 successful
+- $p_{j}^{(0,1)} = p_{j,2} - \phi_{j}$: Only endpoint 2 successful
+- $p_{j}^{(0,0)} = 1 - p_{j,1} - p_{j,2} + \phi_{j}$: Both endpoints unsuccessful
+
+where $\phi_{j} = {\rm P}(X_{i,j,1} = 1, X_{i,j,2} = 1)$.
+
+Let $Z_{j}^{(\ell,m)}$ denote the random variable representing the number of times $\{(X_{i,j,1}, X_{i,j,2}) : i = 1, \ldots, n_{j}\}$ takes the value $(\ell, m)$ for $\ell, m \in \{0, 1\}$. Then:
+
+$$(Z_{j}^{(0,0)}, Z_{j}^{(1,0)}, Z_{j}^{(0,1)}, Z_{j}^{(1,1)}) \sim {\rm Multinomial}(n_{j}; p_{j}^{(0,0)}, p_{j}^{(1,0)}, p_{j}^{(0,1)}, p_{j}^{(1,1)})$$
+
+### Number of Responders
+
+Let $Y_{j,k} = \sum_{i=1}^{n_{j}} X_{i,j,k}$ represent the number of responders in group $j$ for endpoint $k$. Then:
+
+- $Y_{j,1} = Z_{j}^{(1,1)} + Z_{j}^{(1,0)}$
+- $Y_{j,2} = Z_{j}^{(1,1)} + Z_{j}^{(0,1)}$
+
+### Bivariate Binomial Distribution
+
+Following Homma and Yoshida (2025), the joint distribution of $(Y_{j,1}, Y_{j,2})$ can be expressed as a **bivariate binomial distribution**:
+
+$$(Y_{j,1}, Y_{j,2}) \sim {\rm BiBin}(n_{j}, p_{j,1}, p_{j,2}, \gamma_{j})$$
+
+where $\gamma_{j}$ is a dependence parameter related to the correlation $\rho_{j}$ between $X_{i,j,1}$ and $X_{i,j,2}$.
+
+**Probability mass function** (Equation 3 in Homma and Yoshida, 2025):
+
+$${\rm P}(Y_{j,1} = y_{j,1}, Y_{j,2} = y_{j,2} \mid n_{j}, p_{j,1}, p_{j,2}, \gamma_{j}) = f(y_{j,1} \mid n_{j}, p_{j,1}) \times g(y_{j,2} \mid y_{j,1}, n_{j}, p_{j,1}, p_{j,2}, \gamma_{j})$$
+For more details, please see Homma and Yoshida (2025).
 
 ### Correlation Structure
 
-The **tetrachoric correlation** ρⱼ measures association between binary endpoints by assuming underlying bivariate normal:
+The **correlation** $\rho_{j}$ between $X_{i,j,1}$ and $X_{i,j,2}$ is:
 
-$$\pi_{11}^{(j)} = \Phi_2(\Phi^{-1}(p_{j1}), \Phi^{-1}(p_{j2}) \mid \rho_j)$$
+$$\rho_{j} = {\rm Cor}(X_{i,j,1}, X_{i,j,2}) = \frac{\phi_{j} - p_{j,1} p_{j,2}}{\sqrt{p_{j,1}(1 - p_{j,1}) p_{j,2}(1 - p_{j,2})}}$$
 
-where Φ₂ is the bivariate normal CDF.
+The dependence parameter $\gamma_{j}$ is related to $\rho_{j}$ through (Equation 4 in Homma and Yoshida, 2025):
 
-**Correlation constraints**: Valid correlations must satisfy:
-$$\max(0, p_{j1} + p_{j2} - 1) \leq \pi_{11}^{(j)} \leq \min(p_{j1}, p_{j2})$$
+$$\gamma_{j} = \gamma(\rho_{j}, p_{j,1}, p_{j,2}) = \rho_{j} \sqrt{\frac{p_{j,2}(1 - p_{j,2})}{p_{j,1}(1 - p_{j,1})}} \left(1 - \rho_{j} \sqrt{\frac{p_{j,2}(1 - p_{j,2})}{p_{j,1}(1 - p_{j,1})}}\right)^{-1}$$
 
-### Hypothesis Testing
+**Important property**: The correlation between $Y_{j,1}$ and $Y_{j,2}$ equals $\rho_{j}$, the same as the correlation between $X_{i,j,1}$ and $X_{i,j,2}$.
 
-**For endpoint k**:
-$$H_{0k}: p_{1k} = p_{2k} \text{ vs. } H_{1k}: p_{1k} > p_{2k}$$
+**Marginal distributions**:
+$$Y_{j,k} \sim {\rm Bin}(n_{j}, p_{j,k})$$
 
-**For co-primary endpoints** (intersection-union test):
-$$H_0 = H_{01} \cup H_{02} \text{ vs. } H_1 = H_{11} \cap H_{12}$$
+**Correlation bounds**: Due to $0 < p_{j,k} < 1$, the correlation $\rho_{j}$ is bounded:
 
-**Decision rule**: Reject H₀ at level α if and only if **both** H₀₁ and H₀₂ are rejected.
-
-## Available Exact Tests
-
-### 1. Fisher's Exact Test (Conditional)
-
-Fisher's exact test is a **conditional test** that conditions on the marginal totals.
-
-**Test statistic**: Number of successes in treatment group for endpoint k:
-$$X_k = \sum_{i=1}^{n_1} Y_{i1k}$$
-
-**Conditional distribution** given marginals:
-$$P(X_k = x_k \mid n_{1k}, n_{2k}, m_k) = \frac{\binom{m_k}{x_k}\binom{n_1 + n_2 - m_k}{n_1 - x_k}}{\binom{n_1 + n_2}{n_1}}$$
+$$\rho_{j} \in [L(p_{j,1}, p_{j,2}), U(p_{j,1}, p_{j,2})] \subseteq [-1, 1]$$
 
 where:
-- n₁ₖ = treatment group successes
-- n₂ₖ = control group successes  
-- mₖ = n₁ₖ + n₂ₖ = total successes
 
-**P-value**: 
-$$p\text{-value}_k = P(X_k \geq x_k^{\text{obs}} \mid m_k)$$
+$$L(p_{j,1}, p_{j,2}) = \max\left\{-\sqrt{\frac{p_{j,1} p_{j,2}}{(1 - p_{j,1})(1 - p_{j,2})}}, -\sqrt{\frac{(1 - p_{j,1})(1 - p_{j,2})}{p_{j,1} p_{j,2}}}\right\}$$
 
-**Advantages**:
-- Guarantees exact Type I error control
-- Widely accepted and implemented
-- Simple interpretation
+$$U(p_{j,1}, p_{j,2}) = \min\left\{\sqrt{\frac{p_{j,1}(1 - p_{j,2})}{p_{j,2}(1 - p_{j,1})}}, \sqrt{\frac{p_{j,2}(1 - p_{j,1})}{p_{j,1}(1 - p_{j,2})}}\right\}$$
 
-**Disadvantages**:
-- Conditional nature reduces power
-- Conservative (actual α < nominal α)
-- Fixed marginals may not reflect alternative hypothesis
+**Special cases**:
+- If $p_{j,1} = p_{j,2}$, then $U(p_{j,1}, p_{j,2}) = 1$
+- If $p_{j,1} + p_{j,2} = 1$, then $L(p_{j,1}, p_{j,2}) = -1$
 
-### 2. Z-pooled Exact Unconditional Test
+## Hypothesis Testing
 
-This is an **unconditional test** based on the pooled variance Z-statistic.
+### Superiority Hypotheses
 
-**Test statistic**:
-$$Z_k = \frac{\hat{p}_{1k} - \hat{p}_{2k}}{\sqrt{\bar{p}_k(1-\bar{p}_k)(1/n_1 + 1/n_2)}}$$
+Since higher values of both endpoints indicate treatment benefit, we test:
 
-where $\bar{p}_k = (n_1\hat{p}_{1k} + n_2\hat{p}_{2k})/(n_1 + n_2)$ is the pooled proportion.
+**For endpoint 1**:
+$${\rm H}_{0}^{(1)}: p_{1,1} \leq p_{2,1} \text{ vs. } {\rm H}_{1}^{(1)}: p_{1,1} > p_{2,1}$$
 
-**P-value calculation**:
-The p-value is computed by maximizing over the nuisance parameter space:
+**For endpoint 2**:
+$${\rm H}_{0}^{(2)}: p_{1,2} \leq p_{2,2} \text{ vs. } {\rm H}_{1}^{(2)}: p_{1,2} > p_{2,2}$$
 
-$$p\text{-value}_k = \sup_{p_{1k}=p_{2k}=p_k} P(Z_k(\tilde{X}_k) \geq Z_k(x_k^{\text{obs}}) \mid p_k)$$
+### Co-Primary Endpoints (Intersection-Union Test)
 
-where the supremum is taken over all possible values of the common success probability under H₀.
+The trial succeeds only if superiority is demonstrated for **both** endpoints simultaneously:
 
-**Computational approach**:
-1. For each possible value of p under H₀ (grid search)
-2. Calculate probability of observing test statistic as extreme or more extreme
-3. Take maximum over all p values
+**Null hypothesis**: ${\rm H}_{0} = {\rm H}_{0}^{(1)} \cup {\rm H}_{0}^{(2)}$ (at least one null is true)
 
-**Advantages**:
-- Unconditional (more powerful than Fisher's test)
-- Exact Type I error control
-- Corresponds to Barnard's test
+**Alternative hypothesis**: ${\rm H}_{1} = {\rm H}_{1}^{(1)} \cap {\rm H}_{1}^{(2)}$ (both alternatives are true)
 
-**Disadvantages**:
-- Computationally intensive
-- Requires optimization over nuisance parameter
+**Decision rule**: Reject ${\rm H}_{0}$ at level $\alpha$ if and only if **both** ${\rm H}_{0}^{(1)}$ and ${\rm H}_{0}^{(2)}$ are rejected at level $\alpha$ without multiplicity adjustment.
 
-### 3. Boschloo's Exact Unconditional Test
+## Statistical Tests
 
-Boschloo's test is an **exact unconditional test** that combines Fisher's p-value with unconditional maximization.
+Homma and Yoshida (2025) consider five exact test methods:
 
-**Test procedure**:
-1. Compute Fisher's exact p-value for observed data: p_F(x)
-2. Maximize over nuisance parameter:
+### Method 1: One-sided Pearson Chi-squared Test (Chisq)
 
-$$p\text{-value}_k = \sup_{p_{1k}=p_{2k}=p_k} P(p_F(\tilde{X}_k) \leq p_F(x_k^{\text{obs}}) \mid p_k)$$
+For endpoint $k$, the test statistic is:
 
-**Key insight**: Rather than rejecting when Fisher's p-value is small, Boschloo rejects when the probability of obtaining a Fisher p-value as small or smaller (under H₀) is small.
+$$Z(y_{1,k}, y_{2,k}) = \frac{\hat{p}_{1,k} - \hat{p}_{2,k}}{\sqrt{\hat{p}_{k}(1 - \hat{p}_{k})\left(\frac{1}{n_{1}} + \frac{1}{n_{2}}\right)}}$$
 
-**Advantages**:
-- **Uniformly most powerful** among exact unconditional tests
-- More powerful than Fisher's test
-- Exact Type I error control
+where:
 
-**Disadvantages**:
-- Most computationally intensive
-- Requires double summation (Fisher p-value + unconditional)
+- $\hat{p}_{j,k} = y_{j,k} / n_{j}$ is the sample proportion
+- $\hat{p}_{k} = \frac{n_{1} \hat{p}_{1,k} + n_{2} \hat{p}_{2,k}}{n_{1} + n_{2}}$ is the pooled proportion
 
-### Comparison of Test Methods
+Reject ${\rm H}_{0}^{(k)}$ if $Z(y_{1,k}, y_{2,k}) > z_{1-\alpha}$, where $z_{1-\alpha}$ is the $(1-\alpha)$-quantile of the standard normal distribution.
 
-| Test | Type | Power | Computation | Type I Error |
-|------|------|-------|-------------|--------------|
-| Fisher | Conditional | Lowest | Fast | Conservative |
-| Z-pooled | Unconditional | Medium | Moderate | Exact |
-| Boschloo | Unconditional | Highest | Slow | Exact |
+### Method 2: Fisher's Exact Test (Fisher)
 
-**Recommendation**: Use Boschloo's test for best power when computational resources permit. Use Fisher's test for quick calculations or when conservatism is acceptable.
+**Conditional test**: Conditions on the total number of successes $y_{1,k} + y_{2,k}$.
 
-## Joint Distribution and Power
+Under ${\rm H}_{0}^{(k)}$, $Y_{1,k}$ follows a hypergeometric distribution given $Y_{1,k} + Y_{2,k} = y_{k}$.
 
-### Copula-Based Dependence Model
+**One-sided p-value**:
 
-For co-primary endpoints, we model the joint distribution using **copulas**. A copula C(u₁, u₂) describes the dependence structure between uniform random variables:
+$$p_{k}^{\text{Fisher}} = \sum_{y=y_{1,k}}^{\min(n_{1}, y_{k})} \frac{\binom{n_{1}}{y} \binom{n_{2}}{y_{k} - y}}{\binom{n_{1} + n_{2}}{y_{k}}}$$
 
-$$P(Y_1 \leq y_1, Y_2 \leq y_2) = C(F_1(y_1), F_2(y_2))$$
+Reject ${\rm H}_{0}^{(k)}$ if $p_{k}^{\text{Fisher}} < \alpha$.
 
-For binary endpoints with tetrachoric correlation ρ, we use the **Gaussian copula**:
+### Method 3: Fisher's Mid-P Test (Fisher-midP)
 
-$$C(u_1, u_2 \mid \rho) = \Phi_2(\Phi^{-1}(u_1), \Phi^{-1}(u_2) \mid \rho)$$
+Reduces conservatism by adding half the probability of the observed outcome:
 
-This gives the joint cell probabilities π₁₁, π₁₀, π₀₁, π₀₀.
+$$p_{k}^{\text{mid-p}} = p_{k}^{\text{Fisher}} - \frac{1}{2} \times \frac{\binom{n_{1}}{y_{1,k}} \binom{n_{2}}{y_{k} - y_{1,k}}}{\binom{n_{1} + n_{2}}{y_{k}}}$$
+Note: The `twoCoprimary` package can implement the Fisher's Mid-P Test, but Homma and Yoshida (2025) has not investigated this test.
 
-### Exact Power Calculation
+### Method 4: Z-pooled Exact Unconditional Test (Z-pool)
 
-The exact power for co-primary endpoints is:
+**Unconditional test**: Maximizes the p-value over all possible values of the nuisance parameter (common success probability $p_{k}$ under ${\rm H}_{0}$).
 
-$$1 - \beta = P(\text{Reject } H_{01} \text{ and Reject } H_{02} \mid H_1)$$
+Uses the $Z$-test statistic and finds the maximum $p$-value across all possible values of $p_{k}$.
 
-This requires:
-1. **Enumerate all possible outcomes**: For each (x₁₁, x₂₁, x₁₂, x₂₂) where xⱼₖ = number of successes in group j for endpoint k
-2. **Calculate probability** under H₁ using copula model
-3. **Determine rejection** based on exact test
-4. **Sum probabilities** of all outcomes leading to rejection of both nulls
+### Method 5: Boschloo's Exact Unconditional Test (Boschloo)
 
-**Computational formula**:
-$$1 - \beta = \sum_{\mathcal{R}} P(X_{11}=x_{11}, X_{21}=x_{21}, X_{12}=x_{12}, X_{22}=x_{22} \mid H_1)$$
+Similar to Z-pooled, but based on Fisher's exact $p$-values. Maximizes Fisher's exact $p$-value over the nuisance parameter space.
 
-where $\mathcal{R}$ is the rejection region (both tests reject).
+**Most powerful** of the exact unconditional tests, but computationally intensive.
 
-### Sample Size Search Algorithm
+## Exact Power Calculation
 
-Exact sample size calculation uses an **iterative search**:
+### Power Formula
 
-1. **Initial guess**: Use asymptotic formula as starting point
-2. **Evaluate power**: Calculate exact power for current n
-3. **Refine**: 
-   - If power < target, increase n
-   - If power > target, decrease n
-4. **Iterate**: Continue until power ≥ target
-5. **Return**: Smallest n achieving target power
+The exact power for test method $A$ is (Equation 9 in Homma and Yoshida, 2025):
+
+$${\rm power}_{A}(\boldsymbol{\theta}) = {\rm P}\left[\bigcap_{k=1}^{2} \{p_{A}(y_{1,k}, y_{2,k}) < \alpha\} \mid {\rm H}_{1}\right]$$
+
+$$= \sum_{(a_{1,1}, a_{2,1}) \in \mathcal{A}_{1}} \sum_{(a_{1,2}, a_{2,2}) \in \mathcal{A}_{2}} f(a_{1,1} \mid n_{1}, p_{1,1}) \times f(a_{2,1} \mid n_{2}, p_{2,1})\\
+\times g(a_{1,2} \mid a_{1,1}, n_{1}, p_{1,1}, p_{1,2}, \gamma_{1}) \times g(a_{2,2} \mid a_{2,1}, n_{2}, p_{2,1}, p_{2,2}, \gamma_{2})$$
+
+where:
+
+- $\boldsymbol{\theta} = (p_{1,1}, p_{2,1}, p_{1,2}, p_{2,2}, n_{1}, n_{2}, \gamma_{1}, \gamma_{2})$ is the parameter vector
+- $\mathcal{A}_{k}$ is the rejection region for endpoint $k$
+- $\mathcal{A}_{k} = \{(y_{1,k}, y_{2,k}) : p_{A}(y_{1,k}, y_{2,k}) < \alpha\}$
+
+### Sample Size Calculation
+
+The required sample size $n_{2}$ to achieve target power $1 - \beta$ is (Equation 10 in Homma and Yoshida, 2025):
+
+$$n_{2} = \arg\min_{n_{2} \in \mathbb{Z}} \{{\rm power}_{A}(\boldsymbol{\theta}) \geq 1 - \beta\}$$
+
+This cannot be expressed as a closed-form formula due to:
+
+1. Discreteness of binary outcomes
+2. Non-monotonic "sawtooth" power curve
+
+**Algorithm**: Sequential search starting from asymptotic normal approximation (AN method) as initial value.
 
 ## Replicating Homma and Yoshida (2025) Table 4
 
-Table 4 shows sample sizes for different scenarios and test methods.
+Table 4 from Homma and Yoshida (2025) shows sample sizes for various correlations using the Chisq, Fisher, Z-pool, and Boschloo. Note that the following sample code compute only scenario for $\alpha=0.025$.
 
-### Scenario 1: Moderate Effect Sizes
+The notation used in the function is: `p11` = $p_{1,1}$, `p12` = $p_{1,2}$, `p21` = $p_{2,1}$, `p22` = $p_{2,2}$, where the first subscript denotes the group (1 = treatment, 2 = control) and the second subscript denotes the endpoint (1 or 2).
 
-```{r table4_scenario1}
-# Scenario: p11=0.7, p21=0.4, p12=0.6, p22=0.3
-rho_values <- c(0, 0.3, 0.5, 0.8)
-tests <- c("Fisher", "Z-pool", "Boschloo")
+```{r table4_homma}
+# Recreate Homma and Yoshida (2025) Table 4
+library(dplyr)
+library(tidyr)
+library(readr)
 
-results_scenario1 <- lapply(tests, function(test_name) {
-  results_rho <- lapply(rho_values, function(rho) {
-    result <- ss2BinaryExact(
-      p11 = 0.7, p21 = 0.4,
-      p12 = 0.6, p22 = 0.3,
-      r = 1,
-      rho1 = rho, rho2 = rho,
-      alpha = 0.025,
-      beta = 0.2,
-      Test = test_name
-    )
-    
-    power <- power2BinaryExact(
-      n1 = result$n1, n2 = result$n2,
-      p11 = 0.7, p21 = 0.4,
-      p12 = 0.6, p22 = 0.3,
-      rho1 = rho, rho2 = rho,
-      alpha = 0.025,
-      Test = test_name
-    )
-    
-    data.frame(
-      Test = test_name,
-      rho = rho,
-      n_per_group = result$n2,
-      N_total = result$N,
-      power1 = power$power1,
-      power2 = power$power2,
-      power_both = power$powerCoprimary
-    )
-  })
-  bind_rows(results_rho)
-})
-
-table4_scenario1 <- bind_rows(results_scenario1)
-
-# Display sample sizes
-table4_scenario1_ss <- table4_scenario1 %>%
-  select(Test, rho, n_per_group) %>%
-  pivot_wider(
-    names_from = rho,
-    values_from = n_per_group,
-    names_prefix = "rho_"
-  )
-
-kable(table4_scenario1_ss,
-      caption = "Table 4 (Scenario 1): Sample Size per Group (p11=0.7, p21=0.4, p12=0.6, p22=0.3)",
-      digits = 0,
-      col.names = c("Test", "ρ=0", "ρ=0.3", "ρ=0.5", "ρ=0.8"))
-
-# Display achieved power
-table4_scenario1_power <- table4_scenario1 %>%
-  select(Test, rho, power_both) %>%
-  pivot_wider(
-    names_from = rho,
-    values_from = power_both,
-    names_prefix = "rho_"
-  )
-
-kable(table4_scenario1_power,
-      caption = "Achieved Power (Both Endpoints)",
-      digits = 3,
-      col.names = c("Test", "ρ=0", "ρ=0.3", "ρ=0.5", "ρ=0.8"))
-```
-
-**Observations**:
-- Boschloo's test requires smallest sample size (most powerful)
-- Fisher's test requires largest sample size (most conservative)
-- Higher correlation reduces sample size across all tests
-- All tests achieve target power ≥ 0.80
-
-### Scenario 2: Larger Effect Sizes
-
-```{r table4_scenario2}
-# Note: Max feasible rho for this combination is ~0.76
-rho_values_scenario2 <- c(0, 0.3, 0.5)
-
-results_scenario2 <- lapply(tests, function(test_name) {
-  results_rho <- lapply(rho_values_scenario2, function(rho) {
-    result <- ss2BinaryExact(
-      p11 = 0.8, p21 = 0.5,
-      p12 = 0.7, p22 = 0.4,
-      r = 1,
-      rho1 = rho, rho2 = rho,
-      alpha = 0.025,
-      beta = 0.2,
-      Test = test_name
-    )
-    
-    power <- power2BinaryExact(
-      n1 = result$n1, n2 = result$n2,
-      p11 = 0.8, p21 = 0.5,
-      p12 = 0.7, p22 = 0.4,
-      rho1 = rho, rho2 = rho,
-      alpha = 0.025,
-      Test = test_name
-    )
-    
-    data.frame(
-      Test = test_name,
-      rho = rho,
-      n_per_group = result$n2,
-      power_both = power$powerCoprimary
-    )
-  })
-  bind_rows(results_rho)
-})
-
-table4_scenario2 <- bind_rows(results_scenario2)
-
-table4_scenario2_wide <- table4_scenario2 %>%
-  pivot_wider(
-    names_from = rho,
-    values_from = c(n_per_group, power_both),
-    names_glue = "{.value}_rho{rho}"
-  )
-
-kable(table4_scenario2_wide,
-      caption = "Table 4 (Scenario 2): p11=0.8, p21=0.5, p12=0.7, p22=0.4 (ρ ≤ 0.5)",
-      digits = 3,
-      col.names = c("Test", "n (ρ=0)", "n (ρ=0.3)", "n (ρ=0.5)", "Power (ρ=0)", "Power (ρ=0.3)", "Power (ρ=0.5)"))
-```
-
-**Key finding**: Larger effect sizes require smaller sample sizes, but correlation constraints become more restrictive (max ρ ≈ 0.76).
-
-### Scenario 3: Unbalanced Allocation
-
-```{r table4_scenario3}
-# 2:1 allocation (treatment:control)
-results_scenario3 <- lapply(tests, function(test_name) {
-  results_rho <- lapply(c(0, 0.5), function(rho) {
-    result <- ss2BinaryExact(
-      p11 = 0.7, p21 = 0.4,
-      p12 = 0.6, p22 = 0.3,
-      r = 2,
-      rho1 = rho, rho2 = rho,
-      alpha = 0.025,
-      beta = 0.2,
-      Test = test_name
-    )
-    
-    power <- power2BinaryExact(
-      n1 = result$n1, n2 = result$n2,
-      p11 = 0.7, p21 = 0.4,
-      p12 = 0.6, p22 = 0.3,
-      rho1 = rho, rho2 = rho,
-      alpha = 0.025,
-      Test = test_name
-    )
-    
-    data.frame(
-      Test = test_name,
-      rho = rho,
-      n_control = result$n2,
-      n_treatment = result$n1,
-      N_total = result$N,
-      power_both = power$powerCoprimary
-    )
-  })
-  bind_rows(results_rho)
-})
-
-table4_scenario3 <- bind_rows(results_scenario3)
-
-kable(table4_scenario3,
-      caption = "Table 4 (Scenario 3): Unbalanced 2:1 Allocation",
-      digits = 3,
-      col.names = c("Test", "ρ", "n (Control)", "n (Treatment)", "N (Total)", "Power (Both)"))
-```
-
-**Finding**: 2:1 allocation increases total sample size but maintains power. The percentage increase is consistent with balanced design.
-
-## Comparison: Exact vs Asymptotic Methods
-
-### Sample Size Comparison
-
-```{r exact_vs_asymptotic}
-# Compare exact and asymptotic methods with simplified scenarios
-# Using larger effect sizes for faster exact computation
-scenarios <- data.frame(
-  p11 = c(0.70, 0.75),
-  p21 = c(0.50, 0.55),
-  p12 = c(0.65, 0.70),
-  p22 = c(0.45, 0.50),
-  rho = c(0, 0.5)
+param_grid_bin_exact_ss <- tibble(
+  p11 = 0.54, 
+  p12 = 0.54,
+  p21 = 0.25,
+  p22 = 0.25
 )
 
-comparison_results <- lapply(1:nrow(scenarios), function(i) {
-  s <- scenarios[i, ]
-  
-  # Exact (Boschloo)
-  exact <- ss2BinaryExact(
-    p11 = s$p11, p21 = s$p21,
-    p12 = s$p12, p22 = s$p22,
-    r = 1,
-    rho1 = s$rho, rho2 = s$rho,
-    alpha = 0.025,
-    beta = 0.2,
-    Test = "Boschloo"
-  )
-  
-  # Asymptotic
-  asymptotic <- ss2BinaryApprox(
-    p11 = s$p11, p21 = s$p21,
-    p12 = s$p12, p22 = s$p22,
-    r = 1,
-    rho1 = s$rho, rho2 = s$rho,
-    alpha = 0.025,
-    beta = 0.2,
-    Test = "AN"
-  )
-  
-  data.frame(
-    Scenario = paste0("(", s$p11, ",", s$p21, "),(", s$p12, ",", s$p22, ")"),
-    rho = s$rho,
-    Exact = exact$n2,
-    Asymptotic = asymptotic$n2,
-    Difference = exact$n2 - asymptotic$n2,
-    Pct_diff = round((exact$n2 - asymptotic$n2) / asymptotic$n2 * 100, 1)
-  )
-})
-
-comparison_table <- bind_rows(comparison_results)
-
-kable(comparison_table,
-      caption = "Comparison: Exact (Boschloo) vs Asymptotic Methods",
-      col.names = c("Scenario", "ρ", "Exact", "Asymptotic", "Diff", "% Diff"))
-```
-
-**Interpretation**: 
-- Exact methods typically require slightly larger sample sizes
-- Difference is small for moderate effect sizes and probabilities
-- Difference increases for smaller sample sizes or extreme probabilities
-
-### Type I Error Rate Comparison
-
-```{r type_i_error_simulation, eval=FALSE}
-# Conceptual code (not run in vignette)
-# Simulate Type I error rates under null hypothesis
-
-n <- 50  # Small sample size
-p1 <- 0.7
-p2 = 0.7  # Null: equal probabilities
-nsim <- 10000
-
-# For each simulation:
-# 1. Generate data under H0 (p1 = p2)
-# 2. Apply exact test
-# 3. Apply asymptotic test
-# 4. Record rejections
-
-# Expected result:
-# - Exact test: empirical α ≤ 0.025 (conservative)
-# - Asymptotic test: empirical α may exceed 0.025 (anti-conservative for small n)
-```
-
-**Key insight**: Exact methods guarantee Type I error control even for small samples, while asymptotic methods may be anti-conservative.
-
-## Power Curves
-
-### Power vs Sample Size
-
-```{r power_curves, fig.width=8, fig.height=6}
-# Fixed scenario
-p11 <- 0.7
-p21 <- 0.4
-p12 <- 0.6
-p22 <- 0.3
-rho <- 0.5
-
-# Sample size range
-n_seq <- seq(30, 80, by = 5)
-
-# Calculate power for each test method
-power_by_test <- lapply(tests, function(test_name) {
-  powers <- sapply(n_seq, function(n) {
-    pw <- power2BinaryExact(
-      n1 = n, n2 = n,
-      p11 = p11, p21 = p21,
-      p12 = p12, p22 = p22,
-      rho1 = rho, rho2 = rho,
-      alpha = 0.025,
-      Test = test_name
+result_bin_exact_ss <- do.call(
+  bind_rows,
+  lapply(c("Chisq", "Fisher", "Z-pool", "Boschloo"), function(test) {
+    do.call(
+      bind_rows,
+      lapply(1:2, function(r) {
+        design_table(
+          param_grid = param_grid_bin_exact_ss,
+          rho_values = c(0, 0.3, 0.5, 0.8),
+          r = r,
+          alpha = 0.025,
+          beta = 0.1,
+          endpoint_type = "binary",
+          Test = test
+        ) %>% 
+          mutate(alpha = 0.025, r = r, Test = test)
+      })
     )
-    pw$powerCoprimary
   })
-  data.frame(n = n_seq, power = powers, test = test_name)
-})
+) %>% 
+  pivot_longer(
+    cols = starts_with("rho_"),
+    names_to = "rho",
+    values_to = "N",
+    names_transform = list(rho = parse_number)
+  ) %>% 
+  select(r, rho, Test, N) %>% 
+  pivot_wider(names_from = Test,  values_from = N) %>% 
+  as.data.frame()
 
-power_curves_data <- bind_rows(power_by_test)
-
-# Plot
-library(ggplot2)
-ggplot(power_curves_data, aes(x = n, y = power, color = test)) +
-  geom_line(linewidth = 1.2) +
-  geom_hline(yintercept = 0.8, linetype = "dashed", color = "gray") +
-  labs(
-    title = "Power vs Sample Size: Comparison of Exact Tests",
-    subtitle = paste0("p11=", p11, ", p21=", p21, ", p12=", p12, ", p22=", p22, ", ρ=", rho),
-    x = "Sample Size per Group (n)",
-    y = "Power (Both Endpoints)",
-    color = "Test Method"
-  ) +
-  theme_minimal() +
-  theme(legend.position = "bottom")
+kable(result_bin_exact_ss,
+      caption = "Table 4: Total Sample Size (N) for Two Co-Primary Binary Endpoints (α = 0.025, 1-β = 0.90)^a,b^",
+      digits = 1,
+      col.names = c("r", "ρ", "Chisq", "Fisher", "Z-pool", "Boschloo"))
 ```
 
-**Observation**: Boschloo's test achieves target power with smallest sample size, confirming it is the most powerful exact test.
+^a^ Chisq denotes the one-sided Pearson chi-squared test. Fisher stands for Fisher’s exact test. Z-pool represents the Z-pooled exact unconditional test. Boschloo signifies Boschloo’s exact unconditional test.
 
-## Clinical Application: Small Oncology Trial
+^b^ The required sample sizes were obtained by assuming that $p_{1,1} = p_{1,2} = 0.54$ and $p_{2,1} = p_{2,2} = 0.25$.
 
-Consider a small Phase II oncology trial with:
-1. **Tumor response** (CR/PR): Yes/No
-2. **Symptom control**: Yes/No
+## Practical Examples
 
-```{r oncology_example}
-# Design parameters - using larger effect sizes for faster computation
-# Expected response rates with treatment: 50% response, 65% symptom control
-# Expected rates with control: 25% response, 40% symptom control
-# Small trial: exact methods appropriate
-# Moderate correlation: ρ = 0.3 (reduced for feasibility)
+### Example 1: Basic Exact Power Calculation
 
-oncology_design <- ss2BinaryExact(
-  p11 = 0.50,           # Response (treatment)
-  p21 = 0.25,           # Response (control)
-  p12 = 0.65,           # Symptom control (treatment)
-  p22 = 0.40,           # Symptom control (control)
+```{r example1}
+# Calculate exact power using Fisher's exact test
+result_fisher <- power2BinaryExact(
+  n1 = 50,
+  n2 = 50,
+  p11 = 0.70, p12 = 0.65,
+  p21 = 0.50, p22 = 0.45,
+  rho1 = 0.5, rho2 = 0.5,
+  alpha = 0.025,
+  Test = "Fisher"
+)
+
+print(result_fisher)
+```
+
+**Interpretation**:
+
+- `power1`: Power for endpoint 1 alone
+- `power2`: Power for endpoint 2 alone
+- `powerCoprimary`: Exact power for both co-primary endpoints
+
+### Example 2: Sample Size Calculation
+
+```{r example2}
+# Calculate required sample size using Boschloo's test
+result_ss <- ss2BinaryExact(
+  p11 = 0.70, p12 = 0.65,
+  p21 = 0.50, p22 = 0.45,
+  rho1 = 0.5, rho2 = 0.5,
   r = 1,
-  rho1 = 0.3, rho2 = 0.3,
   alpha = 0.025,
   beta = 0.2,
-  Test = "Boschloo"     # Most powerful
-)
-
-cat("Oncology Trial Design (Exact Method):\n")
-cat("Sample size per group:", oncology_design$n2, "\n")
-cat("Total sample size:", oncology_design$N, "\n\n")
-
-# Verify power
-oncology_power <- power2BinaryExact(
-  n1 = oncology_design$n1,
-  n2 = oncology_design$n2,
-  p11 = 0.50, p21 = 0.25,
-  p12 = 0.65, p22 = 0.40,
-  rho1 = 0.3, rho2 = 0.3,
-  alpha = 0.025,
   Test = "Boschloo"
 )
 
-cat("Power verification:\n")
-cat("Power for response:", round(oncology_power$power1, 3), "\n")
-cat("Power for symptom control:", round(oncology_power$power2, 3), "\n")
-cat("Power for both (co-primary):", round(oncology_power$powerCoprimary, 3), "\n\n")
-
-# Compare with asymptotic method
-oncology_asymptotic <- ss2BinaryApprox(
-  p11 = 0.50, p21 = 0.25,
-  p12 = 0.65, p22 = 0.40,
-  r = 1,
-  rho1 = 0.3, rho2 = 0.3,
-  alpha = 0.025,
-  beta = 0.2,
-  Test = "AN"
-)
-
-cat("Comparison with asymptotic method:\n")
-cat("Asymptotic sample size per group:", oncology_asymptotic$n2, "\n")
-cat("Exact sample size per group:", oncology_design$n2, "\n")
-cat("Difference:", oncology_design$n2 - oncology_asymptotic$n2, "\n")
+print(result_ss)
 ```
 
-## Summary
+### Example 3: Comparison of Test Methods
 
-### Key Findings
+```{r example3}
+# Compare different exact test methods
+test_methods <- c("Chisq", "Fisher", "Fisher-midP", "Z-pool", "Boschloo")
 
-1. **Test ranking by power**: Boschloo > Z-pooled > Fisher
+comparison <- lapply(test_methods, function(test) {
+    result <- ss2BinaryExact(
+        p11 = 0.50, p12 = 0.40,
+        p21 = 0.20, p22 = 0.10,
+        rho1 = 0.7, rho2 = 0.6,
+        r = 1,
+        alpha = 0.025,
+        beta = 0.2,
+        Test = test
+    )
+    data.frame(
+        Test = test,
+        n2 = result$n2,
+        N = result$N
+    )
+})
 
-2. **Conservatism**: All exact tests maintain Type I error ≤ α, but Fisher is most conservative
+comparison_table <- bind_rows(comparison)
 
-3. **Correlation impact**: ~5-7% reduction at ρ = 0.5, ~10% at ρ = 0.8 (similar to asymptotic)
+kable(comparison_table,
+      caption = "Sample Size Comparison Across Test Methods",
+      col.names = c("Test Method", "n per group", "N total"))
+```
 
-4. **Exact vs asymptotic**: Exact methods require slightly larger samples but guarantee Type I error control
+## Impact of Correlation
 
-5. **Computational cost**: Boschloo > Z-pooled > Fisher
+### Example 4: Correlation Effect
 
-### When to Use Each Test
+```{r example4}
+# Calculate sample size for different correlation values
+rho_values <- c(0, 0.3, 0.5, 0.8)
 
-**Fisher's exact test**:
-- Quick calculations needed
-- Conservative approach acceptable
-- Widely recognized/required by regulators
+correlation_effect <- lapply(rho_values, function(rho) {
+    result <- ss2BinaryExact(
+        p11 = 0.70, p12 = 0.60,
+        p21 = 0.40, p22 = 0.30,
+        rho1 = rho, rho2 = rho,
+        r = 1,
+        alpha = 0.025,
+        beta = 0.2,
+        Test = "Fisher"
+    )
+    data.frame(
+        rho = rho,
+        n2 = result$n2,
+        N = result$N
+    )
+})
 
-**Z-pooled exact test**:
-- Balance between power and computation
-- Unconditional inference desired
-- Moderate computational resources
+rho_table <- bind_rows(correlation_effect)
 
-**Boschloo's exact test**:
-- Maximum power required
-- Computational resources available
-- Small sample size (every subject counts)
+kable(rho_table,
+      caption = "Impact of Correlation on Sample Size (Fisher's Test)",
+      col.names = c("ρ", "n per group", "N total"))
+```
 
-### Practical Recommendations
+**Key finding**: Higher positive correlation reduces required sample size.
 
-1. **Sample size < 100**: Always use exact methods
+## Comparison: Exact vs Asymptotic
 
-2. **Extreme probabilities** (p < 0.1 or p > 0.9): Use exact methods regardless of sample size
+### Example 5: Exact vs AN Method
 
-3. **Regulatory submissions**: Check requirements; exact methods often preferred
+```{r example5}
+# Exact method (Chisq)
+exact_result <- ss2BinaryExact(
+    p11 = 0.60, p12 = 0.40,
+    p21 = 0.30, p22 = 0.10,
+    rho1 = 0.5, rho2 = 0.5,
+    r = 1,
+    alpha = 0.025,
+    beta = 0.1,
+    Test = "Chisq"
+)
 
-4. **Power priority**: Use Boschloo's test if computational time permits
+# Asymptotic method (AN)
+asymp_result <- ss2BinaryApprox(
+    p11 = 0.60, p12 = 0.40,
+    p21 = 0.30, p22 = 0.10,
+    rho1 = 0.5, rho2 = 0.5,
+    r = 1,
+    alpha = 0.025,
+    beta = 0.1,
+    Test = "AN"
+)
 
-5. **Conservative approach**: Use Fisher's test for added safety margin
+comparison_exact_asymp <- data.frame(
+  Method = c("Exact (Chisq)", "Asymptotic (AN)"),
+  n_per_group = c(exact_result$n2, asymp_result$n2),
+  N_total = c(exact_result$N, asymp_result$N),
+  Difference = c(0, asymp_result$N - exact_result$N)
+)
 
-6. **Sensitivity analysis**: Calculate for multiple test methods and correlations
+kable(comparison_exact_asymp,
+      caption = "Comparison: Exact vs Asymptotic Methods",
+      col.names = c("Method", "n per group", "N total", "Difference"))
+```
 
-### Computational Considerations
+## Practical Recommendations
 
-- **Fisher**: Milliseconds per calculation
-- **Z-pooled**: Seconds per calculation
-- **Boschloo**: Minutes per calculation (for small n)
+### Test Method Selection
 
-Modern computers handle all three tests efficiently for typical clinical trial sample sizes (n < 200).
+1. **Fisher's exact test**:
+   - Most widely used and accepted
+   - Conservative but guarantees Type I error control
+   - Recommended for regulatory submissions
+
+2. **Boschloo's test**:
+   - Most powerful among exact tests
+   - Best choice when computational resources permit
+   - Recommended for final analysis
+
+3. **Chi-squared test**:
+   - Less conservative than Fisher
+   - May be anti-conservative for small samples
+   - Use with caution for $N < 200$
+
+4. **Z-pooled and Fisher-midP**:
+   - Intermediate between Fisher and chi-squared
+   - Reduce conservatism while maintaining validity
+
+### When to Use Each Method
+
+**Sample size guidelines**:
+
+1. **$N < 100$**: Always use exact methods
+
+2. **$100 \leq N < 200$**: Exact methods preferred, especially if:
+   - Extreme probabilities ($p < 0.1$ or $p > 0.9$)
+   - Strict Type I error control required
+
+3. **$N \geq 200$ and $0.1 < p < 0.9$**: Asymptotic methods acceptable
+
+### Correlation Estimation
+
+- Use pilot data or historical information
+- Be conservative if uncertain (use $\rho = 0$)
+- Consider sensitivity analysis across plausible range
+
+### Allocation Ratio
+
+- Balanced design ($r = 1$) generally most efficient
+- Unbalanced designs may be justified by:
+  - Limited control group availability
+  - Ethical considerations
+  - Cost constraints
+
+## Computational Considerations
+
+Modern computers handle all methods efficiently for typical clinical trial sample sizes ($N < 300$).
+
+### Software Implementation
+
+The `twoCoprimary` package implements all methods efficiently using:
+
+- Bivariate binomial distribution (`dbibinom`)
+- Rejection region calculation (`rr1Binary`)
+- Vectorized computations for speed
 
 ## References
 
-Homma, G., & Yoshida, T. (2025). Exact power and sample size in clinical trials with two co-primary binary endpoints. *Statistical Methods in Medical Research* (in press).
-
-Boschloo, R. D. (1970). Raised conditional level of significance for the 2 × 2-table when testing the equality of two probabilities. *Statistica Neerlandica*, 24(1), 1-9.
-
-Barnard, G. A. (1947). Significance tests for 2 × 2 tables. *Biometrika*, 34(1/2), 123-138.
-
-Fisher, R. A. (1935). The logic of inductive inference. *Journal of the Royal Statistical Society*, 98(1), 39-82.
-
-Mehrotra, D. V., Chan, I. S., & Berger, R. L. (2003). A cautionary note on exact unconditional inference for a difference between two independent binomial proportions. *Biometrics*, 59(2), 441-450.
+Homma, G., & Yoshida, T. (2025). Exact power and sample size in clinical trials with two co-primary binary endpoints. *Statistical Methods in Medical Research*, 34(1), 1-19.

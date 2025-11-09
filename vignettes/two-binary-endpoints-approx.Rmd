@@ -33,562 +33,447 @@ library(knitr)
 
 Binary co-primary endpoints are common in:
 
-- **Oncology trials**: Tumor response (CR/PR) + Symptom control (yes/no)
-- **Vaccine trials**: Seroconversion (yes/no) + Clinical protection from disease (yes/no)
-- **Respiratory trials**: ≥1 symptom-free day per week (yes/no) + No rescue medication use (yes/no)
-- **Cardiovascular trials**: Freedom from death (yes/no) + Freedom from hospitalization (yes/no)
-- **Infectious disease trials**: Clinical cure (yes/no) + Microbiological eradication (yes/no)
+- **Migraine trials**: Relief from headache (yes/no) + Relief from the most bothersome migraine-related symptom (yes/no)
+
+- **Psoriasis trials**: At least 75% improvement in the score on the psoriasis area-and-severity index (PASI) (yes/no) + Score on the physician's global assessment of 0 or 1 (yes/no)
+
+- **Primary myelofibrosis trials**: Clinically relevant complete haematological response (yes/no) + Lack of progression of clinical symptoms (yes/no)
 
 ### When to Use Asymptotic Methods
 
 Asymptotic (normal approximation) methods are appropriate when:
 
-- **Sample sizes are large** (typically N > 200)
-- **Probabilities are not extreme** (0.10 < p < 0.90)
+- **Sample sizes are large** (typically $N > 200$)
+
+- **Probabilities are not extreme** ($0.10 < p < 0.90$)
+
 - **Computational efficiency is important**
 
-For small to medium sample sizes or extreme probabilities, use **exact methods** (see `vignette("two-binary-endpoints-exact")`).
+For small to medium sample sizes or extreme probabilities, use **exact methods** based on Homma and Yoshida (2025), which can be computed using exact approaches without any approximations (see `vignette("two-binary-endpoints-exact")`).
 
 ## Statistical Framework
 
 ### Model and Assumptions
 
-Consider a two-arm parallel-group superiority trial comparing treatment (group 1) with control (group 2). Let n₁ and n₂ denote the sample sizes in the two groups.
+Consider a two-arm parallel-group superiority trial comparing treatment (group 1) with control (group 2). Let $n_{1}$ and $n_{2}$ denote the sample sizes in the two groups, with allocation ratio $r = n_{1}/n_{2}$ (i.e., total sample size is $N=n_{1}+n_{2}$).
 
-For subject i in group j (j = 1: treatment, j = 2: control), we observe two binary endpoints:
+For subject $i$ ($i = 1, \ldots, n_j$) in group $j$ ($j = 1$: treatment, $j = 2$: control), we observe two binary **outcomes**:
 
-**Endpoint k** (k = 1, 2):
-$$Y_{ijk} \sim \text{Bernoulli}(p_{jk})$$
+$$X_{i,j,k} \in \{0, 1\}, \quad k = 1, 2$$
 
-where pⱼₖ is the success probability for endpoint k in group j.
+where $X_{i,j,k} = 1$ indicates success and $X_{i,j,k} = 0$ indicates failure for outcome $k$.
 
-**Joint distribution**: The bivariate distribution within each subject follows a multinomial distribution with four possible outcomes:
-- (1,1): Success on both endpoints, probability π₁₁⁽ʲ⁾
-- (1,0): Success on endpoint 1 only, probability π₁₀⁽ʲ⁾
-- (0,1): Success on endpoint 2 only, probability π₀₁⁽ʲ⁾
-- (0,0): Failure on both endpoints, probability π₀₀⁽ʲ⁾
+**Marginal probabilities**: Let $p_{j,k}$ denote the success probability for outcome $k$ in group $j$:
 
-where:
-$$\sum_{a,b \in \{0,1\}} \pi_{ab}^{(j)} = 1$$
+$$p_{j,k} = {\rm P}(X_{i,j,k} = 1), \quad k = 1, 2$$
 
-**Marginal probabilities**:
-$$p_{j1} = \pi_{11}^{(j)} + \pi_{10}^{(j)}$$
-$$p_{j2} = \pi_{11}^{(j)} + \pi_{01}^{(j)}$$
+For details on the joint distribution of $(X_{i,j,1}, X_{i,j,2})$, see Homma and Yoshida (2025) Section 2.1 or Sozu et al. (2010).
 
 ### Correlation Structure
 
-The **tetrachoric correlation** measures the association between two binary variables by assuming an underlying bivariate normal distribution.
+The correlation $\rho_{j}$ between the two binary outcomes in group $j$ is defined as (Homma and Yoshida, 2025):
 
-For group j, the correlation ρⱼ between endpoints 1 and 2 is defined through:
+$$\rho_j = {\rm Cor}(X_{i,j,1}, X_{i,j,2}) = \frac{\phi_j - p_{j,1}p_{j,2}}{\sqrt{p_{j,1}(1-p_{j,1})p_{j,2}(1-p_{j,2})}}$$
 
-$$\pi_{11}^{(j)} = \int_{-\infty}^{\Phi^{-1}(p_{j1})} \int_{-\infty}^{\Phi^{-1}(p_{j2})} \phi_2(x, y \mid \rho_j) \, dy \, dx$$
+where $\phi_j = {\rm P}(X_{i,j,1} = 1, X_{i,j,2} = 1)$ is the joint probability that both outcomes are successful.
+
+**Practical interpretation**: $\rho_{j} > 0$ means subjects who succeed on outcome 1 are more likely to succeed on outcome 2.
+
+**Valid correlation range**: Because $0 < p_{j,k} < 1$, the correlation $\rho_{j}$ is not free to range over $[-1, 1]$, but is bounded by (Homma and Yoshida, 2025, Equation 2):
+
+$$\rho_j \in [L(p_{j,1}, p_{j,2}), U(p_{j,1}, p_{j,2})] \subseteq [-1, 1]$$
 
 where:
-- Φ is the standard normal CDF
-- φ₂(x, y | ρⱼ) is the bivariate normal PDF with correlation ρⱼ
 
-**Practical interpretation**: ρⱼ > 0 means subjects who succeed on endpoint 1 are more likely to succeed on endpoint 2.
+$$L(p_{j,1}, p_{j,2}) = \max\left\{-\sqrt{\frac{p_{j,1}p_{j,2}}{(1-p_{j,1})(1-p_{j,2})}}, -\sqrt{\frac{(1-p_{j,1})(1-p_{j,2})}{p_{j,1}p_{j,2}}}\right\}$$
 
-**Range constraints**: The correlation ρⱼ must satisfy constraints based on the marginal probabilities. The Fréchet-Hoeffding bounds are:
+$$U(p_{j,1}, p_{j,2}) = \min\left\{\sqrt{\frac{p_{j,1}(1-p_{j,2})}{p_{j,2}(1-p_{j,1})}}, \sqrt{\frac{p_{j,2}(1-p_{j,1})}{p_{j,1}(1-p_{j,2})}}\right\}$$
 
-$$\max(0, p_{j1} + p_{j2} - 1) \leq \pi_{11}^{(j)} \leq \min(p_{j1}, p_{j2})$$
+If $p_{j,1} = p_{j,2}$, then $U(p_{j,1}, p_{j,2}) = 1$, whereas $L(p_{j,1}, p_{j,2}) = -1$ for $p_{j,1} + p_{j,2} = 1$.
+
+These bounds can be computed using the `corrbound2Binary()` function in this package.
 
 ### Hypothesis Testing
 
-We test superiority of treatment over control for both endpoints:
+We test superiority of treatment over control for both endpoints. The **endpoints** for testing are the risk differences:
 
-**For endpoint k**:
-$$H_{0k}: p_{1k} - p_{2k} \leq 0 \text{ vs. } H_{1k}: p_{1k} - p_{2k} > 0$$
+**For endpoint** $k$:
+$${\rm H}_{0k}: p_{1,k} - p_{2,k} \leq 0 \text{ vs. } {\rm H}_{1k}: p_{1,k} - p_{2,k} > 0$$
 
 **For co-primary endpoints** (intersection-union test):
 
-**Null hypothesis**: H₀ = H₀₁ ∪ H₀₂ (at least one null is true)
+**Null hypothesis**: ${\rm H}_{0} = {\rm H}_{01} \cup {\rm H}_{02}$ (at least one null is true)
 
-**Alternative hypothesis**: H₁ = H₁₁ ∩ H₁₂ (both alternatives are true)
+**Alternative hypothesis**: ${\rm H}_{1} = {\rm H}_{11} \cap {\rm H}_{12}$ (both alternatives are true)
 
-**Decision rule**: Reject H₀ at level α if and only if **both** H₀₁ and H₀₂ are rejected at level α.
+**Decision rule**: Reject ${\rm H}_{0}$ at level $\alpha$ if and only if **both** ${\rm H}_{01}$ and ${\rm H}_{02}$ are rejected at level $\alpha$.
 
 ### Test Statistics
 
-Several test statistics are available for binary endpoints. We focus on **asymptotic normal approximation** methods.
+Several test statistics are available for binary endpoints. We focus on **asymptotic normal approximation** methods following Sozu et al. (2010).
 
 #### Method 1: Standard Normal Approximation (AN)
 
-For endpoint k, the test statistic without continuity correction is:
+For endpoint k, the test statistic without continuity correction is **(Equation 3 in Sozu et al., 2010)**:
 
-$$Z_k = \frac{\hat{p}_{1k} - \hat{p}_{2k}}{\sqrt{\hat{V}_k}}$$
+$$Z_k = \frac{\hat{p}_{1,k} - \hat{p}_{2,k}}{se_{k0}}$$
 
 where:
-$$\hat{V}_k = \frac{\hat{p}_{1k}(1 - \hat{p}_{1k})}{n_1} + \frac{\hat{p}_{2k}(1 - \hat{p}_{2k})}{n_2}$$
+$$se_{k0} = \sqrt{\left(\frac{1}{n_1} + \frac{1}{n_2}\right) \bar{p}_k(1 - \bar{p}_k)}$$
 
-Under H₀ₖ, Zₖ asymptotically follows N(0, 1).
+and $\bar{p}_k = \frac{n_1 \hat{p}_{1,k} + n_2 \hat{p}_{2,k}}{n_1 + n_2}$ is the **pooled proportion** under the null hypothesis.
 
-Under H₁ₖ with true probabilities p₁ₖ and p₂ₖ, Zₖ asymptotically follows N(μₖ, 1), where:
+Under ${\rm H}_{0k}$, $Z_{k}$ asymptotically follows ${\rm N}(0, 1)$.
 
-$$\mu_k = \frac{p_{1k} - p_{2k}}{\sqrt{V_k}}$$
+**Power formula** (Equation 4 in Sozu et al., 2010):
 
-with:
-$$V_k = \frac{p_{1k}(1 - p_{1k})}{n_1} + \frac{p_{2k}(1 - p_{2k})}{n_2}$$
+Under ${\rm H}_{1k}$ with true probabilities $p_{1,k}$ and $p_{2,k}$, the power for a single endpoint is:
 
-For balanced design (n₁ = n₂ = n):
-$$\mu_k = \frac{p_{1k} - p_{2k}}{\sqrt{\frac{p_{1k}(1 - p_{1k}) + p_{2k}(1 - p_{2k})}{n}}}$$
+$${\rm Power}_k = \Phi\left(\frac{\delta_k - se_{k0} z_{1-\alpha}}{se_k}\right)$$
+
+where:
+
+- $\delta_k = p_{1,k} - p_{2,k}$ is the true risk difference
+- $se_k = \sqrt{\frac{v_{1,k}}{n_1} + \frac{v_{2,k}}{n_2}}$ with $v_{j,k} = p_{j,k}(1 - p_{j,k})$
+- $z_{1-\alpha}$ is the $(1-\alpha)$ quantile of the standard normal distribution
 
 #### Method 2: Normal Approximation with Continuity Correction (ANc)
 
-To improve finite-sample performance, continuity correction can be applied:
+To improve finite-sample performance, Yates's continuity correction is applied **(Equation 5 in Sozu et al., 2010)**:
 
-$$Z_k = \frac{|\hat{p}_{1k} - \hat{p}_{2k}| - \frac{1}{2}\left(\frac{1}{n_1} + \frac{1}{n_2}\right)}{\sqrt{\hat{V}_k}}$$
+$$Z_k = \frac{\hat{p}_{1,k} - \hat{p}_{2,k} - c}{se_{k0}}$$
+
+where:
+$$c = \frac{1}{2}\left(\frac{1}{n_1} + \frac{1}{n_2}\right)$$
+
+**Power formula**:
+$${\rm Power}_k = \Phi\left(\frac{\delta_k - se_{k0} z_{1-\alpha} - c}{se_k}\right)$$
 
 #### Method 3: Arcsine Transformation (AS)
 
-The arcsine-square-root transformation stabilizes variance:
+The arcsine-square-root transformation stabilizes variance **(Equation 6 in Sozu et al., 2010)**:
 
-$$Z_k = \frac{\arcsin(\sqrt{\hat{p}_{1k}}) - \arcsin(\sqrt{\hat{p}_{2k}})}{\sqrt{\frac{1}{4n_1} + \frac{1}{4n_2}}}$$
+$$Z_k = \frac{\arcsin(\sqrt{\hat{p}_{1,k}}) - \arcsin(\sqrt{\hat{p}_{2,k}})}{se}$$
 
-This transformation is variance-stabilizing: the variance of arcsin(√p) is approximately 1/(4n) regardless of p.
+where:
+$$se = \frac{1}{2}\sqrt{\frac{1}{n_1} + \frac{1}{n_2}}$$
+
+**Power formula**:
+
+Let $\delta_k^{\rm AS} = \arcsin(\sqrt{p_{1k}}) - \arcsin(\sqrt{p_{2k}})$, then:
+
+$${\rm Power}_k = \Phi\left(\frac{\delta_k^{\rm AS}}{se} - z_{1-\alpha}\right)$$
+
+#### Method 4: Arcsine Transformation with Continuity Correction (ASc)
+
+Walters' continuity correction for the arcsine method **(Equation 7 in Sozu et al., 2010)**:
+
+$$Z_k = \frac{\arcsin(\sqrt{\hat{p}_{1,k} + c_1}) - \arcsin(\sqrt{\hat{p}_{2,k} + c_2})}{se}$$
+
+where:
+$$c_1 = -\frac{1}{2n_1}, \quad c_2 = \frac{1}{2n_2}$$
+
+$$se = \frac{1}{2}\sqrt{\frac{1}{n_1} + \frac{1}{n_2}}$$
+
+**Power formula**:
+
+Let:
+
+- $\delta_k^{ASc} = \arcsin(\sqrt{p_{1,k} + c_1}) - \arcsin(\sqrt{p_{2,k} + c_2})$
+- $v_{j,k}^c = (p_{j,k} + c_j)(1 - p_{j,k} - c_j)$
+- $se_k = \sqrt{\frac{v_{1,k}}{4n_1 v_{1,k}^c} + \frac{v_{2,k}}{4n_2 v_{2,k}^c}}$
+
+Then:
+$${\rm Power}_k = \Phi\left(\frac{\delta_k^{ASc} - se \cdot z_{1-\alpha}}{se_k}\right)$$
 
 ### Joint Distribution and Correlation
 
-The key challenge is relating the endpoint correlation ρⱼ within subjects to the correlation γ between test statistics Z₁ and Z₂.
+Under ${\rm H}_{1}$, $(Z_{1}, Z_{2})$ asymptotically follows a bivariate normal distribution:
 
-Under H₁, (Z₁, Z₂) asymptotically follows a bivariate normal distribution:
+$$\begin{pmatrix} Z_1 \\ Z_2 \end{pmatrix} \sim {\rm BN}\left(\begin{pmatrix} \mu_1 \\ \mu_2 \end{pmatrix}, \begin{pmatrix} 1 & \gamma \\ \gamma & 1 \end{pmatrix}\right)$$
 
-$$\begin{pmatrix} Z_1 \\ Z_2 \end{pmatrix} \sim BN\left(\begin{pmatrix} \mu_1 \\ \mu_2 \end{pmatrix}, \begin{pmatrix} 1 & \gamma \\ \gamma & 1 \end{pmatrix}\right)$$
-
-The correlation γ depends on ρ₁, ρ₂, and the marginal probabilities. For the standard normal approximation:
-
-$$\gamma = \frac{\text{Cov}(Z_1, Z_2)}{\sqrt{\text{Var}(Z_1)\text{Var}(Z_2)}}$$
-
-**Simplified calculation** (Sozu et al., 2010): Under the assumption of common correlation (ρ₁ = ρ₂ = ρ) and using the tetrachoric correlation model, γ can be approximated as:
-
-$$\gamma \approx \frac{\sum_{j=1,2} \frac{n_j}{n_1 + n_2} \rho_j \sqrt{p_{j1}(1-p_{j1})p_{j2}(1-p_{j2})}}{\sqrt{V_1 V_2}}$$
-
-For balanced design with common correlation:
-
-$$\gamma \approx \frac{\rho \sqrt{[p_{11}(1-p_{11}) + p_{21}(1-p_{21})][p_{12}(1-p_{12}) + p_{22}(1-p_{22})]}}{2\sqrt{V_1 V_2}}$$
-
-This approximation is implemented in the package functions.
+The correlation $\gamma$ between test statistics depends on $\rho_{1}$, $\rho_{2}$, and the marginal probabilities. For details on the derivation and approximation formulas, see Sozu et al. (2010) and Homma and Yoshida (2025). This approximation is implemented in the package functions.
 
 ### Power Calculation
 
 The overall power (probability of rejecting both null hypotheses) is:
 
-$$1 - \beta = P(Z_1 > z_{1-\alpha} \text{ and } Z_2 > z_{1-\alpha} \mid H_1)$$
+$$1 - \beta = {\rm P}(Z_1 > z_{1-\alpha} \text{ and } Z_2 > z_{1-\alpha} \mid {\rm H}_1)$$
 
 Using the bivariate normal distribution:
 
 $$1 - \beta = \Phi_2(-z_{1-\alpha} + \mu_1, -z_{1-\alpha} + \mu_2 \mid \gamma)$$
 
-where Φ₂(a, b | γ) is the CDF of the standard bivariate normal distribution with correlation γ.
+where $\Phi_{2}(a, b \mid \gamma)$ is the CDF of the standard bivariate normal distribution with correlation $\gamma$.
 
-### Sample Size Formula
+### Sample Size Calculation
 
-For target power 1 - β and balanced design (n₁ = n₂ = n), we solve:
-
-$$\Phi_2\left(-z_{1-\alpha} + \frac{(p_{11} - p_{21})}{\sqrt{2V_1/n}}, -z_{1-\alpha} + \frac{(p_{12} - p_{22})}{\sqrt{2V_2/n}} \mid \gamma\right) = 1 - \beta$$
-
-This is solved numerically for n. The total sample size is N = 2n.
-
-**Computational approach**:
-1. Calculate individual endpoint sample sizes ignoring correlation
-2. Calculate power at these sample sizes accounting for correlation
-3. Refine using iterative algorithm until convergence
+For target power $1 - \beta$ and balanced design ($n_{1} = n_{2} = n$), we solve the power formula shown above numerically for $n_{2}$. Then, the total sample size is obtained as $N = (1+r)n_{2}$.
 
 ## Replicating Sozu et al. (2010) Table III
 
-Table III from Sozu et al. (2010) shows sample sizes for various probability combinations and correlations.
+Table III from Sozu et al. (2010) shows sample sizes for various probability combinations and correlations using the AN, ANc, AS, and ASc test methods. Note that exact methods based on Fisher's exact test (Homma and Yoshida, 2025) can provide more accurate sample sizes for small to medium sample sizes, but are not included in this table as they were not available in Sozu et al. (2010).
 
-### Part A: Equal Proportions (p₁₁ = p₁₂)
+The notation used in the function is: `p11` = $p_{1,1}$, `p12` = $p_{1,2}$, `p21` = $p_{2,1}$, `p22` = $p_{2,2}$, where the first subscript denotes the group (1 = treatment, 2 = control) and the second subscript denotes the endpoint (1 or 2).
 
-When both endpoints have the same success probabilities:
+```{r table3_sozu}
+# Recreate Sozu et al. (2010) Table III
+library(dplyr)
+library(tidyr)
+library(readr)
 
-```{r table3_equal_probs}
-# Define scenarios for equal proportions
-prob_pairs <- list(
-  c(0.55, 0.50), c(0.60, 0.55), c(0.65, 0.60), c(0.70, 0.65),
-  c(0.75, 0.70), c(0.80, 0.75), c(0.85, 0.80), c(0.90, 0.85)
+param_grid_bin_ss <- tibble(
+  p11 = c(0.70, 0.87, 0.90, 0.95), 
+  p12 = c(0.70, 0.70, 0.90, 0.95),
+  p21 = c(0.50, 0.70, 0.70, 0.90),
+  p22 = c(0.50, 0.50, 0.70, 0.90)
 )
 
-rho_values <- c(0, 0.3, 0.5, 0.8)
-
-# Calculate sample sizes
-results_equal <- lapply(prob_pairs, function(probs) {
-  p1 <- probs[1]
-  p2 <- probs[2]
-  
-  results_row <- lapply(rho_values, function(rho) {
-    result <- ss2BinaryApprox(
-      p11 = p1, p21 = p2,
-      p12 = p1, p22 = p2,
-      r = 1,
-      rho1 = rho, rho2 = rho,
-      alpha = 0.025,
-      beta = 0.2,
-      Test = "AN"
+result_bin_ss <- do.call(
+  bind_rows,
+  lapply(c("AN", "ANc", "AS", "ASc"), function(test) {
+    do.call(
+      bind_rows,
+      design_table(
+        param_grid = param_grid_bin_ss,
+        rho_values = c(-0.3, 0, 0.3, 0.5, 0.8),
+        r = 1,
+        alpha = 0.025,
+        beta = 0.2,
+        endpoint_type = "binary",
+        Test = test
+      ) %>% 
+        mutate(Test = test)
     )
-    result$n2
   })
-  
-  data.frame(
-    p_treatment = p1,
-    p_control = p2,
-    diff = p1 - p2,
-    rho_0.0 = results_row[[1]],
-    rho_0.3 = results_row[[2]],
-    rho_0.5 = results_row[[3]],
-    rho_0.8 = results_row[[4]]
-  )
-})
+) %>% 
+  mutate_at(vars(starts_with("rho_")), ~ . / 2) %>% 
+  pivot_longer(
+    cols = starts_with("rho_"),
+    names_to = "rho",
+    values_to = "N",
+    names_transform = list(rho = parse_number)
+  ) %>% 
+  pivot_wider(names_from = Test,  values_from = N) %>% 
+  drop_na(AN, ANc, AS, ASc) %>% 
+  as.data.frame()
 
-table3_equal <- bind_rows(results_equal)
-
-kable(table3_equal,
-      caption = "Table III (Part A): Sample Size per Group for Equal Proportions",
+kable(result_bin_ss,
+      caption = "Table III: Sample Size per Group (n) for Two Co-Primary Binary Endpoints (α = 0.025, 1-β = 0.80)^a,b^",
       digits = 0,
-      col.names = c("π₁ (Trt)", "π₂ (Ctrl)", "Δ", "ρ=0.0", "ρ=0.3", "ρ=0.5", "ρ=0.8"))
+      col.names = c("p₁,₁", "p₁,₂", "p₂,₁", "p₂,₂", "ρ", "AN", "ANc", "AS", "ASc"))
 ```
 
-**Observations**:
-- Larger effect sizes (Δ = π₁ - π₂) require smaller sample sizes
-- Higher correlation reduces required sample size
-- At ρ = 0.8, approximately 11% reduction compared to ρ = 0
+^a^ AN: Asymptotic normal test without continuity correction; ANc: Asymptotic normal test with continuity correction; AS: Arcsine transformation without continuity correction; ASc: Arcsine transformation with continuity correction.
 
-### Part B: Unequal Proportions
-
-When endpoints have different success probabilities:
-
-```{r table3_unequal_probs}
-# Scenarios with different effect sizes
-scenarios_unequal <- list(
-  list(p11 = 0.60, p21 = 0.50, p12 = 0.60, p22 = 0.50),
-  list(p11 = 0.65, p21 = 0.50, p12 = 0.60, p22 = 0.50),
-  list(p11 = 0.70, p21 = 0.55, p12 = 0.65, p22 = 0.55),
-  list(p11 = 0.75, p21 = 0.60, p12 = 0.70, p22 = 0.60),
-  list(p11 = 0.80, p21 = 0.65, p12 = 0.75, p22 = 0.65),
-  list(p11 = 0.85, p21 = 0.70, p12 = 0.80, p22 = 0.70)
-)
-
-results_unequal <- lapply(scenarios_unequal, function(scenario) {
-  results_row <- lapply(rho_values, function(rho) {
-    result <- ss2BinaryApprox(
-      p11 = scenario$p11, p21 = scenario$p21,
-      p12 = scenario$p12, p22 = scenario$p22,
-      r = 1,
-      rho1 = rho, rho2 = rho,
-      alpha = 0.025,
-      beta = 0.2,
-      Test = "AN"
-    )
-    result$n2
-  })
-  
-  data.frame(
-    Endpoint1 = paste0(scenario$p11, " vs ", scenario$p21),
-    Endpoint2 = paste0(scenario$p12, " vs ", scenario$p22),
-    diff1 = scenario$p11 - scenario$p21,
-    diff2 = scenario$p12 - scenario$p22,
-    rho_0.0 = results_row[[1]],
-    rho_0.3 = results_row[[2]],
-    rho_0.5 = results_row[[3]],
-    rho_0.8 = results_row[[4]]
-  )
-})
-
-table3_unequal <- bind_rows(results_unequal)
-
-kable(table3_unequal,
-      caption = "Table III (Part B): Sample Size per Group for Unequal Proportions",
-      digits = 0,
-      col.names = c("Endpoint 1", "Endpoint 2", "Δ₁", "Δ₂", 
-                    "ρ=0.0", "ρ=0.3", "ρ=0.5", "ρ=0.8"))
-```
-
-**Key finding**: When effect sizes differ across endpoints, the endpoint with smaller effect size dominates the sample size requirement.
-
-### Comparison with Single-Endpoint Sample Sizes
-
-How do co-primary designs compare to single-endpoint designs?
-
-```{r comparison_single}
-# Calculate sample sizes for individual endpoints
-single_endpoint_comparison <- lapply(prob_pairs, function(probs) {
-  p1 <- probs[1]
-  p2 <- probs[2]
-  
-  # Single endpoint
-  single <- ss1BinaryApprox(
-    p1 = p1, p2 = p2,
-    r = 1,
-    alpha = 0.025,
-    beta = 0.2,
-    Test = "AN"
-  )
-  
-  # Co-primary at rho=0
-  coprimary <- ss2BinaryApprox(
-    p11 = p1, p21 = p2,
-    p12 = p1, p22 = p2,
-    r = 1,
-    rho1 = 0, rho2 = 0,
-    alpha = 0.025,
-    beta = 0.2,
-    Test = "AN"
-  )
-  
-  data.frame(
-    p1 = p1,
-    p2 = p2,
-    Single_EP = single$n2,
-    Coprimary_rho0 = coprimary$n2,
-    Ratio = round(coprimary$n2 / single$n2, 2)
-  )
-})
-
-comparison_table <- bind_rows(single_endpoint_comparison)
-
-kable(comparison_table,
-      caption = "Comparison: Single Endpoint vs Co-Primary (ρ=0)",
-      digits = 2,
-      col.names = c("π₁", "π₂", "Single EP", "Co-primary", "Ratio"))
-```
-
-**Interpretation**: Co-primary design with ρ = 0 requires approximately the same sample size as a single endpoint design for the same effect size. The "cost" of co-primacy is in the reduced power (product of individual powers).
-
-## Power Verification
-
-Let's verify that the calculated sample sizes achieve the target power:
-
-```{r power_verification}
-# Select representative scenarios
-test_scenarios <- data.frame(
-  p11 = c(0.70, 0.75, 0.65, 0.80),
-  p21 = c(0.60, 0.70, 0.50, 0.65),
-  p12 = c(0.70, 0.75, 0.60, 0.75),
-  p22 = c(0.60, 0.70, 0.50, 0.65),
-  rho = c(0.3, 0.5, 0.5, 0.8)
-)
-
-power_results <- lapply(1:nrow(test_scenarios), function(i) {
-  scenario <- test_scenarios[i, ]
-  
-  # Get sample size
-  ss <- ss2BinaryApprox(
-    p11 = scenario$p11, p21 = scenario$p21,
-    p12 = scenario$p12, p22 = scenario$p22,
-    r = 1,
-    rho1 = scenario$rho, rho2 = scenario$rho,
-    alpha = 0.025,
-    beta = 0.2,
-    Test = "AN"
-  )
-  
-  # Calculate power
-  power <- power2BinaryApprox(
-    n1 = ss$n1, n2 = ss$n2,
-    p11 = scenario$p11, p21 = scenario$p21,
-    p12 = scenario$p12, p22 = scenario$p22,
-    rho1 = scenario$rho, rho2 = scenario$rho,
-    alpha = 0.025,
-    Test = "AN"
-  )
-  
-  data.frame(
-    EP1 = paste0(scenario$p11, " vs ", scenario$p21),
-    EP2 = paste0(scenario$p12, " vs ", scenario$p22),
-    rho = scenario$rho,
-    n_per_group = ss$n2,
-    N_total = ss$N,
-    power_EP1 = power$power1,
-    power_EP2 = power$power2,
-    power_both = power$powerCoprimary
-  )
-})
-
-power_check <- bind_rows(power_results)
-
-kable(power_check,
-      caption = "Power Verification (Target: 0.80)",
-      digits = 3,
-      col.names = c("Endpoint 1", "Endpoint 2", "ρ", "n per group", 
-                    "N total", "Power EP1", "Power EP2", "Power Both"))
-```
-
-**Verification**: All scenarios achieve the target power of 0.80 for both endpoints.
-
-## Impact of Correlation: Detailed Analysis
-
-### Correlation Effect on Sample Size
-
-```{r correlation_impact_plot, fig.width=8, fig.height=6}
-# Fixed scenario: moderate effect sizes
-p11 <- 0.70
-p21 <- 0.55
-p12 <- 0.65
-p22 <- 0.50
-
-rho_seq <- seq(0, 0.8, by = 0.05)
-
-sample_sizes <- sapply(rho_seq, function(rho) {
-  result <- ss2BinaryApprox(
-    p11 = p11, p21 = p21,
-    p12 = p12, p22 = p22,
-    r = 1,
-    rho1 = rho, rho2 = rho,
-    alpha = 0.025,
-    beta = 0.2,
-    Test = "AN"
-  )
-  result$N
-})
-
-plot(rho_seq, sample_sizes,
-     type = "l", lwd = 2, col = "darkblue",
-     xlab = "Correlation (ρ)",
-     ylab = "Total Sample Size (N)",
-     main = paste0("Sample Size vs Correlation\n",
-                   "EP1: ", p11, " vs ", p21, "; EP2: ", p12, " vs ", p22),
-     las = 1)
-grid()
-
-# Add reference points
-points(0, sample_sizes[1], pch = 19, col = "red", cex = 1.2)
-points(0.5, sample_sizes[11], pch = 19, col = "blue", cex = 1.2)
-
-# Calculate reductions
-reduction_05 <- round((1 - sample_sizes[11]/sample_sizes[1]) * 100, 1)
-reduction_08 <- round((1 - sample_sizes[17]/sample_sizes[1]) * 100, 1)
-
-legend("topright",
-       legend = c(
-         paste0("ρ=0: N=", sample_sizes[1]),
-         paste0("ρ=0.5: ", reduction_05, "% reduction"),
-         paste0("ρ=0.8: ", reduction_08, "% reduction")
-       ),
-       bty = "n", cex = 0.9)
-```
-
-## Unbalanced Allocation
-
-### Impact of Allocation Ratio
-
-```{r unbalanced_allocation}
-# Compare different allocation ratios
-allocation_ratios <- c(1, 1.5, 2, 3)
-
-unbalanced_results <- lapply(allocation_ratios, function(r) {
-  result <- ss2BinaryApprox(
-    p11 = 0.70, p21 = 0.55,
-    p12 = 0.65, p22 = 0.50,
-    r = r,
-    rho1 = 0.5, rho2 = 0.5,
-    alpha = 0.025,
-    beta = 0.2,
-    Test = "AN"
-  )
-  
-  data.frame(
-    Ratio = paste0(r, ":1"),
-    n_treatment = result$n1,
-    n_control = result$n2,
-    N_total = result$N
-  )
-})
-
-unbalanced_table <- bind_rows(unbalanced_results)
-
-# Calculate percentage increase
-unbalanced_table$Increase_pct <- round((unbalanced_table$N_total / unbalanced_table$N_total[1] - 1) * 100, 1)
-unbalanced_table$Increase_pct[1] <- 0
-
-kable(unbalanced_table,
-      caption = "Impact of Allocation Ratio on Sample Size",
-      col.names = c("Allocation", "n (Trt)", "n (Ctrl)", "N (Total)", "% Increase"))
-```
-
-**Finding**: 2:1 allocation increases total sample size by approximately 12% compared to balanced allocation.
-
-## Clinical Application: Vaccine Trial
-
-Consider a vaccine trial with two co-primary endpoints:
-1. **Seroconversion**: Antibody level above threshold
-2. **Clinical protection**: No symptomatic disease
-
-```{r vaccine_example}
-# Design parameters
-# Expected rates with vaccine: 85% seroconversion, 70% protection
-# Expected rates with placebo: 70% seroconversion, 50% protection
-# Correlation: moderate (ρ = 0.5)
-
-vaccine_design <- ss2BinaryApprox(
-  p11 = 0.85,           # Seroconversion (vaccine)
-  p21 = 0.70,           # Seroconversion (placebo)
-  p12 = 0.70,           # Protection (vaccine)
-  p22 = 0.50,           # Protection (placebo)
-  r = 1,
-  rho1 = 0.5, rho2 = 0.5,
-  alpha = 0.025,
-  beta = 0.1,            # 90% power
-  Test = "AN"
-)
-
-cat("Vaccine Trial Design:\n")
-cat("Sample size per group:", vaccine_design$n2, "\n")
-cat("Total sample size:", vaccine_design$N, "\n\n")
-
-# Verify power
-vaccine_power <- power2BinaryApprox(
-  n1 = vaccine_design$n1,
-  n2 = vaccine_design$n2,
-  p11 = 0.85, p21 = 0.70,
-  p12 = 0.70, p22 = 0.50,
-  rho1 = 0.5, rho2 = 0.5,
-  alpha = 0.025,
-  Test = "AN"
-)
-
-cat("Power verification:\n")
-cat("Power for seroconversion:", round(vaccine_power$power1, 3), "\n")
-cat("Power for protection:", round(vaccine_power$power2, 3), "\n")
-cat("Power for both (co-primary):", round(vaccine_power$powerCoprimary, 3), "\n\n")
-
-# Compare with ignoring correlation
-vaccine_no_corr <- ss2BinaryApprox(
-  p11 = 0.85, p21 = 0.70,
-  p12 = 0.70, p22 = 0.50,
-  r = 1,
-  rho1 = 0, rho2 = 0,
-  alpha = 0.025,
-  beta = 0.1,
-  Test = "AN"
-)
-
-cat("If correlation ignored (ρ=0):\n")
-cat("Sample size per group:", vaccine_no_corr$n2, "\n")
-cat("Total sample size:", vaccine_no_corr$N, "\n\n")
-
-reduction <- vaccine_no_corr$N - vaccine_design$N
-pct_reduction <- round(reduction / vaccine_no_corr$N * 100, 1)
-
-cat("Benefit of accounting for correlation:\n")
-cat("Sample size reduction:", reduction, "subjects\n")
-cat("Percentage reduction:", pct_reduction, "%\n")
-```
-
-## Summary
+^b^ Some values may differ by 1-2 subjects from Sozu et al. (2010) Table III due to numerical differences in computing the bivariate normal cumulative distribution function between SAS and R implementations. Power calculations at the reported sample sizes confirm the accuracy of the values presented here.
 
 ### Key Findings
 
-1. **Correlation impact**: ~5-7% reduction at ρ = 0.5, ~10-11% at ρ = 0.8
+**Effect of correlation**:
 
-2. **Effect size asymmetry**: When effect sizes differ, the endpoint with smaller effect dominates sample size requirements
+- **Positive correlation** ($\rho > 0$) reduces required sample size
+- **Negative correlation** ($\rho < 0$) increases required sample size
+- **Zero correlation** ($\rho = 0$) provides intermediate sample size
 
-3. **Allocation ratio**: 2:1 allocation increases total N by approximately 12%
+**Test method comparison**:
 
-4. **Method comparison**: AN (no continuity correction) gives smallest sample size; continuity correction adds 1-5%
+- **AN**: Generally smallest sample size, most efficient
+- **ANc**: Slightly larger than AN due to continuity correction
+- **AS**: Similar to AN for moderate probabilities
+- **ASc**: Largest sample size, most conservative
 
-5. **Asymptotic validity**: These methods are appropriate for N > 200 and 0.1 < p < 0.9
+## Basic Usage Examples
 
-### Practical Recommendations
+### Example 1: Equal Effect Sizes
+
+Calculate sample size when both endpoints have equal effect sizes:
+
+```{r example1}
+# Both endpoints: 70% vs 50% (20% difference)
+# p_{1,1} = p_{1,2} = 0.7 (treatment group)
+# p_{2,1} = p_{2,2} = 0.5 (control group)
+ss_equal <- ss2BinaryApprox(
+  p11 = 0.7, p12 = 0.7,  # Treatment group
+  p21 = 0.5, p22 = 0.5,  # Control group
+  rho1 = 0.5,            # Correlation in treatment group
+  rho2 = 0.5,            # Correlation in control group
+  r = 1,                 # Balanced allocation
+  alpha = 0.025,
+  beta = 0.2,
+  Test = "AN"
+)
+
+print(ss_equal)
+```
+
+**Note**: In the function, `p11` corresponds to $p_{1,1}$ (success probability for endpoint 1 in treatment group), `p12` to $p_{1,2}$, `p21` to $p_{2,1}$, and `p22` to $p_{2,2}$.
+
+### Example 2: Unequal Effect Sizes
+
+When effect sizes differ, the endpoint with smaller effect dominates:
+
+```{r example2}
+# Endpoint 1: 75% vs 65% (10% difference)
+# Endpoint 2: 80% vs 60% (20% difference)
+ss_unequal <- ss2BinaryApprox(
+  p11 = 0.75, p12 = 0.80,
+  p21 = 0.65, p22 = 0.60,
+  rho1 = 0.3, rho2 = 0.3,
+  r = 1,
+  alpha = 0.025,
+  beta = 0.2,
+  Test = "AN"
+)
+
+print(ss_unequal)
+
+# Compare with individual endpoint sample sizes
+ss_ep1 <- ss1BinaryApprox(p1 = 0.75, p2 = 0.65, r = 1, 
+                          alpha = 0.025, beta = 0.2, Test = "AN")
+ss_ep2 <- ss1BinaryApprox(p1 = 0.80, p2 = 0.60, r = 1,
+                          alpha = 0.025, beta = 0.2, Test = "AN")
+
+cat("Single endpoint 1 sample size:", ss_ep1$n2, "\n")
+cat("Single endpoint 2 sample size:", ss_ep2$n2, "\n")
+cat("Co-primary sample size:", ss_unequal$n2, "\n")
+```
+
+The co-primary design requires approximately the same sample size as the endpoint with smaller effect size.
+
+### Example 3: Effect of Correlation
+
+Demonstrate how correlation affects sample size:
+
+```{r correlation_effect}
+# Fixed effect sizes: p_{1,1} = p_{1,2} = 0.7, p_{2,1} = p_{2,2} = 0.5
+p11 <- 0.7
+p21 <- 0.5
+p12 <- 0.7
+p22 <- 0.5
+
+# Range of correlations
+rho_values <- c(-0.3, 0, 0.3, 0.5, 0.8)
+
+ss_by_rho <- sapply(rho_values, function(rho) {
+  ss <- ss2BinaryApprox(
+    p11 = p11, p12 = p12,
+    p21 = p21, p22 = p22,
+    rho1 = rho, rho2 = rho,
+    r = 1,
+    alpha = 0.025,
+    beta = 0.2,
+    Test = "AN"
+  )
+  ss$n2
+})
+
+result_df <- data.frame(
+  rho = rho_values,
+  n_per_group = ss_by_rho,
+  N_total = ss_by_rho * 2
+)
+
+kable(result_df,
+      caption = "Sample Size vs Correlation (p₁,₁ = p₁,₂ = 0.7, p₂,₁ = p₂,₂ = 0.5)",
+      col.names = c("ρ", "n per group", "N total"))
+
+# Plot
+plot(rho_values, ss_by_rho, 
+     type = "b", pch = 19,
+     xlab = "Correlation (ρ)", 
+     ylab = "Sample size per group (n)",
+     main = "Effect of Correlation on Sample Size",
+     ylim = c(min(ss_by_rho) * 0.9, max(ss_by_rho) * 1.1))
+grid()
+```
+
+**Interpretation**: Higher positive correlation substantially reduces required sample size.
+
+### Example 4: Unbalanced Allocation
+
+Calculate sample size with unequal group allocation:
+
+```{r unbalanced}
+# 2:1 allocation (treatment:control)
+ss_unbalanced <- ss2BinaryApprox(
+  p11 = 0.7, p12 = 0.7,
+  p21 = 0.5, p22 = 0.5,
+  rho1 = 0.5, rho2 = 0.5,
+  r = 2,  # 2:1 allocation
+  alpha = 0.025,
+  beta = 0.2,
+  Test = "AN"
+)
+
+print(ss_unbalanced)
+cat("Total sample size:", ss_unbalanced$N, "\n")
+```
+
+## Power Verification
+
+Verify that calculated sample sizes achieve target power:
+
+```{r power_verification}
+# Use result from Example 1
+power_result <- power2BinaryApprox(
+  n1 = ss_equal$n1,
+  n2 = ss_equal$n2,
+  p11 = 0.7, p12 = 0.7,
+  p21 = 0.5, p22 = 0.5,
+  rho1 = 0.5, rho2 = 0.5,
+  alpha = 0.025,
+  Test = "AN"
+)
+
+cat("Target power: 0.80\n")
+cat("Achieved power (Endpoint 1):", round(power_result$power1, 4), "\n")
+cat("Achieved power (Endpoint 2):", round(power_result$power2, 4), "\n")
+cat("Achieved power (Co-primary):", round(power_result$powerCoprimary, 4), "\n")
+```
+
+## Comparison of Test Methods
+
+Compare the four asymptotic test methods:
+
+```{r method_comparison}
+# Fixed design parameters
+p11 <- 0.80
+p12 <- 0.70
+p21 <- 0.55
+p22 <- 0.45
+rho <- 0.7
+
+# Calculate for each method
+methods <- c("AN", "ANc", "AS", "ASc")
+comparison <- lapply(methods, function(method) {
+    ss <- ss2BinaryApprox(
+        p11 = p11, p12 = p12,
+        p21 = p21, p22 = p22,
+        rho1 = rho, rho2 = rho,
+        r = 1,
+        alpha = 0.025,
+        beta = 0.2,
+        Test = method
+    )
+    
+    data.frame(
+        Method = method,
+        n_per_group = ss$n2,
+        N_total = ss$N
+    )
+})
+
+comparison_table <- bind_rows(comparison)
+
+kable(comparison_table,
+      caption = "Comparison of Test Methods (p₁,₁ = p₁,₂ = 0.7, p₂,₁ = p₂,₂ = 0.5, ρ = 0.5)")
+```
+
+
+## Practical Recommendations
+
+### Design Considerations
 
 1. **Estimate correlation**: Use pilot data or historical information; be conservative if uncertain
 
@@ -600,20 +485,27 @@ cat("Percentage reduction:", pct_reduction, "%\n")
 
 5. **Sample size sensitivity**: Calculate for range of plausible correlations and effect sizes
 
-6. **Consider exact methods**: For N < 200 or extreme probabilities, use exact methods instead
-
 ### When to Use Exact Methods Instead
 
-Use exact methods (`ss2BinaryExact`) when:
-- Small to medium sample sizes (N < 200)
-- Extreme probabilities (p < 0.1 or p > 0.9)
+Use exact methods (`ss2BinaryExact`) based on Homma and Yoshida (2025) when:
+
+- Small to medium sample sizes ($N < 200$)
+- Extreme probabilities ($p < 0.1$ or $p > 0.9$)
 - Strict Type I error control required
 - Regulatory preference for exact tests
 
+Exact methods using Fisher's exact test can provide more accurate sample sizes and better Type I error control in these situations.
+
+### Asymptotic Validity
+
+These asymptotic methods are appropriate when:
+
+- $N > 200$
+- $0.1 < p < 0.9$
+- Computational efficiency is important
+
 ## References
 
+Homma, G., & Yoshida, T. (2025). Exact power and sample size in clinical trials with two co-primary binary endpoints. *Statistical Methods in Medical Research*, 34(1), 1-19.
+
 Sozu, T., Sugimoto, T., & Hamasaki, T. (2010). Sample size determination in clinical trials with multiple co-primary binary endpoints. *Statistics in Medicine*, 29(21), 2169-2179.
-
-Sozu, T., Sugimoto, T., Hamasaki, T., & Evans, S. R. (2015). *Sample Size Determination in Clinical Trials with Multiple Endpoints*. Springer.
-
-Guo, J. H., & Luh, W. M. (2009). An efficient method for computing the power of the tetrachoric correlation with binary and ordinal variables. *Computational Statistics & Data Analysis*, 53(12), 4434-4446.

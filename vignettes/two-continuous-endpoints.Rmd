@@ -42,29 +42,26 @@ In clinical trials, **co-primary endpoints** require demonstrating statistically
 Co-primary continuous endpoints are common in:
 
 - **Alzheimer's disease trials**: Cognitive function (ADAS-cog) + Clinical global impression (CIBIC-plus)
-- **Cardiovascular trials**: Systolic blood pressure + Diastolic blood pressure
-- **Depression trials**: HAM-D + MADRS scores
-- **Pain trials**: Pain intensity + Physical function
-- **Pulmonary trials**: ${\rm FEV}_{1}$ + FVC (Forced Vital Capacity)
+- **Irritable bowel syndrome (IBS) trials**: Pain intensity and stool frequency of IBS with constipation (IBS-C) + Pain intensity and stool consistency of IBS with diarrhea (IBS-D)
 
 ## Statistical Framework
 
 ### Model and Assumptions
 
-Consider a two-arm parallel-group superiority trial comparing treatment (group 1) with control (group 2). Let $n_{1}$ and $n_{2}$ denote the sample sizes in the two groups, and define the allocation ratio $r = n_{1}/n_{2}$.
+Consider a two-arm parallel-group superiority trial comparing treatment (group 1) with control (group 2). Let $n_{1}$ and $n_{2}$ denote the sample sizes in the two groups (i.e., total sample size is $N=n_{1}+n_{2}$), and define the allocation ratio $r = n_{1}/n_{2}$.
 
 For subject $i$ in group $j$ ($j = 1$: treatment, $j = 2$: control), we observe two continuous outcomes:
 
 **Endpoint $k$** ($k = 1, 2$): 
-$$Y_{ijk} \sim {\rm N}(\mu_{jk}, \sigma_{k}^{2})$$
+$$X_{i,j,k} \sim {\rm N}(\mu_{j,k}, \sigma_{k}^{2})$$
 
 where:
 
-- $\mu_{jk}$ is the population mean for outcome $k$ in group $j$
+- $\mu_{j,k}$ is the population mean for outcome $k$ in group $j$
 - $\sigma_{k}^{2}$ is the common variance for outcome $k$ across both groups
 
 **Within-subject correlation**: The two outcomes are correlated within each subject:
-$$\text{Cor}(Y_{ij1}, Y_{ij2}) = \rho_{j}$$
+$$\text{Cor}(X_{i,j,1}, X_{i,j,2}) = \rho_{j}$$
 
 We assume common correlation across groups: $\rho_{1} = \rho_{2} = \rho$.
 
@@ -72,7 +69,7 @@ We assume common correlation across groups: $\rho_{1} = \rho_{2} = \rho$.
 
 The treatment effect for endpoint $k$ is measured by:
 
-**Absolute difference**: $\delta_{k} = \mu_{1k} - \mu_{2k}$
+**Absolute difference**: $\delta_{k} = \mu_{1,k} - \mu_{2,k}$
 
 **Standardized effect size**: $\delta_{k}^{\ast} = \delta_{k} / \sigma_{k}$
 
@@ -97,10 +94,10 @@ where ${\rm H}_{1k}: \delta_{k} > 0$ for $k = 1, 2$.
 For each endpoint $k$, the test statistic is:
 
 **Known variance case**:
-$$Z_{k} = \frac{\bar{Y}_{1k} - \bar{Y}_{2k}}{\sigma_{k}\sqrt{\frac{1}{n_{1}} + \frac{1}{n_{2}}}}$$
+$$Z_{k} = \frac{\bar{X}_{1k} - \bar{X}_{2k}}{\sigma_{k}\sqrt{\frac{1}{n_{1}} + \frac{1}{n_{2}}}}$$
 
 **Unknown variance case**:
-$$T_{k} = \frac{\bar{Y}_{1k} - \bar{Y}_{2k}}{s_{k}\sqrt{\frac{1}{n_{1}} + \frac{1}{n_{2}}}}$$
+$$T_{k} = \frac{\bar{X}_{1k} - \bar{X}_{2k}}{s_{k}\sqrt{\frac{1}{n_{1}} + \frac{1}{n_{2}}}}$$
 
 where $s_{k}$ is the pooled sample standard deviation for endpoint $k$.
 
