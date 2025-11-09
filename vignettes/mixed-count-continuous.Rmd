@@ -27,20 +27,14 @@ library(tidyr)
 library(knitr)
 ```
 
-## Background and Motivation
+## Background
 
 ### Clinical Context
 
 In clinical trials for treating **asthma** and **chronic obstructive pulmonary disease (COPD)**, regulatory agencies require evaluation of both:
 
 1. **Count endpoint**: Number of exacerbations over follow-up period (overdispersed count data)
-2. **Continuous endpoint**: Lung function measure such as FEV₁ (forced expiratory volume in 1 second)
-
-**Examples**:
-- **COPD trials**: Annual exacerbation rate + Change in FEV₁ from baseline
-- **Asthma trials**: Number of rescue medication uses + Peak expiratory flow rate
-- **Migraine trials**: Monthly headache frequency + Pain intensity score
-- **Epilepsy trials**: Seizure count + Quality of life score
+2. **Continuous endpoint**: Lung function measure such as ${\rm FEV}_{1}$ (forced expiratory volume in 1 second)
 
 ### Why Negative Binomial Distribution?
 
@@ -48,555 +42,390 @@ Count outcomes in clinical trials often exhibit **overdispersion**, where the va
 
 **Negative binomial (NB) distribution** accommodates overdispersion:
 
-$$Y \sim \text{NB}(\lambda, \nu)$$
+$$X \sim {\rm NB}(\lambda, \nu)$$
 
-- **Mean**: E[Y] = λ = r × t (rate × time)
-- **Variance**: Var[Y] = λ + λ²/ν
-- **Dispersion parameter**: ν > 0 controls overdispersion
-  - As ν → ∞: NB → Poisson (no overdispersion)
-  - Small ν: High overdispersion (variance >> mean)
+- **Mean**: ${\rm E}[X] = \lambda = r \times t$ (rate $\times$ time)
+- **Variance**: ${\rm Var}[X] = \lambda + \lambda^{2}/\nu$
+- **Dispersion parameter**: $\nu > 0$ controls overdispersion
+  - As $\nu \to \infty$: ${\rm NB} \to {\rm Poisson}$ (no overdispersion)
+  - Small $\nu$: High overdispersion (variance $\gg$ mean)
 
-**Variance-to-mean ratio** (VMR):
-$$\text{VMR} = \frac{\text{Var}[Y]}{E[Y]} = 1 + \frac{\lambda}{\nu}$$
+**Variance-to-mean ratio (VMR)**:
+$${\rm VMR} = \frac{{\rm Var}[X]}{{\rm E}[X]} = 1 + \frac{\lambda}{\nu}$$
 
-When VMR > 1, data are overdispersed and NB is more appropriate than Poisson.
+When ${\rm VMR} > 1$, data are overdispersed and NB is more appropriate than Poisson.
 
 ## Statistical Framework
 
 ### Model and Assumptions
 
-Consider a two-arm superiority trial with allocation ratio κ = n₁/n₂.
+Consider a two-arm superiority trial with sample sizes $n_{1}$ (treatment) and $n_{2}$ (control), with allocation ratio $r = n_{1}/n_{2}$.
 
-**Endpoint 1 (Count)**: Number of events over follow-up time t
+For subject $i$ in group $j$ ($j = 1$: treatment, $j = 2$: control), we observe two **outcomes**:
 
-For subject i in group j (j = 0: control, j = 1: treatment):
-$$Y_{ij1} \sim \text{NB}(\lambda_j, \nu)$$
+**Outcome 1 (Count)**:
+$$X_{i,j,1} \sim {\rm NB}(\lambda_{j}, \nu)$$
 
-where:
-- λⱼ = rⱼ × t is the mean count
-- rⱼ is the event rate per unit time
-- t is the follow-up duration (assumed equal across subjects)
-- ν is the dispersion parameter (assumed common across groups)
+where $\lambda_{j}$ is the expected number of events in group $j$, and $\nu > 0$ is the common dispersion parameter.
 
-**Endpoint 2 (Continuous)**: Change from baseline (e.g., FEV₁)
+**Outcome 2 (Continuous)**:
+$$X_{i,j,2} \sim {\rm N}(\mu_{j}, \sigma^{2})$$
 
-$$Y_{ij2} \sim N(\mu_j, \sigma^2)$$
+where $\mu_{j}$ is the population mean in group $j$, and $\sigma^{2}$ is the common variance across groups.
 
-where:
-- μⱼ is the population mean
-- σ² is the common variance
+### Correlation Structure
+
+The correlation between count and continuous outcomes within subjects is measured by $\rho_{j}$ in group $j$. This correlation must satisfy **feasibility constraints** based on the Fréchet-Hoeffding copula bounds, which depend on the marginal distributions.
+
+Use the `corrbound2MixedCountContinuous()` function to check valid correlation bounds for given parameters.
 
 ### Hypothesis Testing
 
-**For count endpoint** (rate ratio):
-$$H_{01}: r_1 / r_0 \geq 1 \text{ vs. } H_{11}: r_1 / r_0 < 1$$
+We test superiority of treatment over control for both endpoints. **Note**: In COPD/asthma trials, treatment benefit is indicated by **lower values** for both endpoints (fewer exacerbations, less decline in lung function).
 
-(Lower rate in treatment indicates improvement)
+**For count endpoint** (1):
+$${\rm H}_{01}: r_{1} \geq r_{2} \text{ vs. } {\rm H}_{11}: r_{1} < r_{2}$$
 
-**For continuous endpoint** (mean difference):
-$$H_{02}: \mu_1 - \mu_0 \geq 0 \text{ vs. } H_{12}: \mu_1 - \mu_0 < 0$$
+Equivalently, testing $\beta_{1} = \log(r_{1}) - \log(r_{2}) < 0$.
 
-(Negative difference indicates improvement, e.g., less decline in FEV₁)
+**For continuous endpoint** (2):
+$${\rm H}_{02}: \mu_{1} - \mu_{2} \geq 0 \text{ vs. } {\rm H}_{12}: \mu_{1} - \mu_{2} < 0$$
 
-**Co-primary endpoints**:
-$$H_0 = H_{01} \cup H_{02} \text{ vs. } H_1 = H_{11} \cap H_{12}$$
+**Co-primary endpoints** (intersection-union test):
+$${\rm H}_0 = {\rm H}_{01} \cup {\rm H}_{02} \text{ vs. } {\rm H}_1 = {\rm H}_{11} \cap {\rm H}_{12}$$
 
-Reject H₀ at level α if and only if **both** H₀₁ and H₀₂ are rejected.
+Reject ${\rm H}_{0}$ at level $\alpha$ if and only if **both** ${\rm H}_{01}$ and ${\rm H}_{02}$ are rejected at level $\alpha$.
 
 ### Test Statistics
 
-**Count endpoint**: Using log-transformation for rate ratio
+**Count endpoint** (Equation 7 in Homma and Yoshida, 2024):
 
-$$Z_1 = \frac{\log(\bar{Y}_1) - \log(\bar{Y}_0)}{\sqrt{\widehat{\text{Var}}(\log(\bar{Y}_1) - \log(\bar{Y}_0))}}$$
-
-where $\bar{Y}_j = \frac{1}{n_j}\sum_{i=1}^{n_j} Y_{ij1}$ is the sample mean in group j.
-
-**Variance approximation** (Delta method):
-
-$$\text{Var}(\log(\bar{Y}_j)) \approx \frac{1}{E[\bar{Y}_j]^2} \text{Var}(\bar{Y}_j) = \frac{1}{\lambda_j n_j}\left(1 + \frac{\lambda_j}{\nu}\right)$$
-
-Thus:
-$$\widehat{\text{Var}}(\log(\bar{Y}_1) - \log(\bar{Y}_0)) = \frac{1}{\lambda_1 n_1}\left(1 + \frac{\lambda_1}{\nu}\right) + \frac{1}{\lambda_0 n_0}\left(1 + \frac{\lambda_0}{\nu}\right)$$
-
-For balanced design (n₀ = n₁ = n):
-$$\text{Var}(\log(\bar{Y}_1) - \log(\bar{Y}_0)) = \frac{1}{n}\left(\frac{1 + \lambda_1/\nu}{\lambda_1} + \frac{1 + \lambda_0/\nu}{\lambda_0}\right)$$
-
-**Under H₁₁**, Z₁ asymptotically follows N(μ₁, 1) where:
-
-$$\mu_1 = \frac{\log(\lambda_1) - \log(\lambda_0)}{\sqrt{\text{Var}(\log(\bar{Y}_1) - \log(\bar{Y}_0))}}$$
-
-**Continuous endpoint**: Standard Z-test
-
-$$Z_2 = \frac{\bar{Y}_1 - \bar{Y}_0}{\sigma\sqrt{\frac{1}{n_1} + \frac{1}{n_0}}}$$
-
-For balanced design:
-$$Z_2 = \frac{\bar{Y}_1 - \bar{Y}_0}{\sigma\sqrt{\frac{2}{n}}}$$
-
-**Under H₁₂**, Z₂ ~ N(μ₂, 1) where:
-
-$$\mu_2 = \frac{\mu_1 - \mu_0}{\sigma\sqrt{\frac{1}{n_1} + \frac{1}{n_0}}}$$
-
-### Copula-Based Dependence Model
-
-The correlation between a count variable and a continuous variable is modeled using **copulas**.
-
-**Copula**: A function C(u₁, u₂) that describes the dependence structure between uniform random variables:
-
-$$F(y_1, y_2) = C(F_1(y_1), F_2(y_2))$$
-
-For our mixed endpoints:
-- F₁ is the NB CDF for the count endpoint
-- F₂ is the normal CDF for the continuous endpoint
-- C is the copula function
-
-**Common copula families**:
-
-1. **Gaussian (Normal) copula**:
-$$C(u_1, u_2 \mid \rho) = \Phi_2(\Phi^{-1}(u_1), \Phi^{-1}(u_2) \mid \rho)$$
-
-2. **Clayton copula** (lower tail dependence):
-$$C(u_1, u_2 \mid \theta) = (u_1^{-\theta} + u_2^{-\theta} - 1)^{-1/\theta}, \quad \theta > 0$$
-
-3. **Frank copula** (symmetric dependence):
-$$C(u_1, u_2 \mid \theta) = -\frac{1}{\theta}\log\left(1 + \frac{(e^{-\theta u_1} - 1)(e^{-\theta u_2} - 1)}{e^{-\theta} - 1}\right)$$
-
-The parameter ρ (or θ) controls the strength of dependence.
-
-### Joint Distribution of Test Statistics
-
-Under H₁, (Z₁, Z₂) asymptotically follows a bivariate normal distribution:
-
-$$\begin{pmatrix} Z_1 \\ Z_2 \end{pmatrix} \sim BN\left(\begin{pmatrix} \mu_1 \\ \mu_2 \end{pmatrix}, \begin{pmatrix} 1 & \gamma \\ \gamma & 1 \end{pmatrix}\right)$$
-
-**Correlation γ between test statistics**:
-
-The correlation γ depends on the within-subject correlation ρⱼ between endpoints. Homma and Yoshida (2024) derived (Equation 11):
-
-$$\gamma = \sum_{j=0,1} \frac{\kappa^j \rho_j \sqrt{1 + \lambda_j/\nu}}{(1 + \kappa) \sqrt{\lambda_j V_a(1 + \kappa)/\kappa}}$$
+$$Z_{1} = \frac{\hat{\beta}_{1}}{\sqrt{{\rm Var}(\hat{\beta}_{1})}}$$
 
 where:
-- κ = n₁/n₀ is the allocation ratio
-- $V_a = \frac{1}{\lambda_0} + \frac{1}{\kappa \lambda_1}$ is a variance term
-- ρⱼ is the correlation in group j
 
-For **balanced design** (κ = 1) with **common correlation** (ρ₀ = ρ₁ = ρ):
+- $\hat{\beta}_{1} = \log(\bar{X}_{1,1}) - \log(\bar{X}_{2,1})$ is the log rate ratio
+- ${\rm Var}(\hat{\beta}_{1}) = \frac{1}{n_{2}}\left[\frac{1}{t}\left(\frac{1}{\lambda_{2}} + \frac{1}{r\lambda_{1}}\right) + \frac{1+r}{\nu r}\right] = \frac{V_{a}}{n_{2}}$
 
-$$\gamma = \frac{\rho}{2\sqrt{\lambda_0 \lambda_1 V_a}} \left(\sqrt{1 + \frac{\lambda_0}{\nu}} + \sqrt{1 + \frac{\lambda_1}{\nu}}\right)$$
+**Continuous endpoint**:
 
-**Key insight**: Higher dispersion (smaller ν) increases the correlation γ between test statistics.
+$$Z_{2} = \frac{\bar{X}_{1,2} - \bar{X}_{2,2}}{\sigma\sqrt{\frac{1+r}{r n_{2}}}}$$
+
+When $\sigma$ is a common known standard deviation.
+
+### Joint Distribution and Correlation
+
+Under ${\rm H}_{1}$, the test statistics $(Z_{1}, Z_{2})$ asymptotically follow a bivariate normal distribution (Appendix B in Homma and Yoshida, 2024):
+
+$$\begin{pmatrix} Z_1 \\ Z_2 \end{pmatrix} \sim {\rm BN}\left(\begin{pmatrix} \mu_1 \\ \mu_2 \end{pmatrix}, \begin{pmatrix} 1 & \gamma \\ \gamma & 1 \end{pmatrix}\right)$$
+
+where:
+
+- $\mu_{1} = \frac{\sqrt{n_{2}}\beta_{1}}{\sqrt{V_{a}}}$ with $\beta_{1} = \log(r_{1}) - \log(r_{2})$
+- $\mu_{2} = \frac{\delta}{\sigma\sqrt{\frac{1+r}{r n_{2}}}}$ with $\delta = \mu_{1} - \mu_{2}$
+
+**Correlation between test statistics** (Equation 11 in Homma and Yoshida, 2024):
+
+$$\gamma = \sum_{j=1}^{2} \frac{n_{2}\rho_{j}\sqrt{1+\lambda_{j}/\nu}}{n_{j}\sqrt{\lambda_{j}V_{a}(1+r)/r}}$$
+
+For **balanced design** ($r = 1$) with **common correlation** ($\rho_{1} = \rho_{2} = \rho$):
+
+$$\gamma = \frac{\rho}{\sqrt{2}}\frac{\sqrt{1/\lambda_{2} + 1/\nu} + \sqrt{1/\lambda_{1} + 1/\nu}}{\sqrt{(1/\lambda_{2} + 1/\lambda_{1} + 2/\nu)}}$$
 
 ### Power Calculation
 
-The overall power is:
+The overall power is (Equation 10 in Homma and Yoshida, 2024):
 
-$$1 - \beta = P(Z_1 < -z_{1-\alpha} \text{ and } Z_2 < -z_{1-\alpha} \mid H_1)$$
+$$1 - \beta = {\rm P}(Z_{1} < z_{\alpha} \cap Z_{2} < z_{\alpha} \mid {\rm H}_{1})$$
 
-(Note: One-sided tests in the "less than" direction for both endpoints, as we test for benefit)
+Using the bivariate normal CDF $\Phi_{2}$:
 
-Using bivariate normal CDF:
-
-$$1 - \beta = \Phi_2(-z_{1-\alpha} - \mu_1, -z_{1-\alpha} - \mu_2 \mid \gamma)$$
+$$1 - \beta = \Phi_{2}\left(z_{\alpha} - \frac{\sqrt{n_{2}}(\log r_{1} - \log r_{2})}{\sqrt{V_{a}}}, z_{\alpha} - \frac{\sqrt{n_{2}}(\mu_{1}-\mu_{2})}{\sigma\sqrt{\frac{1+r}{r}}} {\LARGE{\Bigg|}} \gamma\right)$$
 
 ### Sample Size Determination
 
-The sample size is found by solving:
+The sample size is determined by solving the power equation numerically. For a given allocation ratio $r$, target power $1 - \beta$, and significance level $\alpha$, we find the smallest $n_{2}$ such that the overall power equals or exceeds $1 - \beta$.
 
-$$\Phi_2\left(-z_{1-\alpha} - \mu_1, -z_{1-\alpha} - \mu_2 \mid \gamma\right) = 1 - \beta$$
+**Sequential search algorithm**:
 
-where μ₁, μ₂, and γ all depend on n (or n₀, n₁).
-
-**Linear extrapolation algorithm** (Homma & Yoshida, 2024):
-
-1. **Initial guess**: Calculate single-endpoint sample sizes:
-   - For count endpoint: Use Poisson or NB formula
-   - For continuous endpoint: Use standard formula
-   - Take maximum: n⁽⁰⁾ = max(n₁⁽⁰⁾, n₂⁽⁰⁾)
-
-2. **Compute power**: Calculate power⁽⁰⁾ at n⁽⁰⁾
-
-3. **Linear extrapolation**:
-$$n^{(k+1)} = n^{(k)} \times \frac{1 - \beta}{\text{power}^{(k)}}$$
-
-4. **Iterate**: Repeat steps 2-3 until |power⁽ᵏ⁾ - (1-β)| < ε (e.g., ε = 0.001)
-
-5. **Round up**: Return n = ⌈n⁽ᵏ⁾⌉
-
-This algorithm typically converges in 3-5 iterations.
+1. Calculate initial sample size based on single-endpoint formulas
+2. Compute power at current sample size
+3. If power $\geq$ target: decrease $n_{2}$ until power $<$ target, then add 1 back
+4. If power $<$ target: increase $n_{2}$ until power $\geq$ target
 
 ## Correlation Bounds
-
-The correlation between a negative binomial count and a normal continuous variable must satisfy constraints based on Fréchet-Hoeffding copula bounds.
-
-### Theoretical Bounds
-
-For any bivariate distribution:
-
-$$-1 \leq \rho \leq 1$$
-
-However, for specific marginal distributions (NB and normal), the **feasible range is narrower**.
-
-**Lower bound**: Determined by the copula corresponding to perfect negative dependence (Fréchet lower bound)
-
-**Upper bound**: Determined by the copula corresponding to perfect positive dependence (Fréchet upper bound)
-
-These bounds depend on the parameters (λ, ν, μ, σ).
 
 ### Example: Calculate Correlation Bounds
 
 ```{r correlation_bounds}
-# Scenario: λ = 1.25 (r=1.25, t=1), ν=0.8, μ=0, σ=250
+# Scenario: lambda = 1.25, nu = 0.8, mu = 0, sigma = 250
 bounds1 <- corrbound2MixedCountContinuous(lambda = 1.25, nu = 0.8, mu = 0, sd = 250)
-cat("Correlation bounds for NB(1.25, 0.8) and N(0, 250):\n")
+cat("Correlation bounds for NB(1.25, 0.8) and N(0, 250²):\n")
 cat("Lower bound:", round(bounds1[1], 3), "\n")
 cat("Upper bound:", round(bounds1[2], 3), "\n\n")
 
-# Higher dispersion (smaller ν) typically restricts bounds
+# Higher dispersion (smaller nu) typically restricts bounds
 bounds2 <- corrbound2MixedCountContinuous(lambda = 1.25, nu = 0.5, mu = 0, sd = 250)
-cat("Correlation bounds for NB(1.25, 0.5) and N(0, 250):\n")
+cat("Correlation bounds for NB(1.25, 0.5) and N(0, 250²):\n")
 cat("Lower bound:", round(bounds2[1], 3), "\n")
 cat("Upper bound:", round(bounds2[2], 3), "\n\n")
 
 # Higher mean count
 bounds3 <- corrbound2MixedCountContinuous(lambda = 2.0, nu = 0.8, mu = 0, sd = 250)
-cat("Correlation bounds for NB(2.0, 0.8) and N(0, 250):\n")
+cat("Correlation bounds for NB(2.0, 0.8) and N(0, 250²):\n")
 cat("Lower bound:", round(bounds3[1], 3), "\n")
 cat("Upper bound:", round(bounds3[2], 3), "\n")
 ```
 
-**Important**: Always verify that the specified correlation ρ is within the feasible bounds for your parameters.
+**Important**: Always verify that the specified correlation $\rho$ is within the feasible bounds for your parameters.
 
-## Replicating Homma and Yoshida (2024) Tables
+## Replicating Homma and Yoshida (2024) Table 1 (Case B)
 
-### Table 1: Operating Characteristics (Balanced Design, κ=1)
+Table 1 from Homma and Yoshida (2024) shows sample sizes and operating characteristics for various scenarios. We replicate **Case B** with $\nu = 3$ and $\nu = 5$.
 
-We replicate Case A (ν = 0.8 and 1.0) from Table 1.
+**Design parameters for Case B**:
 
-**Design parameters for Case A**:
-- r₀ = 1.25, r₁ = 1.0, t = 1 → λ₀ = 1.25, λ₁ = 1.0
-- μ₀ = 0, μ₁ = -50 (negative indicates benefit: less decline)
-- σ = 250
-- α = 0.025 (one-sided), 1 - β = 0.8 (target power)
-- Balanced allocation: κ = 1 (n₀ = n₁)
+- Count rates: $r_{2} = 1$, $r_{1} = 2$, $t = 1$ → $\lambda_{2} = 1$, $\lambda_{1} = 2$
+- Dispersion: $\nu = 3$ and $5$
+- Continuous means: $\mu_{2} = 0$, $\mu_{1} = -50$ (negative indicates less decline)
+- Standard deviation: $\sigma = 75$
+- $\alpha = 0.025$ (one-sided), $1 - \beta = 0.9$ (target power)
+- Balanced allocation: $r = 1$ ($n_{1} = n_{2}$)
 
-```{r table1_case_A}
-# Define scenarios for Table 1 Case A
-scenarios_table1 <- expand.grid(
-  nu = c(0.8, 1.0),
+```{r table1_case_B}
+# Define scenarios for Table 1 Case B
+scenarios_table1_B <- expand.grid(
+  nu = c(3, 5),
   rho = c(0, 0.2, 0.4, 0.6, 0.8),
   stringsAsFactors = FALSE
 )
 
 # Calculate sample sizes for each scenario
-results_table1 <- lapply(1:nrow(scenarios_table1), function(i) {
-  nu <- scenarios_table1$nu[i]
-  rho <- scenarios_table1$rho[i]
+results_table1_B <- lapply(1:nrow(scenarios_table1_B), function(i) {
+  nu_val <- scenarios_table1_B$nu[i]
+  rho_val <- scenarios_table1_B$rho[i]
   
   result <- ss2MixedCountContinuous(
-    r1 = 1.0,
-    r2 = 1.25,
-    nu = nu,
+    r1 = 1,
+    r2 = 2,
+    nu = nu_val,
     t = 1,
     mu1 = -50,
     mu2 = 0,
-    sd = 250,
+    sd = 75,
     r = 1,
-    rho1 = rho,
-    rho2 = rho,
+    rho1 = rho_val,
+    rho2 = rho_val,
     alpha = 0.025,
-    beta = 0.2
+    beta = 0.1
   )
   
   data.frame(
-    nu = nu,
-    rho = rho,
-    n0 = result$n2,
+    nu = nu_val,
+    rho = rho_val,
+    n2 = result$n2,
     n1 = result$n1,
     N = result$N
   )
 })
 
-table1_results <- bind_rows(results_table1)
+table1_B_results <- bind_rows(results_table1_B)
 
 # Display results grouped by nu
-table1_nu08 <- table1_results %>%
-  filter(nu == 0.8) %>%
-  select(rho, n0, N)
+table1_B_nu3 <- table1_B_results %>%
+  filter(nu == 3) %>%
+  select(rho, n2, N)
 
-table1_nu10 <- table1_results %>%
-  filter(nu == 1.0) %>%
-  select(rho, n0, N)
+table1_B_nu5 <- table1_B_results %>%
+  filter(nu == 5) %>%
+  select(rho, n2, N)
 
-kable(table1_nu08, 
-      caption = "Table 1 Case A: Sample Sizes (ν = 0.8, Balanced Design)",
-      digits = 0,
+kable(table1_B_nu3, 
+      caption = "Table 1 Case B: Sample Sizes (ν = 3, Balanced Design, α = 0.025, 1-β = 0.9)",
+      digits = 1,
       col.names = c("ρ", "n per group", "N total"))
 
-kable(table1_nu10, 
-      caption = "Table 1 Case A: Sample Sizes (ν = 1.0, Balanced Design)",
-      digits = 0,
+kable(table1_B_nu5, 
+      caption = "Table 1 Case B: Sample Sizes (ν = 5, Balanced Design, α = 0.025, 1-β = 0.9)",
+      digits = 1,
       col.names = c("ρ", "n per group", "N total"))
 ```
 
 **Observations**:
-- Higher dispersion (smaller ν) requires larger sample sizes
-- Correlation reduces sample size: ~2-3% at ρ = 0.4, ~5-7% at ρ = 0.8
-- The effect of correlation is moderate compared to other endpoint types
 
-### Table 2: Operating Characteristics (Unbalanced Design, κ=2)
+- Higher dispersion parameter $\nu$ (less overdispersion) requires **smaller** sample sizes
+- Correlation reduces sample size: approximately 2-4% at $\rho = 0.4$, 5-8% at $\rho = 0.8$
+- The effect of correlation is moderate compared to other endpoint combinations
 
-We replicate Case A and B from Table 2 with 2:1 allocation (treatment:control).
+## Basic Usage Examples
 
-```{r table2_unbalanced}
-# Case A (same as Table 1 but κ=2)
-scenarios_table2_A <- expand.grid(
-  nu = c(0.8, 1.0),
-  rho = c(0, 0.4, 0.8),
-  stringsAsFactors = FALSE
+### Example 1: Balanced Design
+
+Calculate sample size for a balanced design with moderate effect sizes:
+
+```{r example1}
+# Balanced design: n1 = n2 (i.e., r = 1)
+result_balanced <- ss2MixedCountContinuous(
+  r1 = 1.0,              # Count rate in treatment group
+  r2 = 1.25,             # Count rate in control group
+  nu = 0.8,              # Dispersion parameter
+  t = 1,                 # Follow-up time
+  mu1 = -50,             # Mean for treatment (negative = benefit)
+  mu2 = 0,               # Mean for control
+  sd = 250,              # Standard deviation
+  r = 1,                 # Balanced allocation
+  rho1 = 0.5,            # Correlation in treatment group
+  rho2 = 0.5,            # Correlation in control group
+  alpha = 0.025,
+  beta = 0.2
 )
 
-results_table2_A <- lapply(1:nrow(scenarios_table2_A), function(i) {
-  nu <- scenarios_table2_A$nu[i]
-  rho <- scenarios_table2_A$rho[i]
-  
+print(result_balanced)
+```
+
+### Example 2: Effect of Correlation
+
+Demonstrate how correlation affects sample size:
+
+```{r example2}
+# Fixed effect sizes
+r1 <- 1.0
+r2 <- 1.25
+nu <- 0.8
+mu1 <- -50
+mu2 <- 0
+sd <- 250
+
+# Range of correlations
+rho_values <- c(0, 0.2, 0.4, 0.6, 0.8)
+
+ss_by_rho <- sapply(rho_values, function(rho) {
   result <- ss2MixedCountContinuous(
-    r1 = 1.0,
-    r2 = 1.25,
-    nu = nu,
-    t = 1,
-    mu1 = -50,
-    mu2 = 0,
-    sd = 250,
-    r = 2,  # 2:1 allocation
-    rho1 = rho,
-    rho2 = rho,
+    r1 = r1, r2 = r2, nu = nu, t = 1,
+    mu1 = mu1, mu2 = mu2, sd = sd,
+    r = 1,
+    rho1 = rho, rho2 = rho,
     alpha = 0.025,
     beta = 0.2
   )
-  
-  data.frame(
-    nu = nu,
-    rho = rho,
-    n0_control = result$n2,
-    n1_treatment = result$n1,
-    N = result$N,
-    ratio = paste0("2:1")
-  )
+  result$n2
 })
 
-table2_results <- bind_rows(results_table2_A)
+result_df <- data.frame(
+  rho = rho_values,
+  n_per_group = ss_by_rho,
+  N_total = ss_by_rho * 2,
+  reduction_pct = round((1 - ss_by_rho / ss_by_rho[1]) * 100, 1)
+)
 
-kable(table2_results, 
-      caption = "Table 2 Case A: Sample Sizes (Unbalanced 2:1 Allocation)",
-      digits = 0,
-      col.names = c("ν", "ρ", "n (Control)", "n (Treatment)", "N (Total)", "Allocation"))
+kable(result_df,
+      caption = "Effect of Correlation on Sample Size",
+      col.names = c("ρ", "n per group", "N total", "Reduction (%)"))
+
+# Plot
+plot(rho_values, ss_by_rho, 
+     type = "b", pch = 19,
+     xlab = "Correlation (ρ)", 
+     ylab = "Sample size per group (n)",
+     main = "Effect of Correlation on Sample Size",
+     ylim = c(600, max(ss_by_rho) * 1.1))
+grid()
 ```
 
-**Key finding**: 2:1 allocation increases total sample size by approximately 12% compared to balanced allocation, consistent with other endpoint types.
+**Interpretation**: Higher positive correlation reduces required sample size. At $\rho = 0.8$, sample size is reduced by approximately 5-7% compared to $\rho = 0$.
+
+### Example 3: Effect of Dispersion Parameter
+
+Compare sample sizes for different levels of overdispersion:
+
+```{r example3}
+# Fixed design parameters
+r1 <- 1.0
+r2 <- 1.25
+mu1 <- -50
+mu2 <- 0
+sd <- 250
+rho <- 0.5
+
+# Range of dispersion parameters
+nu_values <- c(0.5, 0.8, 1.0, 2.0, 5.0)
+
+ss_by_nu <- sapply(nu_values, function(nu) {
+  result <- ss2MixedCountContinuous(
+    r1 = r1, r2 = r2, nu = nu, t = 1,
+    mu1 = mu1, mu2 = mu2, sd = sd,
+    r = 1,
+    rho1 = rho, rho2 = rho,
+    alpha = 0.025,
+    beta = 0.2
+  )
+  result$n2
+})
+
+result_df_nu <- data.frame(
+  nu = nu_values,
+  VMR = round(1 + 1.125/nu_values, 2),  # VMR at lambda = 1.125 (average)
+  n_per_group = ss_by_nu,
+  N_total = ss_by_nu * 2
+)
+
+kable(result_df_nu,
+      caption = "Effect of Dispersion Parameter on Sample Size",
+      digits = c(1, 2, 0, 0),
+      col.names = c("ν", "VMR", "n per group", "N total"))
+```
+
+**Key finding**: Higher overdispersion (smaller $\nu$, larger VMR) requires larger sample sizes.
+
+### Example 4: Unbalanced Allocation
+
+Calculate sample size with 2:1 allocation ratio:
+
+```{r example4}
+# Balanced design (r = 1)
+result_balanced <- ss2MixedCountContinuous(
+  r1 = 1.0, r2 = 1.25, nu = 0.8, t = 1,
+  mu1 = -50, mu2 = 0, sd = 250,
+  r = 1,
+  rho1 = 0.5, rho2 = 0.5,
+  alpha = 0.025,
+  beta = 0.2
+)
+
+# Unbalanced design (r = 2, i.e., n1 = 2*n2)
+result_unbalanced <- ss2MixedCountContinuous(
+  r1 = 1.0, r2 = 1.25, nu = 0.8, t = 1,
+  mu1 = -50, mu2 = 0, sd = 250,
+  r = 2,
+  rho1 = 0.5, rho2 = 0.5,
+  alpha = 0.025,
+  beta = 0.2
+)
+
+comparison_allocation <- data.frame(
+  Design = c("Balanced (1:1)", "Unbalanced (2:1)"),
+  n_treatment = c(result_balanced$n1, result_unbalanced$n1),
+  n_control = c(result_balanced$n2, result_unbalanced$n2),
+  N_total = c(result_balanced$N, result_unbalanced$N)
+)
+
+kable(comparison_allocation,
+      caption = "Comparison: Balanced vs Unbalanced Allocation",
+      col.names = c("Design", "n₁", "n₂", "N total"))
+
+cat("\nIncrease in total sample size:", 
+    round((result_unbalanced$N - result_balanced$N) / result_balanced$N * 100, 1), "%\n")
+```
 
 ## Power Verification
 
 Verify that calculated sample sizes achieve target power:
 
 ```{r power_verification}
-# Select representative scenarios
-test_scenarios <- data.frame(
-  nu = c(0.8, 1.0, 0.8),
-  rho = c(0.4, 0.4, 0.8),
-  r_alloc = c(1, 1, 1)
-)
-
-power_results <- lapply(1:nrow(test_scenarios), function(i) {
-  scenario <- test_scenarios[i, ]
-  
-  # Calculate sample size
-  ss <- ss2MixedCountContinuous(
-    r1 = 1.0,
-    r2 = 1.25,
-    nu = scenario$nu,
-    t = 1,
-    mu1 = -50,
-    mu2 = 0,
-    sd = 250,
-    r = scenario$r_alloc,
-    rho1 = scenario$rho,
-    rho2 = scenario$rho,
-    alpha = 0.025,
-    beta = 0.2
-  )
-  
-  # Verify power
-  power <- power2MixedCountContinuous(
-    n1 = ss$n1,
-    n2 = ss$n2,
-    r1 = 1.0,
-    r2 = 1.25,
-    nu = scenario$nu,
-    t = 1,
-    mu1 = -50,
-    mu2 = 0,
-    sd = 250,
-    rho1 = scenario$rho,
-    rho2 = scenario$rho,
-    alpha = 0.025
-  )
-  
-  data.frame(
-    nu = scenario$nu,
-    rho = scenario$rho,
-    n_per_group = ss$n2,
-    N_total = ss$N,
-    power_count = power$powerCount,
-    power_continuous = power$powerCont,
-    power_both = power$powerCoprimary
-  )
-})
-
-power_check <- bind_rows(power_results)
-
-kable(power_check,
-      caption = "Power Verification (Target: 0.80)",
-      digits = 3,
-      col.names = c("ν", "ρ", "n per group", "N total", 
-                    "Power (Count)", "Power (Continuous)", "Power (Both)"))
-```
-
-**Verification**: All scenarios achieve approximately 0.80 power for both endpoints simultaneously.
-
-## Visualization
-
-### Impact of Correlation on Sample Size
-
-```{r correlation_impact_plot, fig.width=8, fig.height=6}
-# Fixed scenario
-nu <- 0.8
-rho_seq <- seq(0, 0.8, by = 0.05)
-
-sample_sizes <- sapply(rho_seq, function(rho) {
-  result <- ss2MixedCountContinuous(
-    r1 = 1.0,
-    r2 = 1.25,
-    nu = nu,
-    t = 1,
-    mu1 = -50,
-    mu2 = 0,
-    sd = 250,
-    r = 1,
-    rho1 = rho,
-    rho2 = rho,
-    alpha = 0.025,
-    beta = 0.2
-  )
-  result$N
-})
-
-plot(rho_seq, sample_sizes,
-     type = "l", lwd = 2, col = "darkblue",
-     xlab = "Correlation (ρ)",
-     ylab = "Total Sample Size (N)",
-     main = paste0("Sample Size vs Correlation (ν = ", nu, ")"),
-     las = 1)
-grid()
-
-# Add reference points
-abline(h = sample_sizes[1], lty = 2, col = "gray")
-points(0, sample_sizes[1], pch = 19, col = "red", cex = 1.2)
-
-# Calculate reductions
-reduction_04 <- round((1 - sample_sizes[9]/sample_sizes[1]) * 100, 1)
-reduction_08 <- round((1 - sample_sizes[17]/sample_sizes[1]) * 100, 1)
-
-legend("topright",
-       legend = c(
-         paste0("ρ=0: N=", sample_sizes[1]),
-         paste0("ρ=0.4: ", reduction_04, "% reduction"),
-         paste0("ρ=0.8: ", reduction_08, "% reduction")
-       ),
-       bty = "n", cex = 0.9)
-```
-
-### Impact of Dispersion Parameter
-
-```{r dispersion_impact_plot, fig.width=8, fig.height=6}
-# Fixed correlation, vary dispersion
-nu_seq <- seq(0.5, 3.0, by = 0.1)
-rho <- 0.5
-
-sample_sizes_by_nu <- sapply(nu_seq, function(nu) {
-  result <- ss2MixedCountContinuous(
-    r1 = 1.0,
-    r2 = 1.25,
-    nu = nu,
-    t = 1,
-    mu1 = -50,
-    mu2 = 0,
-    sd = 250,
-    r = 1,
-    rho1 = rho,
-    rho2 = rho,
-    alpha = 0.025,
-    beta = 0.2
-  )
-  result$N
-})
-
-plot(nu_seq, sample_sizes_by_nu,
-     type = "l", lwd = 2, col = "darkgreen",
-     xlab = "Dispersion Parameter (ν)",
-     ylab = "Total Sample Size (N)",
-     main = paste0("Sample Size vs Dispersion (ρ = ", rho, ")"),
-     las = 1)
-grid()
-
-# Add reference line for Poisson limit (ν → ∞)
-abline(h = tail(sample_sizes_by_nu, 1), lty = 2, col = "gray")
-
-text(2.5, tail(sample_sizes_by_nu, 1) + 5,
-     "Poisson limit (ν → ∞)",
-     pos = 3, cex = 0.9)
-```
-
-**Key insight**: Higher dispersion (smaller ν) substantially increases sample size requirements. As ν → ∞ (approaching Poisson), sample size stabilizes.
-
-## Clinical Application: COPD Trial
-
-Consider a COPD trial evaluating a new bronchodilator:
-
-**Endpoints**:
-1. **Annual exacerbation rate**: Count of moderate-to-severe exacerbations
-2. **FEV₁ change**: Change from baseline in forced expiratory volume
-
-**Literature values** (Calverley et al., 2003; Zider et al., 2017):
-- Placebo: ~1.25 exacerbations/year, FEV₁ decline ~0 mL
-- Treatment: ~1.0 exacerbations/year, FEV₁ decline ~-50 mL (less decline is better)
-- Dispersion: ν ≈ 0.8-1.0 (moderate overdispersion)
-- SD of FEV₁: ~250 mL
-- Correlation: ρ ≈ 0.3-0.5 (moderate)
-
-```{r copd_example}
-# Design parameters
-copd_design <- ss2MixedCountContinuous(
-  r1 = 1.0,             # Treatment: 1.0 exacerbations/year
-  r2 = 1.25,            # Placebo: 1.25 exacerbations/year
-  nu = 0.8,             # Moderate overdispersion
-  t = 1,                # 1-year follow-up
-  mu1 = -50,            # Treatment: -50 mL FEV₁ decline
-  mu2 = 0,              # Placebo: 0 mL (reference)
-  sd = 250,             # SD = 250 mL
-  r = 1,                # Balanced allocation
-  rho1 = 0.4,           # Moderate correlation
-  rho2 = 0.4,
-  alpha = 0.025,        # One-sided
-  beta = 0.2            # 80% power
-)
-
-cat("COPD Trial Design:\n")
-cat("Sample size per group:", copd_design$n2, "\n")
-cat("Total sample size:", copd_design$N, "\n\n")
-
-# Verify power
-copd_power <- power2MixedCountContinuous(
-  n1 = copd_design$n1,
-  n2 = copd_design$n2,
+# Use result from Example 1
+power_result <- power2MixedCountContinuous(
+  n1 = result_balanced$n1,
+  n2 = result_balanced$n2,
   r1 = 1.0,
   r2 = 1.25,
   nu = 0.8,
@@ -604,231 +433,48 @@ copd_power <- power2MixedCountContinuous(
   mu1 = -50,
   mu2 = 0,
   sd = 250,
-  rho1 = 0.4,
-  rho2 = 0.4,
+  rho1 = 0.5,
+  rho2 = 0.5,
   alpha = 0.025
 )
 
-cat("Power verification:\n")
-cat("Power for exacerbation rate:", round(copd_power$powerCount, 3), "\n")
-cat("Power for FEV₁:", round(copd_power$powerCont, 3), "\n")
-cat("Power for both (co-primary):", round(copd_power$powerCoprimary, 3), "\n\n")
-
-# Compare with no correlation
-copd_nocorr <- ss2MixedCountContinuous(
-  r1 = 1.0,
-  r2 = 1.25,
-  nu = 0.8,
-  t = 1,
-  mu1 = -50,
-  mu2 = 0,
-  sd = 250,
-  r = 1,
-  rho1 = 0,
-  rho2 = 0,
-  alpha = 0.025,
-  beta = 0.2
-)
-
-cat("If correlation ignored (ρ=0):\n")
-cat("Sample size per group:", copd_nocorr$n2, "\n")
-cat("Total sample size:", copd_nocorr$N, "\n\n")
-
-# Check if both calculations succeeded
-if (!is.null(copd_nocorr$N) && !is.null(copd_design$N)) {
-  reduction <- copd_nocorr$N - copd_design$N
-  pct_reduction <- round(reduction / copd_nocorr$N * 100, 1)
-  
-  cat("Benefit of accounting for correlation:\n")
-  cat("Sample size reduction:", reduction, "subjects\n")
-  cat("Percentage reduction:", pct_reduction, "%\n")
-} else {
-  cat("Note: Comparison not available\n")
-}
+cat("Target power: 0.80\n")
+cat("Achieved power (Count endpoint):", round(as.numeric(power_result$power1), 4), "\n")
+cat("Achieved power (Continuous endpoint):", round(as.numeric(power_result$power2), 4), "\n")
+cat("Achieved power (Co-primary):", round(as.numeric(power_result$powerCoprimary), 4), "\n")
 ```
 
-## Sensitivity Analysis
+## Practical Recommendations
 
-### Robustness to Correlation Misspecification
+### Design Considerations
 
-```{r sensitivity_correlation}
-# Assume we design for ρ = 0.4 but true ρ differs
-assumed_rho <- 0.4
-true_rhos <- c(0, 0.2, 0.4, 0.6, 0.8)
+1. **Estimating dispersion parameter**: Use pilot data or historical studies to estimate $\nu$. Underestimating $\nu$ (overestimating overdispersion) leads to conservative sample sizes.
 
-# Calculate sample size assuming ρ = 0.4
-ss_assumed <- ss2MixedCountContinuous(
-  r1 = 1.0,
-  r2 = 1.25,
-  nu = 0.8,
-  t = 1,
-  mu1 = -50,
-  mu2 = 0,
-  sd = 250,
-  r = 1,
-  rho1 = assumed_rho,
-  rho2 = assumed_rho,
-  alpha = 0.025,
-  beta = 0.2
-)
+2. **Estimating correlation**: Use pilot data; be conservative if uncertain ($\rho = 0$ is conservative).
 
-# Calculate achieved power under different true correlations
-sensitivity_results <- lapply(true_rhos, function(true_rho) {
-  power <- power2MixedCountContinuous(
-    n1 = ss_assumed$n1,
-    n2 = ss_assumed$n2,
-    r1 = 1.0,
-    r2 = 1.25,
-    nu = 0.8,
-    t = 1,
-    mu1 = -50,
-    mu2 = 0,
-    sd = 250,
-    rho1 = true_rho,
-    rho2 = true_rho,
-    alpha = 0.025
-  )
-  
-  data.frame(
-    Assumed_rho = assumed_rho,
-    True_rho = true_rho,
-    n = ss_assumed$n2,
-    Achieved_power = power$powerCoprimary
-  )
-})
+3. **Direction of benefit**: For COPD/asthma trials, ensure test directions are correct (lower is better for both endpoints).
 
-sensitivity_table <- bind_rows(sensitivity_results)
+4. **Balanced allocation**: Generally most efficient ($r = 1$) unless practical constraints require otherwise.
 
-kable(sensitivity_table,
-      caption = "Sensitivity to Correlation Misspecification",
-      digits = 3,
-      col.names = c("Assumed ρ", "True ρ", "n (per group)", "Achieved Power"))
-```
+5. **Sensitivity analysis**: Calculate sample sizes for range of plausible $\nu$, $\rho$, and effect sizes.
 
-**Interpretation**:
-- If true ρ < assumed ρ: Study is underpowered
-- If true ρ > assumed ρ: Study is overpowered (more conservative design)
-- **Recommendation**: Use conservative (lower) estimate of ρ if uncertain
+### When to Use This Method
 
-### Robustness to Dispersion Misspecification
+Use mixed count-continuous methods when:
 
-```{r sensitivity_dispersion}
-# Assume we design for ν = 0.8 but true ν differs
-assumed_nu <- 0.8
-true_nus <- c(0.5, 0.8, 1.0, 1.5, 2.0)
+- One endpoint is an overdispersed count (exacerbations, events)
+- Other endpoint is continuous (lung function, quality of life)
+- Both endpoints are clinically meaningful co-primary endpoints
+- Negative binomial distribution is appropriate for count data
 
-ss_assumed_nu <- ss2MixedCountContinuous(
-  r1 = 1.0,
-  r2 = 1.25,
-  nu = assumed_nu,
-  t = 1,
-  mu1 = -50,
-  mu2 = 0,
-  sd = 250,
-  r = 1,
-  rho1 = 0.4,
-  rho2 = 0.4,
-  alpha = 0.025,
-  beta = 0.2
-)
+### Challenges and Considerations
 
-sensitivity_nu_results <- lapply(true_nus, function(true_nu) {
-  power <- power2MixedCountContinuous(
-    n1 = ss_assumed_nu$n1,
-    n2 = ss_assumed_nu$n2,
-    r1 = 1.0,
-    r2 = 1.25,
-    nu = true_nu,
-    t = 1,
-    mu1 = -50,
-    mu2 = 0,
-    sd = 250,
-    rho1 = 0.4,
-    rho2 = 0.4,
-    alpha = 0.025
-  )
-  
-  data.frame(
-    Assumed_nu = assumed_nu,
-    True_nu = true_nu,
-    n = ss_assumed_nu$n2,
-    Achieved_power = power$powerCoprimary
-  )
-})
+1. **Overdispersion estimation**: Requires historical data or pilot studies; misspecification affects sample size
 
-sensitivity_nu_table <- bind_rows(sensitivity_nu_results)
+2. **Correlation estimation**: Correlation between count and continuous outcomes is challenging to estimate
 
-kable(sensitivity_nu_table,
-      caption = "Sensitivity to Dispersion Misspecification",
-      digits = 3,
-      col.names = c("Assumed ν", "True ν", "n (per group)", "Achieved Power"))
-```
-
-**Interpretation**:
-- If true ν < assumed ν (higher overdispersion): Study is underpowered
-- If true ν > assumed ν (lower overdispersion): Study is overpowered
-- **Recommendation**: Estimate ν conservatively (lower value) from pilot data
-
-## Summary
-
-### Key Findings
-
-1. **Correlation impact**: Accounting for positive correlation reduces sample size by ~2-3% (ρ=0.4) to ~5-7% (ρ=0.8)
-
-2. **Dispersion parameter**: Higher overdispersion (smaller ν) increases sample size requirements substantially
-
-3. **Allocation ratio**: Unbalanced allocation (2:1) increases total sample size by ~12%, similar to other endpoint types
-
-4. **Power accuracy**: The proposed method consistently achieves target power across various scenarios and copula specifications
-
-5. **Clinical relevance**: For COPD trials with realistic parameters, accounting for correlation can save 10-20 patients per trial
-
-### Practical Recommendations
-
-1. **Estimate dispersion**: Use pilot data or historical studies to estimate ν; overdispersion is common in clinical count data
-
-2. **Assess correlation**: Estimate ρ from historical data; be conservative if uncertain (use lower value)
-
-3. **Check correlation bounds**: Always verify that assumed ρ is within feasible range using `corrbound2MixedCountContinuous()`
-
-4. **Sensitivity analysis**: Evaluate robustness to misspecification of ρ and ν
-
-5. **Follow-up duration**: Longer follow-up increases event counts, improving power for count endpoint
-
-6. **Copula selection**: Results are generally robust to copula choice (Gaussian, Clayton, Frank)
-
-### Technical Notes
-
-**Linear Extrapolation Algorithm**: The sample size calculation uses a linear extrapolation approach:
-1. Calculate initial sample sizes from single-endpoint formulas
-2. Compute power at these sample sizes
-3. Iteratively refine using linear extrapolation until convergence
-
-**Copula Specifications**: The method is robust across different copula families representing different dependence structures:
-- **Clayton**: Lower tail dependence
-- **Frank**: Symmetric dependence  
-- **Gaussian**: Standard normal-based dependence
-
-### Comparison with Other Endpoint Types
-
-Correlation impact is **moderate** for count-continuous compared to:
-- Two continuous: ~10-11% reduction at ρ=0.8
-- Two binary: ~10-11% reduction at ρ=0.8
-- Continuous-binary: ~10-11% reduction at ρ=0.8
-- **Count-continuous: ~5-7% reduction at ρ=0.8**
-
-This is because the count endpoint (with overdispersion) contributes high variance, reducing the relative impact of correlation.
+3. **Direction specification**: Ensure treatment benefit direction is correctly specified for both endpoints
 
 ## References
 
 Homma, G., & Yoshida, T. (2024). Sample size calculation in clinical trials with two co-primary endpoints including overdispersed count and continuous outcomes. *Pharmaceutical Statistics*, 23(1), 46-59.
-
-Trivedi, P. K., & Zimmer, D. M. (2007). Copula modeling: an introduction for practitioners. *Foundations and Trends in Econometrics*, 1(1), 1-111.
-
-Calverley, P. M., Pauwels, R., Vestbo, J., et al. (2003). Combined salmeterol and fluticasone in the treatment of chronic obstructive pulmonary disease: a randomised controlled trial. *Lancet*, 361(9356), 449-456.
-
-Zider, A. D., Wang, X., Buhr, R. G., et al. (2017). Reduced COPD exacerbation risk correlates with improved FEV1: a meta-regression analysis. *Chest*, 152(3), 494-501.
-
-Hilbe, J. M. (2011). *Negative Binomial Regression* (2nd ed.). Cambridge University Press.
-
-Cameron, A. C., & Trivedi, P. K. (2013). *Regression Analysis of Count Data* (2nd ed.). Cambridge University Press.
