@@ -149,7 +149,6 @@ MIT License. See [LICENSE](LICENSE) file for details.
 ## Author
 
 **Gosuke Homma**  
-Email: my.name.is.gosuke@gmail.com  
 GitHub: [@gosukehommaEX](https://github.com/gosukehommaEX)
 
 ## Citation
