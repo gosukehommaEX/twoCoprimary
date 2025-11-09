@@ -6,7 +6,7 @@ Authors@R: person(given = "Gosuke",
                   family = "Homma",
                   role = c("aut", "cre"),
                   email = "my.name.is.gosuke@gmail.com",
-                  comment = c(ORCID = "0000-0002-8393-6240"))
+                  comment = c(ORCID = "0000-0002-6854-5627"))
 Description: Provides comprehensive functions to calculate sample size and power 
     for clinical trials with two co-primary endpoints. The package supports five 
     endpoint combinations: two continuous endpoints (Sozu et al. 2011 
