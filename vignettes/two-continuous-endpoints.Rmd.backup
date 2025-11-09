@@ -53,7 +53,7 @@ Consider a two-arm parallel-group superiority trial comparing treatment (group 1
 For subject $i$ in group $j$ ($j = 1$: treatment, $j = 2$: control), we observe two continuous outcomes:
 
 **Endpoint $k$** ($k = 1, 2$): 
-$$X_{i,j,k} \sim \text{N}(\mu_{j,k}, \sigma_{k}^{2})$$
+$$X_{i,j,k} \sim {\rm N}(\mu_{j,k}, \sigma_{k}^{2})$$
 
 where:
 
@@ -79,15 +79,15 @@ The standardized effect size is preferred as it is scale-free and facilitates co
 
 For two co-primary endpoints, we test:
 
-**Null hypothesis**: $\text{H}_{0} = \text{H}_{01} \cup \text{H}_{02}$ (at least one null hypothesis is true)
+**Null hypothesis**: ${\rm H}_{0} = {\rm H}_{01} \cup {\rm H}_{02}$ (at least one null hypothesis is true)
 
-where $\text{H}_{0k}: \delta_{k} = 0$ for $k = 1, 2$.
+where ${\rm H}_{0k}: \delta_{k} = 0$ for $k = 1, 2$.
 
-**Alternative hypothesis**: $\text{H}_{1} = \text{H}_{11} \cap \text{H}_{12}$ (both alternative hypotheses are true)
+**Alternative hypothesis**: ${\rm H}_{1} = {\rm H}_{11} \cap {\rm H}_{12}$ (both alternative hypotheses are true)
 
-where $\text{H}_{1k}: \delta_{k} > 0$ for $k = 1, 2$.
+where ${\rm H}_{1k}: \delta_{k} > 0$ for $k = 1, 2$.
 
-**Decision rule**: Reject $\text{H}_{0}$ if and only if both $\text{H}_{01}$ and $\text{H}_{02}$ are rejected at significance level $\alpha$.
+**Decision rule**: Reject ${\rm H}_{0}$ if and only if both ${\rm H}_{01}$ and ${\rm H}_{02}$ are rejected at significance level $\alpha$.
 
 ### Test Statistics
 
@@ -103,9 +103,9 @@ where $s_{k}$ is the pooled sample standard deviation for endpoint $k$.
 
 ### Joint Distribution
 
-Under $\text{H}_{1}$, when variances are known, $(Z_{1}, Z_{2})$ asymptotically follows a bivariate normal distribution:
+Under ${\rm H}_{1}$, when variances are known, $(Z_{1}, Z_{2})$ asymptotically follows a bivariate normal distribution:
 
-$$\begin{pmatrix} Z_{1} \\ Z_{2} \end{pmatrix} \sim \text{BN}\left(\begin{pmatrix} \mu_{1} \\ \mu_{2} \end{pmatrix}, \begin{pmatrix} 1 & \gamma \\ \gamma & 1 \end{pmatrix}\right)$$
+$$\begin{pmatrix} Z_{1} \\ Z_{2} \end{pmatrix} \sim {\rm BN}\left(\begin{pmatrix} \mu_{1} \\ \mu_{2} \end{pmatrix}, \begin{pmatrix} 1 & \gamma \\ \gamma & 1 \end{pmatrix}\right)$$
 
 where:
 
@@ -116,7 +116,7 @@ where:
 
 The overall power is:
 
-$$1 - \beta = \Pr(Z_{1} > z_{1-\alpha} \text{ and } Z_{2} > z_{1-\alpha} \mid \text{H}_{1})$$
+$$1 - \beta = \Pr(Z_{1} > z_{1-\alpha} \text{ and } Z_{2} > z_{1-\alpha} \mid {\rm H}_{1})$$
 
 Using the bivariate normal CDF:
 

@@ -67,7 +67,7 @@ $$X_{i,j,k} \in \{0, 1\}$$
 where $X_{i,j,k} = 1$ if patient $i$ in group $j$ is a responder for endpoint $k$, and 0 otherwise.
 
 **True response probabilities**:
-$$p_{j,k} = \text{P}(X_{i,j,k} = 1)$$
+$$p_{j,k} = {\rm P}(X_{i,j,k} = 1)$$
 
 where $0 < p_{j,k} < 1$ for each $j$ and $k$.
 
@@ -82,11 +82,11 @@ The paired binary outcomes $(X_{i,j,1}, X_{i,j,2})$ for patient $i$ in group $j$
 - $p_{j}^{(0,1)} = p_{j,2} - \phi_{j}$: Only endpoint 2 successful
 - $p_{j}^{(0,0)} = 1 - p_{j,1} - p_{j,2} + \phi_{j}$: Both endpoints unsuccessful
 
-where $\phi_{j} = \text{P}(X_{i,j,1} = 1, X_{i,j,2} = 1)$.
+where $\phi_{j} = {\rm P}(X_{i,j,1} = 1, X_{i,j,2} = 1)$.
 
 Let $Z_{j}^{(\ell,m)}$ denote the random variable representing the number of times $\{(X_{i,j,1}, X_{i,j,2}) : i = 1, \ldots, n_{j}\}$ takes the value $(\ell, m)$ for $\ell, m \in \{0, 1\}$. Then:
 
-$$(Z_{j}^{(0,0)}, Z_{j}^{(1,0)}, Z_{j}^{(0,1)}, Z_{j}^{(1,1)}) \sim \text{Multinomial}(n_{j}; p_{j}^{(0,0)}, p_{j}^{(1,0)}, p_{j}^{(0,1)}, p_{j}^{(1,1)})$$
+$$(Z_{j}^{(0,0)}, Z_{j}^{(1,0)}, Z_{j}^{(0,1)}, Z_{j}^{(1,1)}) \sim {\rm Multinomial}(n_{j}; p_{j}^{(0,0)}, p_{j}^{(1,0)}, p_{j}^{(0,1)}, p_{j}^{(1,1)})$$
 
 ### Number of Responders
 
@@ -99,20 +99,20 @@ Let $Y_{j,k} = \sum_{i=1}^{n_{j}} X_{i,j,k}$ represent the number of responders 
 
 Following Homma and Yoshida (2025), the joint distribution of $(Y_{j,1}, Y_{j,2})$ can be expressed as a **bivariate binomial distribution**:
 
-$$(Y_{j,1}, Y_{j,2}) \sim \text{BiBin}(n_{j}, p_{j,1}, p_{j,2}, \gamma_{j})$$
+$$(Y_{j,1}, Y_{j,2}) \sim {\rm BiBin}(n_{j}, p_{j,1}, p_{j,2}, \gamma_{j})$$
 
 where $\gamma_{j}$ is a dependence parameter related to the correlation $\rho_{j}$ between $X_{i,j,1}$ and $X_{i,j,2}$.
 
 **Probability mass function** (Equation 3 in Homma and Yoshida, 2025):
 
-$$\text{P}(Y_{j,1} = y_{j,1}, Y_{j,2} = y_{j,2} \mid n_{j}, p_{j,1}, p_{j,2}, \gamma_{j}) = f(y_{j,1} \mid n_{j}, p_{j,1}) \times g(y_{j,2} \mid y_{j,1}, n_{j}, p_{j,1}, p_{j,2}, \gamma_{j})$$
+$${\rm P}(Y_{j,1} = y_{j,1}, Y_{j,2} = y_{j,2} \mid n_{j}, p_{j,1}, p_{j,2}, \gamma_{j}) = f(y_{j,1} \mid n_{j}, p_{j,1}) \times g(y_{j,2} \mid y_{j,1}, n_{j}, p_{j,1}, p_{j,2}, \gamma_{j})$$
 For more details, please see Homma and Yoshida (2025).
 
 ### Correlation Structure
 
 The **correlation** $\rho_{j}$ between $X_{i,j,1}$ and $X_{i,j,2}$ is:
 
-$$\rho_{j} = \text{Cor}(X_{i,j,1}, X_{i,j,2}) = \frac{\phi_{j} - p_{j,1} p_{j,2}}{\sqrt{p_{j,1}(1 - p_{j,1}) p_{j,2}(1 - p_{j,2})}}$$
+$$\rho_{j} = {\rm Cor}(X_{i,j,1}, X_{i,j,2}) = \frac{\phi_{j} - p_{j,1} p_{j,2}}{\sqrt{p_{j,1}(1 - p_{j,1}) p_{j,2}(1 - p_{j,2})}}$$
 
 The dependence parameter $\gamma_{j}$ is related to $\rho_{j}$ through (Equation 4 in Homma and Yoshida, 2025):
 
@@ -121,7 +121,7 @@ $$\gamma_{j} = \gamma(\rho_{j}, p_{j,1}, p_{j,2}) = \rho_{j} \sqrt{\frac{p_{j,2}
 **Important property**: The correlation between $Y_{j,1}$ and $Y_{j,2}$ equals $\rho_{j}$, the same as the correlation between $X_{i,j,1}$ and $X_{i,j,2}$.
 
 **Marginal distributions**:
-$$Y_{j,k} \sim \text{Bin}(n_{j}, p_{j,k})$$
+$$Y_{j,k} \sim {\rm Bin}(n_{j}, p_{j,k})$$
 
 **Correlation bounds**: Due to $0 < p_{j,k} < 1$, the correlation $\rho_{j}$ is bounded:
 
@@ -144,20 +144,20 @@ $$U(p_{j,1}, p_{j,2}) = \min\left\{\sqrt{\frac{p_{j,1}(1 - p_{j,2})}{p_{j,2}(1 -
 Since higher values of both endpoints indicate treatment benefit, we test:
 
 **For endpoint 1**:
-$$\text{H}_{0}^{(1)}: p_{1,1} \leq p_{2,1} \text{ vs. } \text{H}_{1}^{(1)}: p_{1,1} > p_{2,1}$$
+$${\rm H}_{0}^{(1)}: p_{1,1} \leq p_{2,1} \text{ vs. } {\rm H}_{1}^{(1)}: p_{1,1} > p_{2,1}$$
 
 **For endpoint 2**:
-$$\text{H}_{0}^{(2)}: p_{1,2} \leq p_{2,2} \text{ vs. } \text{H}_{1}^{(2)}: p_{1,2} > p_{2,2}$$
+$${\rm H}_{0}^{(2)}: p_{1,2} \leq p_{2,2} \text{ vs. } {\rm H}_{1}^{(2)}: p_{1,2} > p_{2,2}$$
 
 ### Co-Primary Endpoints (Intersection-Union Test)
 
 The trial succeeds only if superiority is demonstrated for **both** endpoints simultaneously:
 
-**Null hypothesis**: $\text{H}_{0} = \text{H}_{0}^{(1)} \cup \text{H}_{0}^{(2)}$ (at least one null is true)
+**Null hypothesis**: ${\rm H}_{0} = {\rm H}_{0}^{(1)} \cup {\rm H}_{0}^{(2)}$ (at least one null is true)
 
-**Alternative hypothesis**: $\text{H}_{1} = \text{H}_{1}^{(1)} \cap \text{H}_{1}^{(2)}$ (both alternatives are true)
+**Alternative hypothesis**: ${\rm H}_{1} = {\rm H}_{1}^{(1)} \cap {\rm H}_{1}^{(2)}$ (both alternatives are true)
 
-**Decision rule**: Reject $\text{H}_{0}$ at level $\alpha$ if and only if **both** $\text{H}_{0}^{(1)}$ and $\text{H}_{0}^{(2)}$ are rejected at level $\alpha$ without multiplicity adjustment.
+**Decision rule**: Reject ${\rm H}_{0}$ at level $\alpha$ if and only if **both** ${\rm H}_{0}^{(1)}$ and ${\rm H}_{0}^{(2)}$ are rejected at level $\alpha$ without multiplicity adjustment.
 
 ## Statistical Tests
 
@@ -174,19 +174,19 @@ where:
 - $\hat{p}_{j,k} = y_{j,k} / n_{j}$ is the sample proportion
 - $\hat{p}_{k} = \frac{n_{1} \hat{p}_{1,k} + n_{2} \hat{p}_{2,k}}{n_{1} + n_{2}}$ is the pooled proportion
 
-Reject $\text{H}_{0}^{(k)}$ if $Z(y_{1,k}, y_{2,k}) > z_{1-\alpha}$, where $z_{1-\alpha}$ is the $(1-\alpha)$-quantile of the standard normal distribution.
+Reject ${\rm H}_{0}^{(k)}$ if $Z(y_{1,k}, y_{2,k}) > z_{1-\alpha}$, where $z_{1-\alpha}$ is the $(1-\alpha)$-quantile of the standard normal distribution.
 
 ### Method 2: Fisher's Exact Test (Fisher)
 
 **Conditional test**: Conditions on the total number of successes $y_{1,k} + y_{2,k}$.
 
-Under $\text{H}_{0}^{(k)}$, $Y_{1,k}$ follows a hypergeometric distribution given $Y_{1,k} + Y_{2,k} = y_{k}$.
+Under ${\rm H}_{0}^{(k)}$, $Y_{1,k}$ follows a hypergeometric distribution given $Y_{1,k} + Y_{2,k} = y_{k}$.
 
 **One-sided p-value**:
 
 $$p_{k}^{\text{Fisher}} = \sum_{y=y_{1,k}}^{\min(n_{1}, y_{k})} \frac{\binom{n_{1}}{y} \binom{n_{2}}{y_{k} - y}}{\binom{n_{1} + n_{2}}{y_{k}}}$$
 
-Reject $\text{H}_{0}^{(k)}$ if $p_{k}^{\text{Fisher}} < \alpha$.
+Reject ${\rm H}_{0}^{(k)}$ if $p_{k}^{\text{Fisher}} < \alpha$.
 
 ### Method 3: Fisher's Mid-P Test (Fisher-midP)
 
@@ -197,7 +197,7 @@ Note: The `twoCoprimary` package can implement the Fisher's Mid-P Test, but Homm
 
 ### Method 4: Z-pooled Exact Unconditional Test (Z-pool)
 
-**Unconditional test**: Maximizes the p-value over all possible values of the nuisance parameter (common success probability $p_{k}$ under $\text{H}_{0}$).
+**Unconditional test**: Maximizes the p-value over all possible values of the nuisance parameter (common success probability $p_{k}$ under ${\rm H}_{0}$).
 
 Uses the $Z$-test statistic and finds the maximum $p$-value across all possible values of $p_{k}$.
 
@@ -213,9 +213,10 @@ Similar to Z-pooled, but based on Fisher's exact $p$-values. Maximizes Fisher's 
 
 The exact power for test method $A$ is (Equation 9 in Homma and Yoshida, 2025):
 
-$$\text{power}_{A}(\boldsymbol{\theta}) = \text{P}\left[\bigcap_{k=1}^{2} \{p_{A}(y_{1,k}, y_{2,k}) < \alpha\} \mid \text{H}_{1}\right]$$
+$${\rm power}_{A}(\boldsymbol{\theta}) = {\rm P}\left[\bigcap_{k=1}^{2} \{p_{A}(y_{1,k}, y_{2,k}) < \alpha\} \mid {\rm H}_{1}\right]$$
 
-$$= \sum_{(a_{1,1}, a_{2,1}) \in \mathcal{A}_{1}} \sum_{(a_{1,2}, a_{2,2}) \in \mathcal{A}_{2}} f(a_{1,1} \mid n_{1}, p_{1,1}) \times f(a_{2,1} \mid n_{2}, p_{2,1}) \times g(a_{1,2} \mid a_{1,1}, n_{1}, p_{1,1}, p_{1,2}, \gamma_{1}) \times g(a_{2,2} \mid a_{2,1}, n_{2}, p_{2,1}, p_{2,2}, \gamma_{2})$$
+$$= \sum_{(a_{1,1}, a_{2,1}) \in \mathcal{A}_{1}} \sum_{(a_{1,2}, a_{2,2}) \in \mathcal{A}_{2}} f(a_{1,1} \mid n_{1}, p_{1,1}) \times f(a_{2,1} \mid n_{2}, p_{2,1})\\
+\times g(a_{1,2} \mid a_{1,1}, n_{1}, p_{1,1}, p_{1,2}, \gamma_{1}) \times g(a_{2,2} \mid a_{2,1}, n_{2}, p_{2,1}, p_{2,2}, \gamma_{2})$$
 
 where:
 
@@ -227,7 +228,7 @@ where:
 
 The required sample size $n_{2}$ to achieve target power $1 - \beta$ is (Equation 10 in Homma and Yoshida, 2025):
 
-$$n_{2} = \arg\min_{n_{2} \in \mathbb{Z}} \{\text{power}_{A}(\boldsymbol{\theta}) \geq 1 - \beta\}$$
+$$n_{2} = \arg\min_{n_{2} \in \mathbb{Z}} \{{\rm power}_{A}(\boldsymbol{\theta}) \geq 1 - \beta\}$$
 
 This cannot be expressed as a closed-form formula due to:
 

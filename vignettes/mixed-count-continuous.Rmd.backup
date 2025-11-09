@@ -34,7 +34,7 @@ library(knitr)
 In clinical trials for treating **asthma** and **chronic obstructive pulmonary disease (COPD)**, regulatory agencies require evaluation of both:
 
 1. **Count endpoint**: Number of exacerbations over follow-up period (overdispersed count data)
-2. **Continuous endpoint**: Lung function measure such as $\text{FEV}_{1}$ (forced expiratory volume in 1 second)
+2. **Continuous endpoint**: Lung function measure such as ${\rm FEV}_{1}$ (forced expiratory volume in 1 second)
 
 ### Why Negative Binomial Distribution?
 
@@ -42,18 +42,18 @@ Count outcomes in clinical trials often exhibit **overdispersion**, where the va
 
 **Negative binomial (NB) distribution** accommodates overdispersion:
 
-$$X \sim \text{NB}(\lambda, \nu)$$
+$$X \sim {\rm NB}(\lambda, \nu)$$
 
-- **Mean**: $\text{E}[X] = \lambda = r \times t$ (rate $\times$ time)
-- **Variance**: $\text{Var}[X] = \lambda + \lambda^{2}/\nu$
+- **Mean**: ${\rm E}[X] = \lambda = r \times t$ (rate $\times$ time)
+- **Variance**: ${\rm Var}[X] = \lambda + \lambda^{2}/\nu$
 - **Dispersion parameter**: $\nu > 0$ controls overdispersion
-  - As $\nu \to \infty$: $\text{NB} \to \text{Poisson}$ (no overdispersion)
+  - As $\nu \to \infty$: ${\rm NB} \to {\rm Poisson}$ (no overdispersion)
   - Small $\nu$: High overdispersion (variance $\gg$ mean)
 
 **Variance-to-mean ratio (VMR)**:
-$$\text{VMR} = \frac{\text{Var}[X]}{\text{E}[X]} = 1 + \frac{\lambda}{\nu}$$
+$${\rm VMR} = \frac{{\rm Var}[X]}{{\rm E}[X]} = 1 + \frac{\lambda}{\nu}$$
 
-When $\text{VMR} > 1$, data are overdispersed and NB is more appropriate than Poisson.
+When ${\rm VMR} > 1$, data are overdispersed and NB is more appropriate than Poisson.
 
 ## Statistical Framework
 
@@ -64,12 +64,12 @@ Consider a two-arm superiority trial with sample sizes $n_{1}$ (treatment) and $
 For subject $i$ in group $j$ ($j = 1$: treatment, $j = 2$: control), we observe two **outcomes**:
 
 **Outcome 1 (Count)**:
-$$X_{i,j,1} \sim \text{NB}(\lambda_{j}, \nu)$$
+$$X_{i,j,1} \sim {\rm NB}(\lambda_{j}, \nu)$$
 
 where $\lambda_{j}$ is the expected number of events in group $j$, and $\nu > 0$ is the common dispersion parameter.
 
 **Outcome 2 (Continuous)**:
-$$X_{i,j,2} \sim \text{N}(\mu_{j}, \sigma^{2})$$
+$$X_{i,j,2} \sim {\rm N}(\mu_{j}, \sigma^{2})$$
 
 where $\mu_{j}$ is the population mean in group $j$, and $\sigma^{2}$ is the common variance across groups.
 
@@ -84,28 +84,28 @@ Use the `corrbound2MixedCountContinuous()` function to check valid correlation b
 We test superiority of treatment over control for both endpoints. **Note**: In COPD/asthma trials, treatment benefit is indicated by **lower values** for both endpoints (fewer exacerbations, less decline in lung function).
 
 **For count endpoint** (1):
-$$\text{H}_{01}: r_{1} \geq r_{2} \text{ vs. } \text{H}_{11}: r_{1} < r_{2}$$
+$${\rm H}_{01}: r_{1} \geq r_{2} \text{ vs. } {\rm H}_{11}: r_{1} < r_{2}$$
 
 Equivalently, testing $\beta_{1} = \log(r_{1}) - \log(r_{2}) < 0$.
 
 **For continuous endpoint** (2):
-$$\text{H}_{02}: \mu_{1} - \mu_{2} \geq 0 \text{ vs. } \text{H}_{12}: \mu_{1} - \mu_{2} < 0$$
+$${\rm H}_{02}: \mu_{1} - \mu_{2} \geq 0 \text{ vs. } {\rm H}_{12}: \mu_{1} - \mu_{2} < 0$$
 
 **Co-primary endpoints** (intersection-union test):
-$$\text{H}_0 = \text{H}_{01} \cup \text{H}_{02} \text{ vs. } \text{H}_1 = \text{H}_{11} \cap \text{H}_{12}$$
+$${\rm H}_0 = {\rm H}_{01} \cup {\rm H}_{02} \text{ vs. } {\rm H}_1 = {\rm H}_{11} \cap {\rm H}_{12}$$
 
-Reject $\text{H}_{0}$ at level $\alpha$ if and only if **both** $\text{H}_{01}$ and $\text{H}_{02}$ are rejected at level $\alpha$.
+Reject ${\rm H}_{0}$ at level $\alpha$ if and only if **both** ${\rm H}_{01}$ and ${\rm H}_{02}$ are rejected at level $\alpha$.
 
 ### Test Statistics
 
 **Count endpoint** (Equation 7 in Homma and Yoshida, 2024):
 
-$$Z_{1} = \frac{\hat{\beta}_{1}}{\sqrt{\text{Var}(\hat{\beta}_{1})}}$$
+$$Z_{1} = \frac{\hat{\beta}_{1}}{\sqrt{{\rm Var}(\hat{\beta}_{1})}}$$
 
 where:
 
 - $\hat{\beta}_{1} = \log(\bar{X}_{1,1}) - \log(\bar{X}_{2,1})$ is the log rate ratio
-- $\text{Var}(\hat{\beta}_{1}) = \frac{1}{n_{2}}\left[\frac{1}{t}\left(\frac{1}{\lambda_{2}} + \frac{1}{r\lambda_{1}}\right) + \frac{1+r}{\nu r}\right] = \frac{V_{a}}{n_{2}}$
+- ${\rm Var}(\hat{\beta}_{1}) = \frac{1}{n_{2}}\left[\frac{1}{t}\left(\frac{1}{\lambda_{2}} + \frac{1}{r\lambda_{1}}\right) + \frac{1+r}{\nu r}\right] = \frac{V_{a}}{n_{2}}$
 
 **Continuous endpoint**:
 
@@ -115,9 +115,9 @@ When $\sigma$ is a common known standard deviation.
 
 ### Joint Distribution and Correlation
 
-Under $\text{H}_{1}$, the test statistics $(Z_{1}, Z_{2})$ asymptotically follow a bivariate normal distribution (Appendix B in Homma and Yoshida, 2024):
+Under ${\rm H}_{1}$, the test statistics $(Z_{1}, Z_{2})$ asymptotically follow a bivariate normal distribution (Appendix B in Homma and Yoshida, 2024):
 
-$$\begin{pmatrix} Z_1 \\ Z_2 \end{pmatrix} \sim \text{BN}\left(\begin{pmatrix} \mu_1 \\ \mu_2 \end{pmatrix}, \begin{pmatrix} 1 & \gamma \\ \gamma & 1 \end{pmatrix}\right)$$
+$$\begin{pmatrix} Z_1 \\ Z_2 \end{pmatrix} \sim {\rm BN}\left(\begin{pmatrix} \mu_1 \\ \mu_2 \end{pmatrix}, \begin{pmatrix} 1 & \gamma \\ \gamma & 1 \end{pmatrix}\right)$$
 
 where:
 
@@ -136,11 +136,11 @@ $$\gamma = \frac{\rho}{\sqrt{2}}\frac{\sqrt{1/\lambda_{2} + 1/\nu} + \sqrt{1/\la
 
 The overall power is (Equation 10 in Homma and Yoshida, 2024):
 
-$$1 - \beta = \text{P}(Z_{1} < z_{\alpha} \cap Z_{2} < z_{\alpha} \mid \text{H}_{1})$$
+$$1 - \beta = {\rm P}(Z_{1} < z_{\alpha} \cap Z_{2} < z_{\alpha} \mid {\rm H}_{1})$$
 
 Using the bivariate normal CDF $\Phi_{2}$:
 
-$$1 - \beta = \Phi_{2}\left(z_{\alpha} - \frac{\sqrt{n_{2}}(\log r_{1} - \log r_{2})}{\sqrt{V_{a}}}, z_{\alpha} - \frac{\sqrt{n_{2}}(\mu_{1}-\mu_{2})}{\sigma\sqrt{\frac{1+r}{r}}} \Bigg| \gamma\right)$$
+$$1 - \beta = \Phi_{2}\left(z_{\alpha} - \frac{\sqrt{n_{2}}(\log r_{1} - \log r_{2})}{\sqrt{V_{a}}}, z_{\alpha} - \frac{\sqrt{n_{2}}(\mu_{1}-\mu_{2})}{\sigma\sqrt{\frac{1+r}{r}}} {\LARGE{\Bigg|}} \gamma\right)$$
 
 ### Sample Size Determination
 

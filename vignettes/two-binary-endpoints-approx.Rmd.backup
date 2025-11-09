@@ -65,7 +65,7 @@ where $X_{i,j,k} = 1$ indicates success and $X_{i,j,k} = 0$ indicates failure fo
 
 **Marginal probabilities**: Let $p_{j,k}$ denote the success probability for outcome $k$ in group $j$:
 
-$$p_{j,k} = \text{P}(X_{i,j,k} = 1), \quad k = 1, 2$$
+$$p_{j,k} = {\rm P}(X_{i,j,k} = 1), \quad k = 1, 2$$
 
 For details on the joint distribution of $(X_{i,j,1}, X_{i,j,2})$, see Homma and Yoshida (2025) Section 2.1 or Sozu et al. (2010).
 
@@ -73,9 +73,9 @@ For details on the joint distribution of $(X_{i,j,1}, X_{i,j,2})$, see Homma and
 
 The correlation $\rho_{j}$ between the two binary outcomes in group $j$ is defined as (Homma and Yoshida, 2025):
 
-$$\rho_j = \text{Cor}(X_{i,j,1}, X_{i,j,2}) = \frac{\phi_j - p_{j,1}p_{j,2}}{\sqrt{p_{j,1}(1-p_{j,1})p_{j,2}(1-p_{j,2})}}$$
+$$\rho_j = {\rm Cor}(X_{i,j,1}, X_{i,j,2}) = \frac{\phi_j - p_{j,1}p_{j,2}}{\sqrt{p_{j,1}(1-p_{j,1})p_{j,2}(1-p_{j,2})}}$$
 
-where $\phi_j = \text{P}(X_{i,j,1} = 1, X_{i,j,2} = 1)$ is the joint probability that both outcomes are successful.
+where $\phi_j = {\rm P}(X_{i,j,1} = 1, X_{i,j,2} = 1)$ is the joint probability that both outcomes are successful.
 
 **Practical interpretation**: $\rho_{j} > 0$ means subjects who succeed on outcome 1 are more likely to succeed on outcome 2.
 
@@ -98,15 +98,15 @@ These bounds can be computed using the `corrbound2Binary()` function in this pac
 We test superiority of treatment over control for both endpoints. The **endpoints** for testing are the risk differences:
 
 **For endpoint** $k$:
-$$\text{H}_{0k}: p_{1,k} - p_{2,k} \leq 0 \text{ vs. } \text{H}_{1k}: p_{1,k} - p_{2,k} > 0$$
+$${\rm H}_{0k}: p_{1,k} - p_{2,k} \leq 0 \text{ vs. } {\rm H}_{1k}: p_{1,k} - p_{2,k} > 0$$
 
 **For co-primary endpoints** (intersection-union test):
 
-**Null hypothesis**: $\text{H}_{0} = \text{H}_{01} \cup \text{H}_{02}$ (at least one null is true)
+**Null hypothesis**: ${\rm H}_{0} = {\rm H}_{01} \cup {\rm H}_{02}$ (at least one null is true)
 
-**Alternative hypothesis**: $\text{H}_{1} = \text{H}_{11} \cap \text{H}_{12}$ (both alternatives are true)
+**Alternative hypothesis**: ${\rm H}_{1} = {\rm H}_{11} \cap {\rm H}_{12}$ (both alternatives are true)
 
-**Decision rule**: Reject $\text{H}_{0}$ at level $\alpha$ if and only if **both** $\text{H}_{01}$ and $\text{H}_{02}$ are rejected at level $\alpha$.
+**Decision rule**: Reject ${\rm H}_{0}$ at level $\alpha$ if and only if **both** ${\rm H}_{01}$ and ${\rm H}_{02}$ are rejected at level $\alpha$.
 
 ### Test Statistics
 
@@ -123,13 +123,13 @@ $$se_{k0} = \sqrt{\left(\frac{1}{n_1} + \frac{1}{n_2}\right) \bar{p}_k(1 - \bar{
 
 and $\bar{p}_k = \frac{n_1 \hat{p}_{1,k} + n_2 \hat{p}_{2,k}}{n_1 + n_2}$ is the **pooled proportion** under the null hypothesis.
 
-Under $\text{H}_{0k}$, $Z_{k}$ asymptotically follows $\text{N}(0, 1)$.
+Under ${\rm H}_{0k}$, $Z_{k}$ asymptotically follows ${\rm N}(0, 1)$.
 
 **Power formula** (Equation 4 in Sozu et al., 2010):
 
-Under $\text{H}_{1k}$ with true probabilities $p_{1,k}$ and $p_{2,k}$, the power for a single endpoint is:
+Under ${\rm H}_{1k}$ with true probabilities $p_{1,k}$ and $p_{2,k}$, the power for a single endpoint is:
 
-$$\text{Power}_k = \Phi\left(\frac{\delta_k - se_{k0} z_{1-\alpha}}{se_k}\right)$$
+$${\rm Power}_k = \Phi\left(\frac{\delta_k - se_{k0} z_{1-\alpha}}{se_k}\right)$$
 
 where:
 
@@ -147,7 +147,7 @@ where:
 $$c = \frac{1}{2}\left(\frac{1}{n_1} + \frac{1}{n_2}\right)$$
 
 **Power formula**:
-$$\text{Power}_k = \Phi\left(\frac{\delta_k - se_{k0} z_{1-\alpha} - c}{se_k}\right)$$
+$${\rm Power}_k = \Phi\left(\frac{\delta_k - se_{k0} z_{1-\alpha} - c}{se_k}\right)$$
 
 #### Method 3: Arcsine Transformation (AS)
 
@@ -160,9 +160,9 @@ $$se = \frac{1}{2}\sqrt{\frac{1}{n_1} + \frac{1}{n_2}}$$
 
 **Power formula**:
 
-Let $\delta_k^\text{AS} = \arcsin(\sqrt{p_{1k}}) - \arcsin(\sqrt{p_{2k}})$, then:
+Let $\delta_k^{\rm AS} = \arcsin(\sqrt{p_{1k}}) - \arcsin(\sqrt{p_{2k}})$, then:
 
-$$\text{Power}_k = \Phi\left(\frac{\delta_k^\text{AS}}{se} - z_{1-\alpha}\right)$$
+$${\rm Power}_k = \Phi\left(\frac{\delta_k^{\rm AS}}{se} - z_{1-\alpha}\right)$$
 
 #### Method 4: Arcsine Transformation with Continuity Correction (ASc)
 
@@ -184,13 +184,13 @@ Let:
 - $se_k = \sqrt{\frac{v_{1,k}}{4n_1 v_{1,k}^c} + \frac{v_{2,k}}{4n_2 v_{2,k}^c}}$
 
 Then:
-$$\text{Power}_k = \Phi\left(\frac{\delta_k^{ASc} - se \cdot z_{1-\alpha}}{se_k}\right)$$
+$${\rm Power}_k = \Phi\left(\frac{\delta_k^{ASc} - se \cdot z_{1-\alpha}}{se_k}\right)$$
 
 ### Joint Distribution and Correlation
 
-Under $\text{H}_{1}$, $(Z_{1}, Z_{2})$ asymptotically follows a bivariate normal distribution:
+Under ${\rm H}_{1}$, $(Z_{1}, Z_{2})$ asymptotically follows a bivariate normal distribution:
 
-$$\begin{pmatrix} Z_1 \\ Z_2 \end{pmatrix} \sim \text{BN}\left(\begin{pmatrix} \mu_1 \\ \mu_2 \end{pmatrix}, \begin{pmatrix} 1 & \gamma \\ \gamma & 1 \end{pmatrix}\right)$$
+$$\begin{pmatrix} Z_1 \\ Z_2 \end{pmatrix} \sim {\rm BN}\left(\begin{pmatrix} \mu_1 \\ \mu_2 \end{pmatrix}, \begin{pmatrix} 1 & \gamma \\ \gamma & 1 \end{pmatrix}\right)$$
 
 The correlation $\gamma$ between test statistics depends on $\rho_{1}$, $\rho_{2}$, and the marginal probabilities. For details on the derivation and approximation formulas, see Sozu et al. (2010) and Homma and Yoshida (2025). This approximation is implemented in the package functions.
 
@@ -198,7 +198,7 @@ The correlation $\gamma$ between test statistics depends on $\rho_{1}$, $\rho_{2
 
 The overall power (probability of rejecting both null hypotheses) is:
 
-$$1 - \beta = \text{P}(Z_1 > z_{1-\alpha} \text{ and } Z_2 > z_{1-\alpha} \mid \text{H}_1)$$
+$$1 - \beta = {\rm P}(Z_1 > z_{1-\alpha} \text{ and } Z_2 > z_{1-\alpha} \mid {\rm H}_1)$$
 
 Using the bivariate normal distribution:
 

@@ -55,7 +55,7 @@ Consider a two-arm superiority trial with sample sizes $n_{1}$ (treatment) and $
 For subject $i$ in group $j$ ($j = 1$: treatment, $j = 2$: control), we observe two **outcomes**:
 
 **Outcome 1 (Continuous)** ($k = 1$):
-$$X_{i,j,1} \sim \text{N}(\mu_{j}, \sigma^2)$$
+$$X_{i,j,1} \sim {\rm N}(\mu_{j}, \sigma^2)$$
 
 where $\mu_{j}$ is the population mean in group $j$ and $\sigma^{2}$ is the common variance across groups.
 
@@ -68,14 +68,14 @@ where $X_{i,j,2} = 1$ if subject $i$ in group $j$ responds successfully, and 0 o
 
 The correlation between a continuous outcome and a binary outcome requires special consideration. Following Sozu et al. (2012), we assume that both outcomes have latent bivariate normal distributions.
 
-**Key concept**: The binary outcome $X_{i,j,2}$ is assumed to arise from dichotomizing a latent continuous variable $X_{i,j,2}^{*}$ (i.e., $X_{i,j,2}^{*}\sim\text{N}(\mu_{j}^{\ast},\sigma^{2\ast}$):
+**Key concept**: The binary outcome $X_{i,j,2}$ is assumed to arise from dichotomizing a latent continuous variable $X_{i,j,2}^{*}$ (i.e., $X_{i,j,2}^{*}\sim{\rm N}(\mu_{j}^{\ast},\sigma^{2\ast}$):
 
 $$X_{i,j,2} = \begin{cases} 
 1 & \text{if } X_{i,j,2}^* \geq g_{j} \\
 0 & \text{if } X_{i,j,2}^* < g_{j}
 \end{cases}$$
 
-where $g_{j}$ is a threshold (cut-off point) such that $\text{P}(X_{i,j,2} = 1) = p_{j} = \text{P}(X_{i,j,2}^{*} \geq g_{j})$.
+where $g_{j}$ is a threshold (cut-off point) such that ${\rm P}(X_{i,j,2} = 1) = p_{j} = {\rm P}(X_{i,j,2}^{*} \geq g_{j})$.
 
 **Biserial correlation**: Assuming that $(X_{i,j,1}, X_{i,j,2}^{*})$ follow a bivariate normal distribution, the **biserial correlation** $\rho$ measures the correlation between the continuous outcome and the latent continuous variable underlying the binary outcome.
 
@@ -86,15 +86,15 @@ For the detailed formula relating the biserial correlation to the correlation be
 We test superiority of treatment over control for both endpoints:
 
 **For continuous endpoint** (1):
-$$\text{H}_{01}: \mu_{1} - \mu_{2} \leq 0 \text{ vs. } \text{H}_{11}: \mu_{1} - \mu_{2} > 0$$
+$${\rm H}_{01}: \mu_{1} - \mu_{2} \leq 0 \text{ vs. } {\rm H}_{11}: \mu_{1} - \mu_{2} > 0$$
 
 **For binary endpoint** (2):
-$$\text{H}_{02}: p_{1} - p_{2} \leq 0 \text{ vs. } \text{H}_{12}: p_{1} - p_{2} > 0$$
+$${\rm H}_{02}: p_{1} - p_{2} \leq 0 \text{ vs. } {\rm H}_{12}: p_{1} - p_{2} > 0$$
 
 **Co-primary endpoints** (intersection-union test):
-$$\text{H}_0 = \text{H}_{01} \cup \text{H}_{02} \text{ vs. } \text{H}_1 = \text{H}_{11} \cap \text{H}_{12}$$
+$${\rm H}_0 = {\rm H}_{01} \cup {\rm H}_{02} \text{ vs. } {\rm H}_1 = {\rm H}_{11} \cap {\rm H}_{12}$$
 
-Reject $\text{H}_{0}$ at level $\alpha$ if and only if **both** $\text{H}_{01}$ and $\text{H}_{02}$ are rejected at level $\alpha$.
+Reject ${\rm H}_{0}$ at level $\alpha$ if and only if **both** ${\rm H}_{01}$ and ${\rm H}_{02}$ are rejected at level $\alpha$.
 
 ### Test Statistics
 
@@ -124,9 +124,9 @@ See the paper for detailed formulas. The `twoCoprimary` package implements all f
 
 ### Joint Distribution and Power Calculation
 
-Under $\text{H}_{1}$, the test statistics $(Z_{1}, Z_{2})$ asymptotically follow a bivariate normal distribution. The overall power is given by (Equation 4 in Sozu et al., 2012):
+Under ${\rm H}_{1}$, the test statistics $(Z_{1}, Z_{2})$ asymptotically follow a bivariate normal distribution. The overall power is given by (Equation 4 in Sozu et al., 2012):
 
-$$1 - \beta = \text{P}\left[\bigcap_{k=1}^{2} \{Z_{k} > z_{\alpha}\}\right] \approx \text{P}\left[\bigcap_{k=1}^{2} \left\{Z_{k}^{*} > c_{k}^{*}\right\}\right]$$
+$$1 - \beta = {\rm P}\left[\bigcap_{k=1}^{2} \{Z_{k} > z_{\alpha}\}\right] \approx {\rm P}\left[\bigcap_{k=1}^{2} \left\{Z_{k}^{*} > c_{k}^{*}\right\}\right]$$
 
 where $Z_{k}^{*} = \frac{\hat{p}_{1} - \hat{p}_{2} - \Delta_{k}}{se_{k}}$ with $\Delta_{k}$ being the treatment effect, and:
 
@@ -138,11 +138,11 @@ where $\delta_{1} = \mu_{1} - \mu_{2}$ is the effect size for the endpoint 1.
 **For binary endpoint** ($k = 2$, AN method) (Equation 5 in Sozu et al., 2012):
 $$c_{2}^{*} = \frac{\sqrt{\frac{(p_{1}+\kappa p_{2})\{(1-p_{1})+\kappa(1-p_{2})\}}{1+\kappa}} z_{\alpha} - \sqrt{\kappa n_{1}}(p_{1}-p_{2})}{\sqrt{\kappa p_{1}(1-p_{1})+p_{2}(1-p_{2})}}$$
 
-The vector $(Z_{1}^{*}, Z_{2}^{*})^\text{T}$ is approximately distributed as a standardized bivariate normal distribution $\text{N}_{2}(\mathbf{0}, \gamma)$, where $\gamma$ is the correlation between the test statistics.
+The vector $(Z_{1}^{*}, Z_{2}^{*})^{\rm T}$ is approximately distributed as a standardized bivariate normal distribution ${\rm N}_{2}(\mathbf{0}, \gamma)$, where $\gamma$ is the correlation between the test statistics.
 
 **Correlation between test statistics**: For the mixed continuous and binary case, the correlation $\gamma$ between $Z_{1}$ and $Z_{2}$ depends on the biserial correlation $\rho$ between outcomes. The explicit formula involves the standard normal density function and success probabilities. See equation (1) in the Supporting Information of Sozu et al. (2012) for details:
 
-$$\text{Corr}(X_{i,j,1}, X_{i,j,2}) = \frac{\rho_{j} \xi_{j}}{\sqrt{p_{j}(1-p_{j})}}$$
+$${\rm Corr}(X_{i,j,1}, X_{i,j,2}) = \frac{\rho_{j} \xi_{j}}{\sqrt{p_{j}(1-p_{j})}}$$
 
 where $\xi_{j} = \frac{1}{\sqrt{2\pi}} \exp\left\{-\frac{(g_{j} - \mu_{j}^{\ast})^2}{2\sigma_{j}^{2\ast}}\right\}$.
 

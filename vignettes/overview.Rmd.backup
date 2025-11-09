@@ -30,18 +30,18 @@ In clinical trials, **co-primary endpoints** are multiple primary endpoints that
 
 - **No multiplicity adjustment needed** for Type I error control
 - The overall Type I error rate is controlled at level $\alpha$ without Bonferroni correction
-- The overall power is the joint probability: Power = $\Pr(\text{Reject } \text{H}_{01} \text{ and Reject } \text{H}_{02})$
+- The overall power is the joint probability: Power = $\Pr(\text{Reject } {\rm H}_{01} \text{ and Reject } {\rm H}_{02})$
 - Accounting for **correlation** between endpoints can improve efficiency
 
 ### Hypotheses Structure
 
 For two co-primary endpoints, we test:
 
-**Null hypothesis**: $\text{H}_{0} = \text{H}_{01} \cup \text{H}_{02}$ (at least one null hypothesis is true)
+**Null hypothesis**: ${\rm H}_{0} = {\rm H}_{01} \cup {\rm H}_{02}$ (at least one null hypothesis is true)
 
-**Alternative hypothesis**: $\text{H}_{1} = \text{H}_{11} \cap \text{H}_{12}$ (both alternative hypotheses are true)
+**Alternative hypothesis**: ${\rm H}_{1} = {\rm H}_{11} \cap {\rm H}_{12}$ (both alternative hypotheses are true)
 
-We reject $\text{H}_{0}$ only if **both** $\text{H}_{01}$ and $\text{H}_{02}$ are rejected at level $\alpha$.
+We reject ${\rm H}_{0}$ only if **both** ${\rm H}_{01}$ and ${\rm H}_{02}$ are rejected at level $\alpha$.
 
 ## Statistical Framework
 
@@ -49,7 +49,7 @@ We reject $\text{H}_{0}$ only if **both** $\text{H}_{01}$ and $\text{H}_{02}$ ar
 
 The co-primary endpoint framework is based on the intersection-union test principle. Let $Z_{1}$ and $Z_{2}$ be the test statistics for endpoints 1 and 2, respectively.
 
-**Decision rule**: Reject $\text{H}_{0}$ if and only if:
+**Decision rule**: Reject ${\rm H}_{0}$ if and only if:
 $$Z_{1} > z_{1-\alpha} \text{ and } Z_{2} > z_{1-\alpha}$$
 
 where $z_{1-\alpha}$ is the $(1-\alpha)$-th quantile of the standard normal distribution.
@@ -58,7 +58,7 @@ where $z_{1-\alpha}$ is the $(1-\alpha)$-th quantile of the standard normal dist
 
 The overall Type I error rate is:
 
-$$\alpha_{\text{overall}} = \Pr(\text{Reject } \text{H}_{0} \mid \text{H}_{0} \text{ true})$$
+$$\alpha_{\text{overall}} = \Pr(\text{Reject } {\rm H}_{0} \mid {\rm H}_{0} \text{ true})$$
 
 Under the intersection-union test, this is automatically controlled at level $\alpha$ without adjustment:
 
@@ -68,9 +68,9 @@ This is because rejecting when **both** statistics exceed the threshold is more 
 
 ### Overall Power
 
-Under the alternative hypothesis $\text{H}_{1}$, the overall power is:
+Under the alternative hypothesis ${\rm H}_{1}$, the overall power is:
 
-$$1 - \beta = \Pr(Z_{1} > z_{1-\alpha} \text{ and } Z_{2} > z_{1-\alpha} \mid \text{H}_{1})$$
+$$1 - \beta = \Pr(Z_{1} > z_{1-\alpha} \text{ and } Z_{2} > z_{1-\alpha} \mid {\rm H}_{1})$$
 
 When $(Z_{1}, Z_{2})$ follow a bivariate normal distribution with correlation $\rho$:
 
@@ -78,7 +78,7 @@ $$1 - \beta = \Phi_{2}(-z_{1-\alpha} + \mu_{1}, -z_{1-\alpha} + \mu_{2} \mid \rh
 
 where:
 - $\Phi_{2}(\cdot, \cdot \mid \rho)$ is the bivariate normal cumulative distribution function with correlation $\rho$
-- $\mu_{1}$ and $\mu_{2}$ are the non-centrality parameters under $\text{H}_{1}$
+- $\mu_{1}$ and $\mu_{2}$ are the non-centrality parameters under ${\rm H}_{1}$
 
 ### Impact of Correlation
 
