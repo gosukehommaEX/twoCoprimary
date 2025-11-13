@@ -72,17 +72,33 @@
 #' )
 #'
 #' # Balanced design with Fisher exact test
+#' \donttest{
+#' # Calculate sample size for exact tests (computationally intensive)
 #' ss2BinaryExact(
-#'   p11 = 0.6,
-#'   p12 = 0.5,
-#'   p21 = 0.4,
-#'   p22 = 0.3,
+#'   p11 = 0.5,
+#'   p12 = 0.4,
+#'   p21 = 0.3,
+#'   p22 = 0.2,
 #'   rho1 = 0.5,
 #'   rho2 = 0.5,
 #'   r = 1,
 #'   alpha = 0.025,
 #'   beta = 0.2,
-#'   Test = 'Fisher'
+#'   Test = "Fisher"
+#' )
+#' }
+#'
+#' ss2BinaryExact(
+#'   p11 = 0.6,
+#'   p12 = 0.5,
+#'   p21 = 0.4,
+#'   p22 = 0.3,
+#'   rho1 = 0.3,
+#'   rho2 = 0.3,
+#'   r = 1,
+#'   alpha = 0.025,
+#'   beta = 0.2,
+#'   Test = "Chisq"
 #' )
 #'
 #' \donttest{
