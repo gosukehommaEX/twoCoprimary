@@ -18,3 +18,7 @@
 ^vignettes/.*_files$
 ^doc$
 ^Meta$
+^build_pkgdown\.R$
+^fix_rm_in_vignettes\.R$
+^tools$
+^vignettes/.*\.backup$
