@@ -57,37 +57,7 @@
 #' Medical Research}, 34(1), 1-19.
 #'
 #' @examples
-#' # Exact sample size calculation using Boschloo test
-#' ss2BinaryExact(
-#'   p11 = 0.5,
-#'   p12 = 0.4,
-#'   p21 = 0.3,
-#'   p22 = 0.2,
-#'   rho1 = 0.7,
-#'   rho2 = 0.7,
-#'   r = 2,
-#'   alpha = 0.025,
-#'   beta = 0.1,
-#'   Test = 'Boschloo'
-#' )
-#'
-#' # Balanced design with Fisher exact test
-#' \donttest{
-#' # Calculate sample size for exact tests (computationally intensive)
-#' ss2BinaryExact(
-#'   p11 = 0.5,
-#'   p12 = 0.4,
-#'   p21 = 0.3,
-#'   p22 = 0.2,
-#'   rho1 = 0.5,
-#'   rho2 = 0.5,
-#'   r = 1,
-#'   alpha = 0.025,
-#'   beta = 0.2,
-#'   Test = "Fisher"
-#' )
-#' }
-#'
+#' # Quick example with Chi-squared test (faster)
 #' ss2BinaryExact(
 #'   p11 = 0.6,
 #'   p12 = 0.5,
@@ -102,18 +72,18 @@
 #' )
 #'
 #' \donttest{
-#' # Larger sample sizes (computationally intensive)
+#' # More computationally intensive example with Fisher test
 #' ss2BinaryExact(
-#'   p11 = 0.45,
-#'   p12 = 0.40,
-#'   p21 = 0.30,
-#'   p22 = 0.25,
-#'   rho1 = 0.6,
-#'   rho2 = 0.6,
+#'   p11 = 0.5,
+#'   p12 = 0.4,
+#'   p21 = 0.3,
+#'   p22 = 0.2,
+#'   rho1 = 0.5,
+#'   rho2 = 0.5,
 #'   r = 1,
 #'   alpha = 0.025,
-#'   beta = 0.1,
-#'   Test = 'Chisq'
+#'   beta = 0.2,
+#'   Test = "Fisher"
 #' )
 #' }
 #'

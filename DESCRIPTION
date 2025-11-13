@@ -39,8 +39,7 @@ Suggests:
 VignetteBuilder: knitr
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.3
-URL: URL: https://gosukehommaex.github.io/twoCoprimary/,
-        https://github.com/gosukehommaEX/twoCoprimary
+URL: https://gosukehommaex.github.io/twoCoprimary/, https://github.com/gosukehommaEX/twoCoprimary
 BugReports: https://github.com/gosukehommaEX/twoCoprimary/issues
 Language: en-US
 Config/testthat/edition: 3
