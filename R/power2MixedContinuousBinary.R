@@ -94,7 +94,7 @@
 #' @export
 #' @importFrom mvtnorm rmvnorm
 #' @importFrom pbivnorm pbivnorm
-#' @importFrom stats qnorm pnorm qt pt dhyper phyper
+#' @importFrom stats dnorm qnorm pnorm qt pt dhyper phyper
 power2MixedContinuousBinary <- function(n1, n2, delta, sd, p1, p2, rho, alpha, Test, nMC = 10000) {
 
   # Input validation

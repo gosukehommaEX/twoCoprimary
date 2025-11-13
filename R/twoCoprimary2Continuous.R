@@ -34,7 +34,7 @@
 #'   \item If power and r are provided and n1/n2 are NULL: calculates sample size
 #' }
 #'
-#' Exactly one of {(n1, n2), (power, r)} must be NULL.
+#' Exactly one of \{(n1, n2), (power, r)\} must be NULL.
 #'
 #' @examples
 #' # Calculate power given sample sizes

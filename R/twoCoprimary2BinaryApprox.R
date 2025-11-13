@@ -28,7 +28,7 @@
 #' This function serves as a unified interface similar to \code{power.prop.test()}.
 #' The function determines the operation mode based on which parameters are NULL.
 #'
-#' Exactly one of {(n1, n2), (power, r)} must be NULL.
+#' Exactly one of \{(n1, n2), (power, r)\} must be NULL.
 #'
 #' @examples
 #' # Calculate power given sample sizes

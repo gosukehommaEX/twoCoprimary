@@ -71,6 +71,7 @@
 #' plot(result_power, type = "power_curve", n_range = c(50, 200))
 #'
 #' @export
+#' @importFrom graphics abline contour grid points text
 plot.twoCoprimary <- function(x, type = NULL, n_points = 50,
                               n_range = NULL, rho_range = NULL,
                               col = "steelblue", lwd = 2,
@@ -325,7 +326,7 @@ plot_sample_size_rho <- function(x, endpoint_type, n_points, rho_range,
     main <- "Required Sample Size as a Function of Correlation"
   }
   if (is.null(xlab)) {
-    xlab <- "Correlation (\u03C1)"  # Greek rho
+    xlab <- "Correlation (rho)"
   }
   if (is.null(ylab)) {
     ylab <- if (abs(r - 1) < 0.01) {

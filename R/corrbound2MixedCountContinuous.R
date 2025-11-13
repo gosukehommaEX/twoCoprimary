@@ -40,7 +40,7 @@
 #' corrbound2MixedCountContinuous(lambda = 1.0 * 2, nu = 1.0, mu = 0, sd = 300)
 #'
 #' @export
-#' @importFrom stats pnbinom pnorm integrate
+#' @importFrom stats pnbinom pnorm integrate qnbinom
 corrbound2MixedCountContinuous <- function(lambda, nu, mu, sd) {
 
   # Input validation
