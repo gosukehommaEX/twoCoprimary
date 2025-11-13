@@ -1,0 +1,658 @@
+# Mixed Continuous and Binary Co-Primary Endpoints
+
+## Overview
+
+This vignette demonstrates sample size calculation for clinical trials
+with two co-primary endpoints where one is continuous and one is binary.
+The methodology is based on Sozu et al. (2012).
+
+**Important note on notation**: In Sozu et al. (2012), the allocation
+ratio is defined as $\kappa = n_{2}/n_{1}$ (control/treatment), which is
+the inverse of the notation used in other papers in this package where
+$r = n_{1}/n_{2}$ (treatment/control). Therefore, $\kappa = 1/r$. In
+this vignette, we follow the notation from the original paper using
+$\kappa$ to maintain consistency with the published formulas.
+
+``` r
+library(twoCoprimary)
+library(dplyr)
+library(tidyr)
+library(knitr)
+```
+
+## Background
+
+### Clinical Context
+
+Mixed continuous and binary co-primary endpoints are common in:
+
+- **Rheumatoid arthritis trials**: The mean change from baseline in the
+  modified total Sharp score (mTSS) + An ACR50 response (yes/no)
+- **Chronic kidney disease trials**: The mean peak percentage change
+  from baseline serum creatinine over the 72-h period after contrast
+  media administration + The contrast-induced nephropathy (yes/no)
+
+### Why Mixed Endpoints?
+
+Combining continuous and binary endpoints provides:
+
+1.  **Comprehensive assessment**: Magnitude of change (continuous) +
+    clinical meaningfulness (binary)
+2.  **Regulatory relevance**: Many guidelines require both types
+3.  **Clinical interpretability**: Binary endpoints are easier to
+    communicate to patients
+
+## Statistical Framework
+
+### Model and Assumptions
+
+Consider a two-arm superiority trial with sample sizes $n_{1}$
+(treatment) and $n_{2}$ (control), with allocation ratio
+$\kappa = n_{2}/n_{1}$.
+
+For subject $i$ in group $j$ ($j = 1$: treatment, $j = 2$: control), we
+observe two **outcomes**:
+
+**Outcome 1 (Continuous)** ($k = 1$):
+$$X_{i,j,1} \sim \text{N}\left( \mu_{j},\sigma^{2} \right)$$
+
+where $\mu_{j}$ is the population mean in group $j$ and $\sigma^{2}$ is
+the common variance across groups.
+
+**Outcome 2 (Binary)** ($k = 2$): $$X_{i,j,2} \in \{ 0,1\}$$
+
+where $X_{i,j,2} = 1$ if subject $i$ in group $j$ responds successfully,
+and 0 otherwise. Let $p_{j}$ denotes the true success probability in
+group $j$ for endpoint $2$.
+
+### Correlation Structure: Biserial Correlation
+
+The correlation between a continuous outcome and a binary outcome
+requires special consideration. Following Sozu et al. (2012), we assume
+that both outcomes have latent bivariate normal distributions.
+
+**Key concept**: The binary outcome $X_{i,j,2}$ is assumed to arise from
+dichotomizing a latent continuous variable $X_{i,j,2}^{*}$ (i.e.,
+$X_{i,j,2}^{*} \sim \text{N}(\mu_{j}^{*},\sigma^{2*}$):
+
+$$X_{i,j,2} = \begin{cases}
+1 & {{\text{if}\mspace{6mu}}X_{i,j,2}^{*} \geq g_{j}} \\
+0 & {{\text{if}\mspace{6mu}}X_{i,j,2}^{*} < g_{j}}
+\end{cases}$$
+
+where $g_{j}$ is a threshold (cut-off point) such that
+$\text{P}\left( X_{i,j,2} = 1 \right) = p_{j} = \text{P}\left( X_{i,j,2}^{*} \geq g_{j} \right)$.
+
+**Biserial correlation**: Assuming that
+$\left( X_{i,j,1},X_{i,j,2}^{*} \right)$ follow a bivariate normal
+distribution, the **biserial correlation** $\rho$ measures the
+correlation between the continuous outcome and the latent continuous
+variable underlying the binary outcome.
+
+For the detailed formula relating the biserial correlation to the
+correlation between test statistics, see Sozu et al. (2012), equation
+(1) in the Supporting Information.
+
+### Hypothesis Testing
+
+We test superiority of treatment over control for both endpoints:
+
+**For continuous endpoint** (1):
+$$\text{H}_{01}:\mu_{1} - \mu_{2} \leq 0{\mspace{6mu}\text{vs.}\mspace{6mu}}\text{H}_{11}:\mu_{1} - \mu_{2} > 0$$
+
+**For binary endpoint** (2):
+$$\text{H}_{02}:p_{1} - p_{2} \leq 0{\mspace{6mu}\text{vs.}\mspace{6mu}}\text{H}_{12}:p_{1} - p_{2} > 0$$
+
+**Co-primary endpoints** (intersection-union test):
+$$\text{H}_{0} = \text{H}_{01} \cup \text{H}_{02}{\mspace{6mu}\text{vs.}\mspace{6mu}}\text{H}_{1} = \text{H}_{11} \cap \text{H}_{12}$$
+
+Reject $\text{H}_{0}$ at level $\alpha$ if and only if **both**
+$\text{H}_{01}$ and $\text{H}_{02}$ are rejected at level $\alpha$.
+
+### Test Statistics
+
+**Continuous endpoint** (Equation 2 in Sozu et al., 2012):
+
+$$Z_{1} = \frac{{\bar{X}}_{1} - {\bar{X}}_{2}}{\sigma\sqrt{\frac{1 + \kappa}{n_{1}}}}$$
+
+where ${\bar{X}}_{1}$ and ${\bar{X}}_{2}$ are the sample means. When
+$\sigma$ is unknown, use the pooled sample standard deviation.
+
+**Binary endpoint - Asymptotic Normal (AN) method** (Equation 3 in Sozu
+et al., 2012):
+
+$$Z_{2} = \frac{{\widehat{p}}_{1} - {\widehat{p}}_{2}}{\sqrt{\left( \frac{1}{n_{1}} + \frac{1}{n_{2}} \right)\widehat{p}\left( 1 - \widehat{p} \right)}}$$
+
+where:
+
+- ${\widehat{p}}_{1}$ and ${\widehat{p}}_{2}$ are the sample proportions
+- $\widehat{p} = \frac{n_{1}{\widehat{p}}_{1} + n_{2}{\widehat{p}}_{2}}{n_{1} + n_{2}}$
+  is the pooled proportion
+
+**Other test methods**: Sozu et al. (2012) also present:
+
+- **ANc**: Asymptotic normal with continuity correction (equation 5)
+- **AS**: Arcsine transformation without continuity correction (equation
+  6)
+- **ASc**: Arcsine transformation with continuity correction (equation
+  7)
+- **Fisher**: Fisher’s exact test (simulation-based)
+
+See the paper for detailed formulas. The `twoCoprimary` package
+implements all five methods. Note that Fisher’s exact test does not have
+a closed-form sample size formula and requires simulation-based power
+calculation.
+
+### Joint Distribution and Power Calculation
+
+Under $\text{H}_{1}$, the test statistics $\left( Z_{1},Z_{2} \right)$
+asymptotically follow a bivariate normal distribution. The overall power
+is given by (Equation 4 in Sozu et al., 2012):
+
+$$1 - \beta = \text{P}\left\lbrack \bigcap\limits_{k = 1}^{2}\{ Z_{k} > z_{\alpha}\} \right\rbrack \approx \text{P}\left\lbrack \bigcap\limits_{k = 1}^{2}\left\{ Z_{k}^{*} > c_{k}^{*} \right\} \right\rbrack$$
+
+where
+$Z_{k}^{*} = \frac{{\widehat{p}}_{1} - {\widehat{p}}_{2} - \Delta_{k}}{se_{k}}$
+with $\Delta_{k}$ being the treatment effect, and:
+
+**For continuous endpoint** ($k = 1$):
+$$c_{1}^{*} = z_{\alpha} - \frac{\delta_{1}}{\sigma}\sqrt{\frac{\kappa n_{1}}{1 + \kappa}}$$
+
+where $\delta_{1} = \mu_{1} - \mu_{2}$ is the effect size for the
+endpoint 1.
+
+**For binary endpoint** ($k = 2$, AN method) (Equation 5 in Sozu et al.,
+2012):
+$$c_{2}^{*} = \frac{\sqrt{\frac{\left( p_{1} + \kappa p_{2} \right)\{\left( 1 - p_{1} \right) + \kappa\left( 1 - p_{2} \right)\}}{1 + \kappa}}z_{\alpha} - \sqrt{\kappa n_{1}}\left( p_{1} - p_{2} \right)}{\sqrt{\kappa p_{1}\left( 1 - p_{1} \right) + p_{2}\left( 1 - p_{2} \right)}}$$
+
+The vector $\left( Z_{1}^{*},Z_{2}^{*} \right)^{\text{T}}$ is
+approximately distributed as a standardized bivariate normal
+distribution $\text{N}_{2}(\mathbf{0},\gamma)$, where $\gamma$ is the
+correlation between the test statistics.
+
+**Correlation between test statistics**: For the mixed continuous and
+binary case, the correlation $\gamma$ between $Z_{1}$ and $Z_{2}$
+depends on the biserial correlation $\rho$ between outcomes. The
+explicit formula involves the standard normal density function and
+success probabilities. See equation (1) in the Supporting Information of
+Sozu et al. (2012) for details:
+
+$$\text{Corr}\left( X_{i,j,1},X_{i,j,2} \right) = \frac{\rho_{j}\xi_{j}}{\sqrt{p_{j}\left( 1 - p_{j} \right)}}$$
+
+where
+$\xi_{j} = \frac{1}{\sqrt{2\pi}}\exp\left\{ - \frac{\left( g_{j} - \mu_{j}^{*} \right)^{2}}{2\sigma_{j}^{2*}} \right\}$.
+
+### Sample Size Determination
+
+The sample size is determined by solving the power equation numerically.
+For a given allocation ratio $r$, target power $1 - \beta$, and
+significance level $\alpha$, we find the smallest $n_{2}$ such that the
+overall power equals or exceeds $1 - \beta$.
+
+**Computational approach**:
+
+1.  Calculate initial sample size based on single-endpoint formulas
+2.  Compute the correlation $\gamma$ between test statistics using the
+    biserial correlation
+3.  Calculate joint power using the bivariate normal distribution
+4.  Iterate until target power is achieved
+
+**Fisher’s exact test**: For Fisher’s exact test, the power calculation
+is simulation-based due to the discrete nature of the test statistic.
+The sample size calculation uses sequential search starting from the AN
+method’s sample size as an initial value.
+
+## Replicating Sozu et al. (2012) Table 2
+
+Table 2 from Sozu et al. (2012) shows sample sizes for the PREMIER study
+scenario with different standard deviations and correlations.
+
+``` r
+# Recreate Sozu et al. (2012) Table 2
+library(dplyr)
+library(tidyr)
+
+param_grid_mixed_cb_ss <- expand.grid(
+  delta = 4.4,
+  sd = c(19, 20, 21, 22),
+  p1 = 0.59,
+  p2 = 0.46
+)
+
+result_mixed_cb_ss <- design_table(
+  param_grid = param_grid_mixed_cb_ss,
+  rho_values = c(0, 0.3, 0.5, 0.8),
+  r = 1,
+  alpha = 0.025,
+  beta = 0.2,
+  endpoint_type = "mixed_cont_binary",
+  Test = "AN"
+) %>% 
+  mutate_at(vars(starts_with("rho_")), ~ . / 2)
+
+kable(result_mixed_cb_ss,
+      caption = "Table 2: Sample Size per Group (n) for PREMIER Study Scenario (delta1 = 4.4, p1 = 0.59, p2 = 0.46, α = 0.025, 1-β = 0.80)",
+      digits = 2,
+      col.names = c("delta", "σ", "p1", "p2", "ρ=0.0", "ρ=0.3", "ρ=0.5", "ρ=0.8"))
+```
+
+| delta |   σ |   p1 |   p2 | ρ=0.0 | ρ=0.3 | ρ=0.5 | ρ=0.8 |
+|------:|----:|-----:|-----:|------:|------:|------:|------:|
+|   4.4 |  19 | 0.59 | 0.46 |   346 |   340 |   334 |   323 |
+|   4.4 |  20 | 0.59 | 0.46 |   369 |   363 |   358 |   347 |
+|   4.4 |  21 | 0.59 | 0.46 |   394 |   389 |   384 |   374 |
+|   4.4 |  22 | 0.59 | 0.46 |   422 |   417 |   413 |   404 |
+
+Table 2: Sample Size per Group (n) for PREMIER Study Scenario (delta1 =
+4.4, p1 = 0.59, p2 = 0.46, α = 0.025, 1-β = 0.80)
+
+**Interpretation**: This table shows that as the standard deviation
+increases, the required sample size increases. The correlation has a
+modest effect on sample size reduction (approximately 5-7% reduction at
+$\rho = 0.8$).
+
+## Replicating Sozu et al. (2012) Supporting Information Table 5
+
+Table 5 from the Supporting Information shows sample sizes for scenarios
+with higher success probabilities and different test methods.
+
+``` r
+# Recreate Supporting Information Table 5
+param_grid_mixed_cb_ss2 <- tibble(
+  delta = c(0.235, 0.397, 0.521, 0.190, 0.335, 0.457),
+  sd = 1,
+  p1 = c(rep(0.99, 3), rep(0.95, 3)),
+  p2 = c(seq(0.95, 0.85, length.out = 3), seq(0.90, 0.80, length.out = 3))
+)
+
+result_mixed_cb_ss2 <- do.call(
+  bind_rows,
+  lapply(c("ANc", "ASc"), function(test) {
+    design_table(
+      param_grid = param_grid_mixed_cb_ss2,
+      rho_values = c(0, 0.3, 0.5, 0.8),
+      r = 1,
+      alpha = 0.025,
+      beta = 0.2,
+      endpoint_type = "mixed_cont_binary",
+      Test = test
+    ) %>% 
+      mutate_at(vars(starts_with("rho_")), ~ . / 2) %>% 
+      mutate(Test = test)
+  })
+) %>% 
+  arrange(desc(p1), delta) %>% 
+  select(delta, sd, p1, p2, Test, everything())
+
+# Display for ANc
+result_anc <- result_mixed_cb_ss2 %>% 
+  filter(Test == "ANc") %>% 
+  select(-Test)
+
+kable(result_anc,
+      caption = "Table 5 (Part A): Sample Size per Group (n) with Continuity Correction (ANc) (σ = 1, α = 0.025, 1-β = 0.80)^a^",
+      digits = 3,
+      col.names = c("delta", "σ", "p1", "p2", "ρ=0.0", "ρ=0.3", "ρ=0.5", "ρ=0.8"))
+```
+
+| delta |   σ |   p1 |   p2 | ρ=0.0 | ρ=0.3 | ρ=0.5 | ρ=0.8 |
+|------:|----:|-----:|-----:|------:|------:|------:|------:|
+| 0.235 |   1 | 0.99 | 0.95 |   400 |   397 |   395 |   391 |
+| 0.397 |   1 | 0.99 | 0.90 |   143 |   142 |   141 |   139 |
+| 0.521 |   1 | 0.99 | 0.85 |    84 |    83 |    82 |    81 |
+| 0.190 |   1 | 0.95 | 0.90 |   592 |   585 |   579 |   569 |
+| 0.335 |   1 | 0.95 | 0.85 |   195 |   192 |   190 |   187 |
+| 0.457 |   1 | 0.95 | 0.80 |   106 |   105 |   104 |   102 |
+
+Table 5 (Part A): Sample Size per Group (n) with Continuity Correction
+(ANc) (σ = 1, α = 0.025, 1-β = 0.80)^(a)
+
+``` r
+
+# Display for ASc
+result_asc <- result_mixed_cb_ss2 %>% 
+  filter(Test == "ASc") %>% 
+  select(-Test)
+
+kable(result_asc,
+      caption = "Table 5 (Part B): Sample Size per Group (n) with Arcsine and Continuity Correction (ASc) (σ = 1, α = 0.025, 1-β = 0.80)^a^",
+      digits = 3,
+      col.names = c("delta", "σ", "p1", "p2", "ρ=0.0", "ρ=0.3", "ρ=0.5", "ρ=0.8"))
+```
+
+| delta |   σ |   p1 |   p2 | ρ=0.0 | ρ=0.3 | ρ=0.5 | ρ=0.8 |
+|------:|----:|-----:|-----:|------:|------:|------:|------:|
+| 0.235 |   1 | 0.99 | 0.95 |   376 |   373 |   371 |   367 |
+| 0.397 |   1 | 0.99 | 0.90 |   129 |   128 |   127 |   125 |
+| 0.521 |   1 | 0.99 | 0.85 |    74 |    74 |    73 |    72 |
+| 0.190 |   1 | 0.95 | 0.90 |   585 |   578 |   572 |   562 |
+| 0.335 |   1 | 0.95 | 0.85 |   189 |   187 |   185 |   182 |
+| 0.457 |   1 | 0.95 | 0.80 |   102 |   101 |   100 |    98 |
+
+Table 5 (Part B): Sample Size per Group (n) with Arcsine and Continuity
+Correction (ASc) (σ = 1, α = 0.025, 1-β = 0.80)^(a)
+
+^(a) Some values may differ slightly from the Supporting Information
+Table 5 in Sozu et al. (2012) due to numerical differences in computing
+the bivariate normal cumulative distribution function between SAS and R
+implementations.
+
+**Key findings**:
+
+- ANc and ASc give similar sample sizes
+- Correlation effect is modest for these scenarios
+- Higher success probabilities ($p_{1}$) generally require larger sample
+  sizes when the effect size is small
+
+## Basic Usage Examples
+
+### Example 1: Balanced Design
+
+Calculate sample size for a balanced design with moderate effect sizes:
+
+``` r
+# Balanced design: nT = nC (i.e., r = 1, which corresponds to kappa = 1)
+result_balanced <- ss2MixedContinuousBinary(
+  delta = 0.5,           # Standardized effect for continuous endpoint
+  sd = 1,                # Standard deviation
+  p1 = 0.7,              # Success prob in treatment group
+  p2 = 0.5,              # Success prob in control group
+  rho = 0.5,             # Biserial correlation
+  r = 1,                 # Balanced allocation (r = nT/nC = 1)
+  alpha = 0.025,
+  beta = 0.2,
+  Test = "AN"
+)
+
+print(result_balanced)
+#> 
+#> Sample size calculation for mixed continuous and binary co-primary endpoints
+#> 
+#>              n1 = 102
+#>              n2 = 102
+#>               N = 204
+#>           delta = 0.5
+#>              sd = 1
+#>               p = 0.7, 0.5
+#>             rho = 0.5
+#>      allocation = 1
+#>           alpha = 0.025
+#>            beta = 0.2
+#>            Test = AN
+```
+
+**Note**: In the function, $r = n_{1}/n_{2}$. Thus $r = 1$ corresponds
+to balanced allocation ($n_{1} = n_{2}$), which is equivalent to
+$\kappa = 1$ in Sozu et al. (2012).
+
+### Example 2: Effect of Correlation
+
+Demonstrate how biserial correlation affects sample size:
+
+``` r
+# Fixed effect sizes
+delta <- 0.5
+p1 <- 0.7
+p2 <- 0.5
+
+# Range of correlations
+rho_values <- c(0, 0.3, 0.5, 0.8)
+
+ss_by_rho <- sapply(rho_values, function(rho) {
+  result <- ss2MixedContinuousBinary(
+    delta = delta,
+    sd = 1,
+    p1 = p1,
+    p2 = p2,
+    rho = rho,
+    r = 1,
+    alpha = 0.025,
+    beta = 0.2,
+    Test = "AN"
+  )
+  result$n2
+})
+
+result_df <- data.frame(
+  rho = rho_values,
+  n_per_group = ss_by_rho,
+  N_total = ss_by_rho * 2,
+  reduction_pct = round((1 - ss_by_rho / ss_by_rho[1]) * 100, 1)
+)
+
+kable(result_df,
+      caption = "Effect of Biserial Correlation on Sample Size",
+      col.names = c("ρ", "n per group", "N total", "Reduction (%)"))
+```
+
+|   ρ | n per group | N total | Reduction (%) |
+|----:|------------:|--------:|--------------:|
+| 0.0 |         104 |     208 |           0.0 |
+| 0.3 |         103 |     206 |           1.0 |
+| 0.5 |         102 |     204 |           1.9 |
+| 0.8 |          99 |     198 |           4.8 |
+
+Effect of Biserial Correlation on Sample Size
+
+``` r
+
+# Plot
+plot(rho_values, ss_by_rho, 
+     type = "b", pch = 19,
+     xlab = "Biserial Correlation (ρ)", 
+     ylab = "Sample size per group (n)",
+     main = "Effect of Correlation on Sample Size",
+     ylim = c(90, max(ss_by_rho) * 1.1))
+grid()
+```
+
+![](mixed-continuous-binary_files/figure-html/example2-1.png)
+
+**Interpretation**: Higher positive correlation reduces required sample
+size. At $\rho = 0.8$, sample size is reduced by approximately 5-8%
+compared to $\rho = 0$.
+
+### Example 3: Comparison of Test Methods
+
+Compare different test methods for the binary endpoint:
+
+``` r
+# Fixed design parameters
+delta <- 0.5
+p1 <- 0.7
+p2 <- 0.5
+rho <- 0.5
+
+test_methods <- c("AN", "ANc", "AS", "ASc")
+
+test_comparison <- lapply(test_methods, function(test_method) {
+  result <- ss2MixedContinuousBinary(
+    delta = delta,
+    sd = 1,
+    p1 = p1,
+    p2 = p2,
+    rho = rho,
+    r = 1,
+    alpha = 0.025,
+    beta = 0.2,
+    Test = test_method
+  )
+  
+  data.frame(
+    Test_method = test_method,
+    n_per_group = result$n2,
+    N_total = result$N
+  )
+})
+
+test_comparison_table <- bind_rows(test_comparison)
+
+kable(test_comparison_table,
+      caption = "Comparison of Test Methods for Binary Endpoint",
+      digits = 0,
+      col.names = c("Test Method", "n per group", "N total"))
+```
+
+| Test Method | n per group | N total |
+|:------------|------------:|--------:|
+| AN          |         102 |     204 |
+| ANc         |         109 |     218 |
+| AS          |         101 |     202 |
+| ASc         |         109 |     218 |
+
+Comparison of Test Methods for Binary Endpoint
+
+**Key findings**:
+
+- **AN** (no continuity correction): Similar to AS
+- **ANc** (with continuity correction): Slightly larger (~1-5% increase)
+- **AS** (arcsine): Smallest sample size
+- **ASc** (arcsine with CC): Similar to ANc
+
+### Example 4: Unbalanced Allocation
+
+Calculate sample size with 2:1 allocation ratio:
+
+``` r
+# Balanced design (r = 1, equivalent to kappa = 1)
+result_balanced <- ss2MixedContinuousBinary(
+  delta = 0.5,
+  sd = 1,
+  p1 = 0.7,
+  p2 = 0.5,
+  rho = 0.5,
+  r = 1,
+  alpha = 0.025,
+  beta = 0.2,
+  Test = "AN"
+)
+
+# Unbalanced design (r = 2, i.e., nT = 2*nC, equivalent to kappa = 0.5)
+result_unbalanced <- ss2MixedContinuousBinary(
+  delta = 0.5,
+  sd = 1,
+  p1 = 0.7,
+  p2 = 0.5,
+  rho = 0.5,
+  r = 2,
+  alpha = 0.025,
+  beta = 0.2,
+  Test = "AN"
+)
+
+comparison_allocation <- data.frame(
+  Design = c("Balanced (1:1)", "Unbalanced (2:1)"),
+  n_treatment = c(result_balanced$n1, result_unbalanced$n1),
+  n_control = c(result_balanced$n2, result_unbalanced$n2),
+  N_total = c(result_balanced$N, result_unbalanced$N),
+  kappa = c(1, 0.5)
+)
+
+kable(comparison_allocation,
+      caption = "Comparison: Balanced vs Unbalanced Allocation",
+      col.names = c("Design", "nT", "nC", "N total", "κ"))
+```
+
+| Design           |  nT |  nC | N total |   κ |
+|:-----------------|----:|----:|--------:|----:|
+| Balanced (1:1)   | 102 | 102 |     204 | 1.0 |
+| Unbalanced (2:1) | 152 |  76 |     228 | 0.5 |
+
+Comparison: Balanced vs Unbalanced Allocation
+
+``` r
+
+cat("\nIncrease in total sample size:", 
+    round((result_unbalanced$N - result_balanced$N) / result_balanced$N * 100, 1), "%\n")
+#> 
+#> Increase in total sample size: 11.8 %
+```
+
+**Note**: In the function, $r = n_{1}/n_{2}$, so $r = 2$ means
+$n_{1} = 2 \times n_{2}$, which corresponds to
+$\kappa = n_{2}/n_{1} = 0.5$ in Sozu et al. (2012) notation.
+
+## Power Verification
+
+Verify that calculated sample sizes achieve target power:
+
+``` r
+# Use result from Example 1
+power_result <- power2MixedContinuousBinary(
+  n1 = result_balanced$n1,
+  n2 = result_balanced$n2,
+  delta = 0.5,
+  sd = 1,
+  p1 = 0.7,
+  p2 = 0.5,
+  rho = 0.5,
+  alpha = 0.025,
+  Test = "AN"
+)
+
+cat("Target power: 0.80\n")
+#> Target power: 0.80
+cat("Achieved power (Continuous endpoint):", round(as.numeric(power_result$power1), 4), "\n")
+#> Achieved power (Continuous endpoint):
+cat("Achieved power (Binary endpoint):", round(as.numeric(power_result$power2), 4), "\n")
+#> Achieved power (Binary endpoint):
+cat("Achieved power (Co-primary):", round(as.numeric(power_result$powerCoprimary), 4), "\n")
+#> Achieved power (Co-primary): 0.8044
+```
+
+## Practical Recommendations
+
+### Design Considerations
+
+1.  **Estimating biserial correlation**: Use pilot data or historical
+    studies; be conservative if uncertain. Biserial correlation is more
+    challenging to estimate than Pearson correlation.
+
+2.  **Latent variable assumption**: Ensure the binary endpoint
+    conceptually has an underlying continuous scale (e.g., “improved”
+    means crossing a threshold on a continuous improvement scale).
+
+3.  **Test method selection**:
+
+    - **AN**: Most common, smallest sample size
+    - **ANc**: Adds continuity correction for conservatism
+    - **AS**: Uses arcsine transformation for variance stabilization
+    - **ASc**: Combines arcsine transformation with continuity
+      correction
+    - **Fisher**: Provides exact inference but computationally intensive
+
+4.  **Balanced allocation**: Generally most efficient ($\kappa = 1$,
+    i.e., $r = 1$) unless practical constraints require otherwise.
+
+5.  **Sensitivity analysis**: Calculate for range of plausible
+    correlations and effect sizes.
+
+### When to Use This Method
+
+Use mixed continuous-binary methods when:
+
+- One endpoint is naturally continuous (e.g., change in test score)
+- Other endpoint is naturally binary (e.g., clinical response yes/no)
+- Both endpoints are clinically meaningful co-primary endpoints
+- Sample sizes are moderate to large ($N > 50$)
+
+### Challenges and Considerations
+
+1.  **Correlation estimation**: Biserial correlation involves a latent
+    variable and is harder to estimate than Pearson correlation
+
+2.  **Threshold specification**: The dichotomization threshold affects
+    correlation; ensure it’s clinically meaningful
+
+3.  **Asymmetric power**: Mixed endpoints often have unequal power for
+    the two endpoints; the endpoint with lower power dominates sample
+    size
+
+4.  **Asymptotic approximation**: Methods rely on asymptotic normality;
+    may not be accurate for very small samples ($N < 50$)
+
+## References
+
+Sozu, T., Sugimoto, T., & Hamasaki, T. (2012). Sample size determination
+in clinical trials with multiple co-primary endpoints including mixed
+continuous and binary variables. *Biometrical Journal*, 54(5), 716-729.
