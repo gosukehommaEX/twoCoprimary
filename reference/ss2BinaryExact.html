@@ -203,31 +203,61 @@ Medical Research</em>, 34(1), 1-19.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Balanced design with Fisher exact test</span></span></span>
+<span class="r-in"><span><span class="co"># \donttest{</span></span></span>
+<span class="r-in"><span><span class="co"># Calculate sample size for exact tests (computationally intensive)</span></span></span>
 <span class="r-in"><span><span class="fu">ss2BinaryExact</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  p11 <span class="op">=</span> <span class="fl">0.6</span>,</span></span>
-<span class="r-in"><span>  p12 <span class="op">=</span> <span class="fl">0.5</span>,</span></span>
-<span class="r-in"><span>  p21 <span class="op">=</span> <span class="fl">0.4</span>,</span></span>
-<span class="r-in"><span>  p22 <span class="op">=</span> <span class="fl">0.3</span>,</span></span>
+<span class="r-in"><span>  p11 <span class="op">=</span> <span class="fl">0.5</span>,</span></span>
+<span class="r-in"><span>  p12 <span class="op">=</span> <span class="fl">0.4</span>,</span></span>
+<span class="r-in"><span>  p21 <span class="op">=</span> <span class="fl">0.3</span>,</span></span>
+<span class="r-in"><span>  p22 <span class="op">=</span> <span class="fl">0.2</span>,</span></span>
 <span class="r-in"><span>  rho1 <span class="op">=</span> <span class="fl">0.5</span>,</span></span>
 <span class="r-in"><span>  rho2 <span class="op">=</span> <span class="fl">0.5</span>,</span></span>
 <span class="r-in"><span>  r <span class="op">=</span> <span class="fl">1</span>,</span></span>
 <span class="r-in"><span>  alpha <span class="op">=</span> <span class="fl">0.025</span>,</span></span>
 <span class="r-in"><span>  beta <span class="op">=</span> <span class="fl">0.2</span>,</span></span>
-<span class="r-in"><span>  Test <span class="op">=</span> <span class="st">'Fisher'</span></span></span>
+<span class="r-in"><span>  Test <span class="op">=</span> <span class="st">"Fisher"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Sample size calculation for two binary co-primary endpoints</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              n1 = 128</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              n2 = 128</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>               N = 256</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     p (group 1) = 0.6, 0.5</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     p (group 2) = 0.4, 0.3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>              n1 = 117</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>              n2 = 117</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>               N = 234</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     p (group 1) = 0.5, 0.4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     p (group 2) = 0.3, 0.2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>             rho = 0.5, 0.5</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      allocation = 1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>           alpha = 0.025</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>            beta = 0.2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>            Test = Fisher</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-in"><span><span class="co"># }</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu">ss2BinaryExact</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  p11 <span class="op">=</span> <span class="fl">0.6</span>,</span></span>
+<span class="r-in"><span>  p12 <span class="op">=</span> <span class="fl">0.5</span>,</span></span>
+<span class="r-in"><span>  p21 <span class="op">=</span> <span class="fl">0.4</span>,</span></span>
+<span class="r-in"><span>  p22 <span class="op">=</span> <span class="fl">0.3</span>,</span></span>
+<span class="r-in"><span>  rho1 <span class="op">=</span> <span class="fl">0.3</span>,</span></span>
+<span class="r-in"><span>  rho2 <span class="op">=</span> <span class="fl">0.3</span>,</span></span>
+<span class="r-in"><span>  r <span class="op">=</span> <span class="fl">1</span>,</span></span>
+<span class="r-in"><span>  alpha <span class="op">=</span> <span class="fl">0.025</span>,</span></span>
+<span class="r-in"><span>  beta <span class="op">=</span> <span class="fl">0.2</span>,</span></span>
+<span class="r-in"><span>  Test <span class="op">=</span> <span class="st">"Chisq"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Sample size calculation for two binary co-primary endpoints</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>              n1 = 123</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>              n2 = 123</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>               N = 246</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     p (group 1) = 0.6, 0.5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     p (group 2) = 0.4, 0.3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>             rho = 0.3, 0.3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      allocation = 1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>           alpha = 0.025</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>            beta = 0.2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>            Test = Chisq</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># \donttest{</span></span></span>

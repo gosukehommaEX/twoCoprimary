@@ -169,31 +169,61 @@ ss2BinaryExact(
 #> 
 
 # Balanced design with Fisher exact test
+# \donttest{
+# Calculate sample size for exact tests (computationally intensive)
 ss2BinaryExact(
-  p11 = 0.6,
-  p12 = 0.5,
-  p21 = 0.4,
-  p22 = 0.3,
+  p11 = 0.5,
+  p12 = 0.4,
+  p21 = 0.3,
+  p22 = 0.2,
   rho1 = 0.5,
   rho2 = 0.5,
   r = 1,
   alpha = 0.025,
   beta = 0.2,
-  Test = 'Fisher'
+  Test = "Fisher"
 )
 #> 
 #> Sample size calculation for two binary co-primary endpoints
 #> 
-#>              n1 = 128
-#>              n2 = 128
-#>               N = 256
-#>     p (group 1) = 0.6, 0.5
-#>     p (group 2) = 0.4, 0.3
+#>              n1 = 117
+#>              n2 = 117
+#>               N = 234
+#>     p (group 1) = 0.5, 0.4
+#>     p (group 2) = 0.3, 0.2
 #>             rho = 0.5, 0.5
 #>      allocation = 1
 #>           alpha = 0.025
 #>            beta = 0.2
 #>            Test = Fisher
+#> 
+# }
+
+ss2BinaryExact(
+  p11 = 0.6,
+  p12 = 0.5,
+  p21 = 0.4,
+  p22 = 0.3,
+  rho1 = 0.3,
+  rho2 = 0.3,
+  r = 1,
+  alpha = 0.025,
+  beta = 0.2,
+  Test = "Chisq"
+)
+#> 
+#> Sample size calculation for two binary co-primary endpoints
+#> 
+#>              n1 = 123
+#>              n2 = 123
+#>               N = 246
+#>     p (group 1) = 0.6, 0.5
+#>     p (group 2) = 0.4, 0.3
+#>             rho = 0.3, 0.3
+#>      allocation = 1
+#>           alpha = 0.025
+#>            beta = 0.2
+#>            Test = Chisq
 #> 
 
 # \donttest{
