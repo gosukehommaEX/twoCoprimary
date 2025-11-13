@@ -140,65 +140,7 @@ Medical Research*, 34(1), 1-19.
 ## Examples
 
 ``` r
-# Exact sample size calculation using Boschloo test
-ss2BinaryExact(
-  p11 = 0.5,
-  p12 = 0.4,
-  p21 = 0.3,
-  p22 = 0.2,
-  rho1 = 0.7,
-  rho2 = 0.7,
-  r = 2,
-  alpha = 0.025,
-  beta = 0.1,
-  Test = 'Boschloo'
-)
-#> 
-#> Sample size calculation for two binary co-primary endpoints
-#> 
-#>              n1 = 204
-#>              n2 = 102
-#>               N = 306
-#>     p (group 1) = 0.5, 0.4
-#>     p (group 2) = 0.3, 0.2
-#>             rho = 0.7, 0.7
-#>      allocation = 2
-#>           alpha = 0.025
-#>            beta = 0.1
-#>            Test = Boschloo
-#> 
-
-# Balanced design with Fisher exact test
-# \donttest{
-# Calculate sample size for exact tests (computationally intensive)
-ss2BinaryExact(
-  p11 = 0.5,
-  p12 = 0.4,
-  p21 = 0.3,
-  p22 = 0.2,
-  rho1 = 0.5,
-  rho2 = 0.5,
-  r = 1,
-  alpha = 0.025,
-  beta = 0.2,
-  Test = "Fisher"
-)
-#> 
-#> Sample size calculation for two binary co-primary endpoints
-#> 
-#>              n1 = 117
-#>              n2 = 117
-#>               N = 234
-#>     p (group 1) = 0.5, 0.4
-#>     p (group 2) = 0.3, 0.2
-#>             rho = 0.5, 0.5
-#>      allocation = 1
-#>           alpha = 0.025
-#>            beta = 0.2
-#>            Test = Fisher
-#> 
-# }
-
+# Quick example with Chi-squared test (faster)
 ss2BinaryExact(
   p11 = 0.6,
   p12 = 0.5,
@@ -227,32 +169,32 @@ ss2BinaryExact(
 #> 
 
 # \donttest{
-# Larger sample sizes (computationally intensive)
+# More computationally intensive example with Fisher test
 ss2BinaryExact(
-  p11 = 0.45,
-  p12 = 0.40,
-  p21 = 0.30,
-  p22 = 0.25,
-  rho1 = 0.6,
-  rho2 = 0.6,
+  p11 = 0.5,
+  p12 = 0.4,
+  p21 = 0.3,
+  p22 = 0.2,
+  rho1 = 0.5,
+  rho2 = 0.5,
   r = 1,
   alpha = 0.025,
-  beta = 0.1,
-  Test = 'Chisq'
+  beta = 0.2,
+  Test = "Fisher"
 )
 #> 
 #> Sample size calculation for two binary co-primary endpoints
 #> 
-#>              n1 = 247
-#>              n2 = 247
-#>               N = 494
-#>     p (group 1) = 0.45, 0.4
-#>     p (group 2) = 0.3, 0.25
-#>             rho = 0.6, 0.6
+#>              n1 = 117
+#>              n2 = 117
+#>               N = 234
+#>     p (group 1) = 0.5, 0.4
+#>     p (group 2) = 0.3, 0.2
+#>             rho = 0.5, 0.5
 #>      allocation = 1
 #>           alpha = 0.025
-#>            beta = 0.1
-#>            Test = Chisq
+#>            beta = 0.2
+#>            Test = Fisher
 #> 
 # }
 ```
