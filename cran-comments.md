@@ -6,15 +6,9 @@
 
 This is a resubmission. In this version I have:
 
-* Fixed URL field formatting in DESCRIPTION: Ensured proper comma-space 
-  separation with no line breaks
-  
-* Wrapped all computationally intensive examples in ss2BinaryExact(), 
-  power2BinaryExact(), and twoCoprimary2BinaryExact() with \donttest{} 
-  to reduce check time
-
-The spelling NOTEs for "Homma", "Sozu", "Yoshida", "et", and "al" are author 
-names from published references and are spelled correctly.
+* Removed "Provides functions to" from the start of the Description field
+* Removed single quotes around author names (Sozu, Homma, Yoshida)
+* Cleaned up excess whitespace in the Description field
 
 ## Test environments
 
