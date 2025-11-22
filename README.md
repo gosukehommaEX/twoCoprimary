@@ -6,6 +6,7 @@
 [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![CRAN downloads](https://cranlogs.r-pkg.org/badges/grand-total/twoCoprimary)](https://CRAN.R-project.org/package=twoCoprimary)
+[![Monthly downloads](https://cranlogs.r-pkg.org/badges/twoCoprimary)](https://CRAN.R-project.org/package=twoCoprimary)
 <!-- badges: end -->
 
 ## Overview
