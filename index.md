@@ -1,4 +1,4 @@
-# twoCoprimary ![](reference/figures/logo.png)
+# twoCoprimary
 
 ## Overview
 

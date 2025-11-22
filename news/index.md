@@ -2,6 +2,8 @@
 
 ## twoCoprimary 1.0.0
 
+CRAN release: 2025-11-21
+
 ### Initial Release
 
 This is the first release of twoCoprimary, providing comprehensive tools
