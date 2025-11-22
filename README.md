@@ -139,15 +139,17 @@ Comprehensive vignettes are available:
 
 ## References
 
-1. Homma, G., & Yoshida, T. (2025). Exact power and sample size in clinical trials with two co-primary binary endpoints. *Statistical Methods in Medical Research*, 34(1). https://doi.org/10.1177/09622802251368697
+1. Homma, G., & Yoshida, T. (2024). Sample size calculation for clinical trials with co‐primary outcomes: Negative binomial and continuous outcomes. *Pharmaceutical Statistics*, 23(3), 368-392. https://doi.org/10.1002/pst.2337
 
-2. Homma, G., & Yoshida, T. (2024). Sample size calculation for clinical trials with co‐primary outcomes: Negative binomial and continuous outcomes. *Pharmaceutical Statistics*, 23(3), 368-392. https://doi.org/10.1002/pst.2337
+2. Homma, G., & Yoshida, T. (2025). Exact power and sample size in clinical trials with two co-primary binary endpoints. *Statistical Methods in Medical Research*, 34(1). https://doi.org/10.1177/09622802251368697
 
-3. Sozu, T., Kanou, T., Hamada, C., & Yoshimura, I. (2011). Power and sample size calculations in clinical trials with multiple primary variables. *Japanese Journal of Biometrics*, 32(2), 83-96. https://doi.org/10.5691/jjb.32.83
+3. Sozu, T., Sugimoto, T., Hamasaki, T., & Evans, S. R. (2010). Sample size determination in superiority clinical trials with multiple co-primary correlated endpoints. *Statistics in Medicine*, 29(21), 2219-2227. https://doi.org/10.1002/sim.3972
 
-4. Sozu, T., Sugimoto, T., Hamasaki, T., & Evans, S. R. (2012). Sample size determination in clinical trials with multiple co-primary binary endpoints including mixed binary and continuous endpoints. *Biometrical Journal*, 54(5), 716-729. https://doi.org/10.1002/bimj.201100221
+4. Sozu, T., Sugimoto, T., & Hamasaki, T. (2011). Sample size determination in superiority clinical trials with multiple co-primary correlated endpoints. *Journal of Biopharmaceutical Statistics*, 21(4), 650-668. https://doi.org/10.1080/10543406.2011.551329
 
-5. Sozu, T., Sugimoto, T., Hamasaki, T., & Evans, S. R. (2010). Sample size determination in superiority clinical trials with multiple co-primary correlated endpoints. *Statistics in Medicine*, 29(21), 2219-2227. https://doi.org/10.1002/sim.3972
+5. Sozu, T., Sugimoto, T., Hamasaki, T., & Evans, S. R. (2012). Sample size determination in clinical trials with multiple co-primary binary endpoints including mixed binary and continuous endpoints. *Biometrical Journal*, 54(5), 716-729. https://doi.org/10.1002/bimj.201100221
+
+
 
 ## Citation
 
