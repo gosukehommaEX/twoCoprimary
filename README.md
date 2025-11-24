@@ -7,6 +7,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![CRAN downloads](https://cranlogs.r-pkg.org/badges/grand-total/twoCoprimary)](https://CRAN.R-project.org/package=twoCoprimary)
 [![Monthly downloads](https://cranlogs.r-pkg.org/badges/twoCoprimary)](https://CRAN.R-project.org/package=twoCoprimary)
+[![R-CMD-check](https://github.com/gosukehommaEX/twoCoprimary/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/gosukehommaEX/twoCoprimary/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 ## Overview
