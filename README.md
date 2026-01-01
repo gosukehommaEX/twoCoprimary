@@ -58,28 +58,30 @@ library(twoCoprimary)
 
 # Sample size calculation
 result <- ss2Continuous(
-  delta1 = 0.5,      # Standardized effect size for endpoint 1
-  delta2 = 0.4,      # Standardized effect size for endpoint 2
-  rho = 0.3,         # Correlation between endpoints
+  delta1 = 0.5,      # Effect size for endpoint 1
+  delta2 = 0.5,      # Effect size for endpoint 2
+  sd1 = 1,           # Standard deviation for endpoint 1
+  sd2 = 1,           # Standard deviation for endpoint 2
+  rho = 0.5,         # Correlation between endpoints
+  r = 1,             # Balanced allocation
   alpha = 0.025,     # One-sided significance level
-  power = 0.80,      # Target power
-  r = 1              # Allocation ratio (1:1)
+  beta = 0.2,        # Type II error (80% power)
+  known_var = TRUE
 )
 
 print(result)
-#> 
-#> Sample size calculation for two continuous co-primary endpoints
-#> 
-#> Parameters:
-#>   Effect sizes: delta1 = 0.5, delta2 = 0.4
-#>   Correlation: rho = 0.3
-#>   Significance level: alpha = 0.025 (one-sided)
-#>   Target power: 1 - beta = 0.8
-#>   Allocation ratio: r = 1
-#> 
-#> Results:
-#>   Sample size per group: n1 = n2 = 130
-#>   Total sample size: N = 260
+# Sample size calculation for two continuous co-primary endpoints
+# 
+#              n1 = 79
+#              n2 = 79
+#               N = 158
+#           delta = 0.5, 0.5
+#              sd = 1, 1
+#             rho = 0.5
+#      allocation = 1
+#           alpha = 0.025
+#            beta = 0.2
+#       known_var = TRUE
 ```
 
 ### Example 2: Two Binary Endpoints (Exact Method)
@@ -89,16 +91,28 @@ For small to medium sample sizes, use exact methods:
 ``` r
 # Sample size with exact inference
 result_exact <- ss2BinaryExact(
-  p11 = 0.30, p12 = 0.15,    # Response rates for endpoint 1
-  p21 = 0.50, p22 = 0.30,    # Response rates for endpoint 2
+  p11 = 0.50, p12 = 0.30,    # Response rates for group 1
+  p21 = 0.30, p22 = 0.10,    # Response rates for group 2
   rho1 = 0.3, rho2 = 0.3,    # Within-group correlations
   alpha = 0.025,             # One-sided significance level
-  power = 0.80,              # Target power
+  beta = 0.2,                # Type II error (80% power)
   r = 1,                     # Allocation ratio
-  test_method = "Fisher"     # Exact test method
+  Test = "Fisher"            # Exact test method
 )
 
 print(result_exact)
+# Sample size calculation for two binary co-primary endpoints
+# 
+#              n1 = 111
+#              n2 = 111
+#               N = 222
+#     p (group 1) = 0.5, 0.3
+#     p (group 2) = 0.3, 0.1
+#             rho = 0.3, 0.3
+#      allocation = 1
+#           alpha = 0.025
+#            beta = 0.2
+#            Test = Fisher
 ```
 
 ### Example 3: Mixed Count and Continuous Endpoints
@@ -106,24 +120,37 @@ print(result_exact)
 For COPD/asthma trials with exacerbation count and lung function:
 
 ``` r
-# Exacerbation rates (events per year)
-r1 <- 0.80  # Treatment group
-r2 <- 1.25  # Control group
-
 # Sample size calculation
-result_mixed <- ss2MixedCountContinuous(
-  r1 = r1, r2 = r2,          # Event rates
-  nu = 1.0,                  # Dispersion parameter
-  t = 1,                     # Follow-up period (years)
-  mu1 = 250, mu2 = 200,      # Mean FEV1 (mL)
-  sd = 300,                  # Common SD
-  rho1 = 0.5, rho2 = 0.5,    # Correlations
-  alpha = 0.025,
-  power = 0.80,
-  r = 1
+result <- ss2MixedCountContinuous(
+    r1 = 1.0,              # Count rate in treatment group
+    r2 = 1.25,             # Count rate in control group
+    nu = 0.8,              # Dispersion parameter
+    t = 1,                 # Follow-up time
+    mu1 = -50,             # Mean for treatment (negative = benefit)
+    mu2 = 0,               # Mean for control
+    sd = 250,              # Standard deviation
+    r = 1,                 # Balanced allocation
+    rho1 = 0.5,            # Correlation in treatment group
+    rho2 = 0.5,            # Correlation in control group
+    alpha = 0.025,         # One-sided significance level
+    beta = 0.2             # Type II error (80% power)
 )
 
-print(result_mixed)
+print(result)
+# Sample size calculation for mixed count and continuous co-primary endpoints
+# 
+#              n1 = 705
+#              n2 = 705
+#               N = 1410
+#              sd = 250
+#            rate = 1, 1.25
+#              nu = 0.8
+#               t = 1
+#              mu = -50, 0
+#             rho = 0.5, 0.5
+#      allocation = 1
+#           alpha = 0.025
+#            beta = 0.2
 ```
 
 ## Documentation
