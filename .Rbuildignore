@@ -23,3 +23,4 @@
 ^tools$
 ^vignettes/.*\.backup$
 ^CRAN-SUBMISSION$
+^dev$

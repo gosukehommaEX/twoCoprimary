@@ -67,3 +67,9 @@ coverage/
 *.gcno
 /doc/
 /Meta/
+
+# Added for the 1.1.0 revision round
+dev/out/
+src/*.o
+src/*.so
+src/*.dll
