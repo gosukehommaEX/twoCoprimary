@@ -1,4 +1,4 @@
-url: https://gosukehommaEX.github.io/twoCoprimary/
+url: https://gosukehommaex.github.io/twoCoprimary/
 
 template:
   bootstrap: 5
@@ -110,6 +110,12 @@ reference:
   - corrbound2Binary
   - corrbound2MixedCountContinuous
   - design_table
+
+- title: "Package Overview"
+  desc: >
+    Package level documentation
+  contents:
+  - twoCoprimary-package
 
 - title: "Visualization and Output"
   desc: >

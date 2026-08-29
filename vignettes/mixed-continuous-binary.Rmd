@@ -120,7 +120,9 @@ where:
 - **ASc**: Arcsine transformation with continuity correction (equation 7)
 - **Fisher**: Fisher's exact test (simulation-based)
 
-See the paper for detailed formulas. The `twoCoprimary` package implements all five methods. Note that Fisher's exact test does not have a closed-form sample size formula and requires simulation-based power calculation.
+See the paper for detailed formulas. The `twoCoprimary` package implements all five methods.
+
+Fisher's exact test is different in kind from the other four. Under the null hypothesis the number of responders in group 1 is hypergeometric given the total, which gives an exact conditional $p$-value for the binary endpoint, but the joint distribution of that $p$-value and the $t$ statistic of the continuous endpoint has no closed form. Sozu et al. (2012) therefore obtain the overall power by Monte Carlo integration over the latent variables. Two consequences follow for users. The result varies between calls unless a seed is set with `set.seed()`, and the sequential search compares a simulated power against the target, so the returned sample size can move by a subject or two between runs. Raising `nMC` reduces both effects at a proportional cost.
 
 ### Joint Distribution and Power Calculation
 
@@ -157,7 +159,7 @@ The sample size is determined by solving the power equation numerically. For a g
 3. Calculate joint power using the bivariate normal distribution
 4. Iterate until target power is achieved
 
-**Fisher's exact test**: For Fisher's exact test, the power calculation is simulation-based due to the discrete nature of the test statistic. The sample size calculation uses sequential search starting from the AN method's sample size as an initial value.
+**Fisher's exact test**: the binary outcome is generated as the dichotomization of the latent continuous variable at a group specific threshold $g_{j}$ chosen so that $\Pr(X_{i,j,2}^{\ast} \geq g_{j}) = p_{j}$, jointly with the observed continuous outcome. Each replicate yields a $t$ statistic and a hypergeometric $p$-value, and the overall power is the proportion of replicates in which both reject. The sample size calculation uses the same sequential search, starting from the AN sample size.
 
 ## Replicating Sozu et al. (2012) Table 2
 
@@ -192,7 +194,7 @@ kable(result_mixed_cb_ss,
       col.names = c("delta", "σ", "p1", "p2", "ρ=0.0", "ρ=0.3", "ρ=0.5", "ρ=0.8"))
 ```
 
-**Interpretation**: This table shows that as the standard deviation increases, the required sample size increases. The correlation has a modest effect on sample size reduction (approximately 5-7% reduction at $\rho = 0.8$).
+**Interpretation**: This table shows that as the standard deviation increases, the required sample size increases. The correlation has a modest effect, reducing the sample size by 4 to 7% at $\rho = 0.8$ across the four standard deviations shown.
 
 ## Replicating Sozu et al. (2012) Supporting Information Table 5
 
@@ -249,9 +251,38 @@ kable(result_asc,
 
 ^a^ Some values may differ slightly from the Supporting Information Table 5 in Sozu et al. (2012) due to numerical differences in computing the bivariate normal cumulative distribution function between SAS and R implementations.
 
+### Part C: Fisher's exact test
+
+Table 5 of the Supporting Information also reports Fisher's exact test. The row with the largest standardized effect is reproduced here; the remaining rows behave the same way but need sample sizes up to 584 per group, which makes a simulated search slow enough to be unsuitable for a vignette. The package's test suite checks the achieved power at all 24 published Fisher sample sizes.
+
+```{r table5_fisher}
+set.seed(20260829)
+
+rho_values <- c(0, 0.3, 0.5, 0.8)
+published_n <- c(76, 75, 75, 74)
+
+fisher_row <- lapply(seq_along(rho_values), function(i) {
+  ss <- ss2MixedContinuousBinary(
+    delta = 0.521, sd = 1,
+    p1 = 0.99, p2 = 0.85,
+    rho = rho_values[i], r = 1,
+    alpha = 0.025, beta = 0.2,
+    Test = "Fisher", nMC = 10000
+  )
+  data.frame(rho = rho_values[i], n_per_group = ss$n1, published = published_n[i])
+})
+
+kable(do.call(rbind, fisher_row),
+      caption = "Table 5 (Part C): Sample Size per Group (n) with Fisher's Exact Test (delta1 = 0.521, p1 = 0.99, p2 = 0.85, sigma = 1, alpha = 0.025, 1-beta = 0.80)",
+      col.names = c("rho", "n per group", "Sozu et al. (2012)"))
+```
+
+Agreement within a subject or two is the most that a simulated power can give at this number of replications; raising `nMC` tightens it at a proportional cost.
+
 **Key findings**:
 
 - ANc and ASc give similar sample sizes
+- Fisher's exact test agrees closely with ASc, as Sozu et al. (2012) report
 - Correlation effect is modest for these scenarios
 - Higher success probabilities ($p_{1}$) generally require larger sample sizes when the effect size is small
 
@@ -329,7 +360,7 @@ plot(rho_values, ss_by_rho,
 grid()
 ```
 
-**Interpretation**: Higher positive correlation reduces required sample size. At $\rho = 0.8$, sample size is reduced by approximately 5-8% compared to $\rho = 0$.
+**Interpretation**: Higher positive correlation reduces the required sample size. At $\rho = 0.8$ the reduction is about 5% relative to $\rho = 0$ in this scenario.
 
 ### Example 3: Comparison of Test Methods
 
@@ -374,9 +405,9 @@ kable(test_comparison_table,
 
 **Key findings**:
 
-- **AN** (no continuity correction): Similar to AS
-- **ANc** (with continuity correction): Slightly larger (~1-5% increase)
 - **AS** (arcsine): Smallest sample size
+- **AN** (no continuity correction): One subject larger than AS here
+- **ANc** and **ASc** (with continuity correction): About 7% larger than AN
 - **ASc** (arcsine with CC): Similar to ANc
 
 ### Example 4: Unbalanced Allocation
@@ -465,7 +496,7 @@ cat("Achieved power (Co-primary):", round(as.numeric(power_result$powerCoprimary
    - **ANc**: Adds continuity correction for conservatism
    - **AS**: Uses arcsine transformation for variance stabilization
    - **ASc**: Combines arcsine transformation with continuity correction
-   - **Fisher**: Provides exact inference but computationally intensive
+   - **Fisher**: Provides exact inference for the binary endpoint, at the cost of a simulated overall power
 
 4. **Balanced allocation**: Generally most efficient ($\kappa = 1$, i.e., $r = 1$) unless practical constraints require otherwise.
 

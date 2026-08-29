@@ -19,6 +19,13 @@
 #'   (Chi-squared test), "Z-pooled" (Z-pooled exact unconditional test),
 #'   or "Boschloo" (Boschloo's exact unconditional test)
 #'
+#' @param n_grid Number of grid points used to maximize the null tail probability
+#'   over the nuisance parameter in the two exact unconditional tests, that is
+#'   \code{"Z-pool"} and \code{"Boschloo"} (default is 100). The other three
+#'   tests read their p-values off a distribution and ignore this argument. A
+#'   finer grid locates the maximum more accurately at a proportionally higher
+#'   computational cost, and the default reproduces the results of earlier
+#'   versions of the package.
 #' @return An object of class "twoCoprimary" containing either:
 #'   \itemize{
 #'     \item Power calculation results (when n1 and n2 are specified)
@@ -60,7 +67,8 @@ twoCoprimary2BinaryExact <- function(n1 = NULL, n2 = NULL,
                                      p11, p12, p21, p22,
                                      rho1, rho2,
                                      power = NULL, r = NULL,
-                                     alpha = 0.025, Test = "Fisher") {
+                                     alpha = 0.025, Test = "Fisher",
+                                     n_grid = 100) {
 
   # Count NULL parameters
   n_null <- sum(is.null(n1), is.null(n2))
@@ -75,7 +83,7 @@ twoCoprimary2BinaryExact <- function(n1 = NULL, n2 = NULL,
       p11 = p11, p12 = p12,
       p21 = p21, p22 = p22,
       rho1 = rho1, rho2 = rho2,
-      alpha = alpha, Test = Test
+      alpha = alpha, Test = Test, n_grid = n_grid
     )
 
   } else if (n_null == 2 && !power_null && !r_null) {
@@ -86,7 +94,7 @@ twoCoprimary2BinaryExact <- function(n1 = NULL, n2 = NULL,
       p21 = p21, p22 = p22,
       rho1 = rho1, rho2 = rho2,
       r = r, alpha = alpha, beta = beta,
-      Test = Test
+      Test = Test, n_grid = n_grid
     )
 
   } else {

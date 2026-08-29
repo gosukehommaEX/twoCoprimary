@@ -22,6 +22,13 @@
 #'     \item \code{"Boschloo"}: Boschloo exact unconditional test
 #'   }
 #'
+#' @param n_grid Number of grid points used to maximize the null tail probability
+#'   over the nuisance parameter in the two exact unconditional tests, that is
+#'   \code{"Z-pool"} and \code{"Boschloo"} (default is 100). The other three
+#'   tests read their p-values off a distribution and ignore this argument. A
+#'   finer grid locates the maximum more accurately at a proportionally higher
+#'   computational cost, and the default reproduces the results of earlier
+#'   versions of the package.
 #' @return A data frame with the following columns:
 #'   \item{n1}{Sample size for group 1}
 #'   \item{n2}{Sample size for group 2}
@@ -49,7 +56,7 @@
 #' @references
 #' Homma, G., & Yoshida, T. (2025). Exact power and sample size in clinical
 #' trials with two co-primary binary endpoints. \emph{Statistical Methods in
-#' Medical Research}, 34(1), 1-19.
+#' Medical Research}, 34(11), 2183-2201.
 #'
 #' @examples
 #' # Exact power calculation using Boschloo test
@@ -99,7 +106,8 @@
 #' @export
 #' @import fpCompare
 #' @importFrom stats dbinom pbinom
-power2BinaryExact <- function(n1, n2, p11, p12, p21, p22, rho1, rho2, alpha, Test) {
+power2BinaryExact <- function(n1, n2, p11, p12, p21, p22, rho1, rho2, alpha, Test,
+                              n_grid = 100) {
 
   # Input validation
   if (length(n1) != 1 || length(n2) != 1) {
@@ -141,7 +149,7 @@ power2BinaryExact <- function(n1, n2, p11, p12, p21, p22, rho1, rho2, alpha, Tes
   }
 
   # Calculate rejection region for the test
-  RR <- rr1Binary(n1, n2, alpha, Test)
+  RR <- rr1Binary(n1, n2, alpha, Test, n_grid = n_grid)
 
   # Calculate power for individual endpoints using binomial distribution
   # For endpoint k, we sum over all outcomes where the null is rejected
@@ -156,15 +164,15 @@ power2BinaryExact <- function(n1, n2, p11, p12, p21, p22, rho1, rho2, alpha, Tes
   pmass2 <- outer(0:n2, 0:n2, function(x, y) dbibinom(n2, x, y, p21, p22, rho2))
 
   # Calculate power for co-primary endpoints using equation (9)
-  # Sum over all outcomes where BOTH endpoints reject the null
-  # This requires extracting the joint probabilities where RR[i1, j1] = TRUE
-  # and multiplying by the probabilities for endpoint 2
-  powerCoprimary <- sum(
-    '*'(
-      t(pmass1[row(RR)[RR %>>% 0], ])[row(RR)[RR %>>% 0], ],
-      t(pmass2[col(RR)[RR %>>% 0], ])[col(RR)[RR %>>% 0], ]
-    )
-  )
+  # The sum runs over every pair of outcomes such that the endpoint 1 cell and
+  # the endpoint 2 cell both fall in the rejection region, that is over
+  # (a, c) in RR and (b, d) in RR of pmass1[a, b] pmass2[c, d]. Summing over c
+  # and d first turns the double sum into two matrix products of order n + 1.
+  # The direct expression instead forms two K by K matrices, where K is the
+  # number of cells in RR and grows like n ^ 2, so it costs O(n ^ 4) in both
+  # time and memory.
+  RR_num <- RR * 1
+  powerCoprimary <- sum(pmass1 * (RR_num %*% pmass2 %*% t(RR_num)))
 
   # Return results as a data frame
   result <- data.frame(

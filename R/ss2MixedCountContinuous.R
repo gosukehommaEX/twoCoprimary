@@ -63,13 +63,13 @@
 #' valid correlation bounds.
 #'
 #' @references
-#' Homma, G., & Yoshida, T. (2024). Sample size calculation for count and
-#' continuous multiple co-primary endpoints. \emph{Pharmaceutical Statistics},
-#' 23(3), 372-388.
+#' Homma, G., & Yoshida, T. (2024). Sample size calculation in clinical trials
+#' with two co-primary endpoints including overdispersed count and continuous
+#' outcomes. \emph{Pharmaceutical Statistics}, 23(1), 46-59.
 #'
 #' Homma, G., & Yoshida, T. (2025). Exact power and sample size in clinical
 #' trials with two co-primary binary endpoints. \emph{Statistical Methods in
-#' Medical Research}, 34(1), 1-19.
+#' Medical Research}, 34(11), 2183-2201.
 #'
 #' @examples
 #' # Sample size calculation for count and continuous endpoints
@@ -88,7 +88,10 @@
 #'   beta = 0.2
 #' )
 #'
-#' # With different dispersion parameter (more overdispersion)
+#' \donttest{
+#' # With different dispersion parameter (more overdispersion). The sequential
+#' # search reaches several hundred subjects per group, so this is kept out of
+#' # the routinely executed examples.
 #' ss2MixedCountContinuous(
 #'   r1 = 1.0,
 #'   r2 = 1.25,
@@ -103,6 +106,7 @@
 #'   alpha = 0.025,
 #'   beta = 0.2
 #' )
+#' }
 #'
 #' @export
 ss2MixedCountContinuous <- function(r1, r2, nu, t, mu1, mu2, sd, r, rho1, rho2, alpha, beta) {

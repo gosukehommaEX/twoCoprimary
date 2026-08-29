@@ -59,6 +59,13 @@
 #' variable underlying the binary endpoint and the observed continuous endpoint. This is
 #' not the same as the point-biserial correlation observed in the data.
 #'
+#'
+#' The Monte Carlo step of \code{Test = "Fisher"} draws random numbers, so
+#' results vary between calls unless a seed is set with \code{set.seed}
+#' beforehand. The sequential search for the sample size compares a simulated
+#' power against the target, so the returned sample size can differ by a subject
+#' or two between runs; increasing \code{nMC} reduces that variation.
+#'
 #' @references
 #' Sozu, T., Sugimoto, T., & Hamasaki, T. (2012). Sample size determination in
 #' clinical trials with multiple co-primary endpoints including mixed continuous
@@ -66,7 +73,7 @@
 #'
 #' Homma, G., & Yoshida, T. (2025). Exact power and sample size in clinical
 #' trials with two co-primary binary endpoints. \emph{Statistical Methods in
-#' Medical Research}, 34(1), 1-19.
+#' Medical Research}, 34(11), 2183-2201.
 #'
 #' @examples
 #' # Sample size calculation using asymptotic normal method

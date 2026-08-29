@@ -37,7 +37,7 @@ Binary co-primary endpoints are common in:
 
 - **Psoriasis trials**: At least 75% improvement in the score on the psoriasis area-and-severity index (PASI) (yes/no) + Score on the physician's global assessment of 0 or 1 (yes/no)
 
-- **Primary myelofibrosis trials**: Clinically relevant complete haematological response (yes/no) + Lack of progression of clinical symptoms (yes/no)
+- **Primary myelofibrosis trials**: Clinically relevant complete hematological response (yes/no) + Lack of progression of clinical symptoms (yes/no)
 
 ### When to Use Asymptotic Methods
 
@@ -260,7 +260,7 @@ result_bin_ss <- do.call(
 
 kable(result_bin_ss,
       caption = "Table III: Sample Size per Group (n) for Two Co-Primary Binary Endpoints (α = 0.025, 1-β = 0.80)^a,b^",
-      digits = 0,
+      digits = c(2, 2, 2, 2, 1, 0, 0, 0, 0),
       col.names = c("p₁,₁", "p₁,₂", "p₂,₁", "p₂,₂", "ρ", "AN", "ANc", "AS", "ASc"))
 ```
 
@@ -278,10 +278,11 @@ kable(result_bin_ss,
 
 **Test method comparison**:
 
-- **AN**: Generally smallest sample size, most efficient
-- **ANc**: Slightly larger than AN due to continuity correction
-- **AS**: Similar to AN for moderate probabilities
-- **ASc**: Largest sample size, most conservative
+- **AS**: Smallest sample size of the four, or equal to AN
+- **AN**: Equal to AS for moderate probabilities, slightly larger when the
+  probabilities are close to one
+- **ASc**: Larger than AS by the continuity correction
+- **ANc**: Largest sample size of the four, and the most conservative
 
 ## Basic Usage Examples
 
@@ -388,7 +389,9 @@ plot(rho_values, ss_by_rho,
 grid()
 ```
 
-**Interpretation**: Higher positive correlation substantially reduces required sample size.
+**Interpretation**: Higher positive correlation reduces the required sample
+size. In this scenario the sample size per group falls from 124 at
+$\rho = -0.3$ to 109 at $\rho = 0.8$, a reduction of about 12%.
 
 ### Example 4: Unbalanced Allocation
 
@@ -467,7 +470,8 @@ comparison <- lapply(methods, function(method) {
 comparison_table <- bind_rows(comparison)
 
 kable(comparison_table,
-      caption = "Comparison of Test Methods (p₁,₁ = p₁,₂ = 0.7, p₂,₁ = p₂,₂ = 0.5, ρ = 0.5)")
+      caption = "Comparison of Test Methods (p₁,₁ = 0.80, p₁,₂ = 0.70, p₂,₁ = 0.55, p₂,₂ = 0.45, ρ = 0.7)",
+      col.names = c("Test Method", "n per group", "N total"))
 ```
 
 
@@ -506,6 +510,6 @@ These asymptotic methods are appropriate when:
 
 ## References
 
-Homma, G., & Yoshida, T. (2025). Exact power and sample size in clinical trials with two co-primary binary endpoints. *Statistical Methods in Medical Research*, 34(1), 1-19.
+Homma, G., & Yoshida, T. (2025). Exact power and sample size in clinical trials with two co-primary binary endpoints. *Statistical Methods in Medical Research*, 34(11), 2183-2201.
 
 Sozu, T., Sugimoto, T., & Hamasaki, T. (2010). Sample size determination in clinical trials with multiple co-primary binary endpoints. *Statistics in Medicine*, 29(21), 2169-2179.

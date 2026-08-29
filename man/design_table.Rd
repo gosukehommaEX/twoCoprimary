@@ -14,7 +14,8 @@ design_table(
   Test = "AN",
   known_var = TRUE,
   nMC = 1000,
-  output_var = NULL
+  output_var = NULL,
+  n_grid = 100
 )
 }
 \arguments{
@@ -59,6 +60,14 @@ Default is 1000.}
 the result columns: "N" (total sample size, default for sample size
 calculation) or "powerCoprimary" (co-primary power, default for power
 calculation).}
+
+\item{n_grid}{Number of grid points used to maximize the null tail probability
+over the nuisance parameter in the two exact unconditional tests, that is
+\code{"Z-pool"} and \code{"Boschloo"} (default is 100). The other three
+tests read their p-values off a distribution and ignore this argument. A
+finer grid locates the maximum more accurately at a proportionally higher
+computational cost, and the default reproduces the results of earlier
+versions of the package.}
 }
 \value{
 A data.frame of class "twoCoprimary_table" with:
@@ -148,7 +157,7 @@ print(result_binary)
 
 }
 \references{
-Sozu, T., Kanou, T., Hamada, C., & Yoshimura, I. (2011). Power and sample
-size calculations in clinical trials with multiple primary variables.
-Japanese Journal of Biometrics, 27, 83-96.
+Sozu, T., Sugimoto, T., & Hamasaki, T. (2011). Sample size determination in
+superiority clinical trials with multiple co-primary correlated endpoints.
+\emph{Journal of Biopharmaceutical Statistics}, 21(4), 650-668.
 }

@@ -70,11 +70,18 @@ where \eqn{\Phi_2} is the cumulative distribution function of the bivariate
 standard normal distribution.
 
 For unknown variance, Monte Carlo simulation is used with Wishart-distributed
-variance-covariance matrices to account for variance estimation uncertainty,
-following equation (6) in Sozu et al. (2011):
+correlation matrices of the standardized endpoints to account for variance
+estimation uncertainty, following equation (6) in Sozu et al. (2011):
 \deqn{\text{Power} = E_W\left[\Phi_2(-c_1^*\sqrt{w_{11}}, -c_2^*\sqrt{w_{22}} | \rho)\right]}
 where \eqn{c_k^* = t_{\alpha,\nu}\sqrt{\frac{1}{\nu}} - \frac{Z_k}{\sqrt{w_{kk}}}} and
-\eqn{W} follows a Wishart distribution with \eqn{\nu = n_1 + n_2 - 2} degrees of freedom.
+\eqn{W} follows a Wishart distribution with \eqn{\nu = n_1 + n_2 - 2} degrees of
+freedom and the correlation matrix of the standardized endpoints as its scale
+matrix, so that \eqn{\sqrt{w_{kk} / \nu}} is the ratio of the estimated to the
+true standard deviation of endpoint k.
+
+The Monte Carlo step draws random numbers, so results for
+\code{known_var = FALSE} vary between calls unless a seed is set with
+\code{set.seed} beforehand.
 }
 \examples{
 # Example parameters for comparison across methods

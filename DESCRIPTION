@@ -1,7 +1,7 @@
 Package: twoCoprimary
 Type: Package
 Title: Sample Size and Power Calculation for Two Co-Primary Endpoints
-Version: 1.0.0
+Version: 1.1.0
 Authors@R: person(given = "Gosuke",
                   family = "Homma",
                   role = c("aut", "cre"),
@@ -27,19 +27,23 @@ Imports:
     mvtnorm,
     pbivnorm,
     fpCompare,
+    Rcpp,
     stats
+LinkingTo:
+    Rcpp
 Suggests: 
     dplyr,
+    Exact,
     knitr,
+    readr,
     rmarkdown,
     testthat (>= 3.0.0),
     tibble,
-    tidyr,
-    readr
+    tidyr
 VignetteBuilder: knitr
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.3
 URL: https://gosukehommaex.github.io/twoCoprimary/, https://github.com/gosukehommaEX/twoCoprimary
 BugReports: https://github.com/gosukehommaEX/twoCoprimary/issues
 Language: en-US
 Config/testthat/edition: 3
+Config/roxygen2/version: 8.0.0

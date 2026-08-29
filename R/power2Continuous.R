@@ -41,11 +41,18 @@
 #' standard normal distribution.
 #'
 #' For unknown variance, Monte Carlo simulation is used with Wishart-distributed
-#' variance-covariance matrices to account for variance estimation uncertainty,
-#' following equation (6) in Sozu et al. (2011):
+#' correlation matrices of the standardized endpoints to account for variance
+#' estimation uncertainty, following equation (6) in Sozu et al. (2011):
 #' \deqn{\text{Power} = E_W\left[\Phi_2(-c_1^*\sqrt{w_{11}}, -c_2^*\sqrt{w_{22}} | \rho)\right]}
 #' where \eqn{c_k^* = t_{\alpha,\nu}\sqrt{\frac{1}{\nu}} - \frac{Z_k}{\sqrt{w_{kk}}}} and
-#' \eqn{W} follows a Wishart distribution with \eqn{\nu = n_1 + n_2 - 2} degrees of freedom.
+#' \eqn{W} follows a Wishart distribution with \eqn{\nu = n_1 + n_2 - 2} degrees of
+#' freedom and the correlation matrix of the standardized endpoints as its scale
+#' matrix, so that \eqn{\sqrt{w_{kk} / \nu}} is the ratio of the estimated to the
+#' true standard deviation of endpoint k.
+#'
+#' The Monte Carlo step draws random numbers, so results for
+#' \code{known_var = FALSE} vary between calls unless a seed is set with
+#' \code{set.seed} beforehand.
 #'
 #' @references
 #' Sozu, T., Sugimoto, T., & Hamasaki, T. (2011). Sample size determination in
@@ -129,8 +136,12 @@ power2Continuous <- function(n1, n2, delta1, delta2, sd1, sd2, rho, alpha,
     # Calculate power for individual endpoints using t-distribution
     power1and2 <- 1 - pt(qt(1 - alpha, nu), df = nu, ncp = Z)
 
-    # Define variance-covariance matrix
-    Sigma <- matrix(c(sd1 ^ 2, rho * sd1 * sd2, rho * sd1 * sd2, sd2 ^ 2), nrow = 2)
+    # Correlation matrix of the standardized endpoints. The Wishart matrix must
+    # be that of the standardized variables, because Z below is already divided
+    # by sd1 and sd2. Drawing it from the variance-covariance matrix instead
+    # leaves a factor of sd_k in sqrt(W_kk / nu), which cancels only when
+    # sd1 = sd2 = 1.
+    Sigma <- matrix(c(1, rho, rho, 1), nrow = 2)
 
     # Monte Carlo approach following Sozu et al. (2011) equation (6)
     # Generate Wishart random matrices

@@ -197,15 +197,37 @@ Note: The `twoCoprimary` package can implement the Fisher's Mid-P Test, but Homm
 
 ### Method 4: Z-pooled Exact Unconditional Test (Z-pool)
 
-**Unconditional test**: Maximizes the p-value over all possible values of the nuisance parameter (common success probability $p_{k}$ under $\text{H}_{0}$).
+**Unconditional test**: the $p$-value is the null probability of the outcomes at least as extreme as the observed one, maximized over the nuisance parameter $p_{k}$, the common success probability under $\text{H}_{0}$.
 
-Uses the $Z$-test statistic and finds the maximum $p$-value across all possible values of $p_{k}$.
+The ordering statistic is the pooled $Z$ statistic. Writing $T(y_{1}, y_{2})$ for that statistic and $t$ for its observed value,
+
+$$p_{k} = \max_{0 \leq \theta \leq 1} \; \Pr\left( T(Y_{1}, Y_{2}) \geq t \mid \theta \right),$$
+
+where $Y_{1}$ and $Y_{2}$ are independent binomial variables with common probability $\theta$.
 
 ### Method 5: Boschloo's Exact Unconditional Test (Boschloo)
 
-Similar to Z-pooled, but based on Fisher's exact $p$-values. Maximizes Fisher's exact $p$-value over the nuisance parameter space.
+Same construction with Fisher's exact $p$-value as the ordering statistic, so the tail event is the set of outcomes whose Fisher $p$-value is no larger than the observed one.
 
-**Most powerful** of the exact unconditional tests, but computationally intensive.
+**Most powerful** of the exact unconditional tests, but the most demanding to compute.
+
+### Tied outcomes
+
+The tail event is defined by the inequality $T \geq t$, so every outcome sharing the observed value of the ordering statistic belongs to it. Outcomes with the same value of $T$ therefore receive the same $p$-value. Accumulating the null probabilities along an ordering of the outcomes without grouping the ties would give the earlier members of a tie group a smaller $p$-value than the later ones, and which member comes first would depend on an arbitrary sort order. Ties are common: at $n_{1} = n_{2} = 40$ roughly half of the outcomes with a positive $Z$ statistic share their value with another outcome.
+
+### The nuisance parameter grid
+
+The maximization over $\theta$ is carried out on a finite grid of equally spaced values on $[0, 1]$, not analytically. The number of grid points is the `n_grid` argument of `rr1Binary()`, `power2BinaryExact()`, `ss2BinaryExact()` and `twoCoprimary2BinaryExact()`, and its default is 100.
+
+A coarse grid can only understate the maximum, so it can only make the $p$-value smaller and the rejection region larger. In practice the default is ample: for $n_{1} = n_{2} = 20$ and $40$ at $\alpha = 0.025$, the rejection regions of both unconditional tests are identical for every grid size from 25 to 4000 points. Cost grows roughly in proportion to `n_grid`, so a finer grid is inexpensive to try when a design sits close to a decision boundary.
+
+```{r n_grid_demo}
+# The default reproduces a much finer grid
+identical(
+  rr1Binary(n1 = 30, n2 = 30, alpha = 0.025, Test = "Boschloo"),
+  rr1Binary(n1 = 30, n2 = 30, alpha = 0.025, Test = "Boschloo", n_grid = 1000)
+)
+```
 
 ## Exact Power Calculation
 
@@ -437,7 +459,8 @@ comparison_exact_asymp <- data.frame(
 
 kable(comparison_exact_asymp,
       caption = "Comparison: Exact vs Asymptotic Methods",
-      col.names = c("Method", "n per group", "N total", "Difference"))
+      col.names = c("Method", "n per group", "N total",
+                    "Difference in N total"))
 ```
 
 ## Practical Recommendations
@@ -491,16 +514,18 @@ kable(comparison_exact_asymp,
 
 ## Computational Considerations
 
-Modern computers handle all methods efficiently for typical clinical trial sample sizes ($N < 300$).
+Two quantities dominate the cost of an exact sample size search. The rejection region has to be built once for each candidate sample size, and the bivariate binomial probability mass function has to be evaluated over the whole outcome grid.
 
 ### Software Implementation
 
-The `twoCoprimary` package implements all methods efficiently using:
+The `twoCoprimary` package uses:
 
-- Bivariate binomial distribution (`dbibinom`)
-- Rejection region calculation (`rr1Binary`)
-- Vectorized computations for speed
+- the bivariate binomial distribution (`dbibinom`), whose conditional probability is evaluated in compiled code, with the powers and binomial coefficients that the sum needs tabulated once so that the cost grows like $N^{2}$ rather than $N^{3}$;
+- the rejection region (`rr1Binary`), built by vectorized operations over the outcome grid;
+- a matrix product for the co-primary power. Summing over the outcomes of the second group first turns the double sum over the rejection region into two matrix products of order $n + 1$. Evaluating that double sum directly would cost $O(n^{4})$ in both time and memory, which is prohibitive beyond moderate sample sizes.
+
+A complete sample size search with Boschloo's test at $N$ around 370 takes on the order of a second on a current desktop machine.
 
 ## References
 
-Homma, G., & Yoshida, T. (2025). Exact power and sample size in clinical trials with two co-primary binary endpoints. *Statistical Methods in Medical Research*, 34(1), 1-19.
+Homma, G., & Yoshida, T. (2025). Exact power and sample size in clinical trials with two co-primary binary endpoints. *Statistical Methods in Medical Research*, 34(11), 2183-2201.

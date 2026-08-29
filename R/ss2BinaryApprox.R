@@ -56,7 +56,7 @@
 #'
 #' Homma, G., & Yoshida, T. (2025). Exact power and sample size in clinical
 #' trials with two co-primary binary endpoints. \emph{Statistical Methods in
-#' Medical Research}, 34(1), 1-19.
+#' Medical Research}, 34(11), 2183-2201.
 #'
 #' @examples
 #' # Sample size calculation using asymptotic normal method

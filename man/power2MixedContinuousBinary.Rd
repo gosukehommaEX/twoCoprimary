@@ -84,6 +84,12 @@ on the biserial correlation rho and the specific testing method.
 The biserial correlation rho represents the correlation between the latent continuous
 variable underlying the binary endpoint and the observed continuous endpoint. This is
 not the same as the point-biserial correlation observed in the data.
+
+The Monte Carlo step of \code{Test = "Fisher"} draws random numbers, so
+results vary between calls unless a seed is set with \code{set.seed}
+beforehand. The sequential search for the sample size compares a simulated
+power against the target, so the returned sample size can differ by a subject
+or two between runs; increasing \code{nMC} reduces that variation.
 }
 \examples{
 # Power calculation using asymptotic normal method

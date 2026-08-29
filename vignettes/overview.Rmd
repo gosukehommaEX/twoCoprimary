@@ -89,7 +89,7 @@ The correlation $\rho$ between test statistics affects the overall power:
 - **Zero correlation** ($\rho = 0$): Test statistics are independent
 - **Negative correlation** ($\rho < 0$): Decreases power and increases required sample size
 
-**Key insight**: Accounting for positive correlation between endpoints can lead to substantial sample size reductions (typically 5-15% for $\rho = 0.5$-0.8) compared to assuming independence.
+**Key insight**: Accounting for positive correlation between endpoints reduces the required sample size compared to assuming independence. How much depends on the endpoint types and on how similar the individual powers are: across the scenarios in these vignettes the reduction ranges from about 2% to about 11% as $\rho$ moves from 0 to 0.8, and it is largest when the two endpoints carry comparable effect sizes.
 
 ## Supported Endpoint Types
 
@@ -361,7 +361,7 @@ For detailed methodology, examples, and validation against published results, pl
 
 Homma, G., & Yoshida, T. (2024). Sample size calculation in clinical trials with two co-primary endpoints including overdispersed count and continuous outcomes. *Pharmaceutical Statistics*, 23(1), 46-59.
 
-Homma, G., & Yoshida, T. (2025). Exact power and sample size in clinical trials with two co-primary binary endpoints. *Statistical Methods in Medical Research*, 34(1), 1-19.
+Homma, G., & Yoshida, T. (2025). Exact power and sample size in clinical trials with two co-primary binary endpoints. *Statistical Methods in Medical Research*, 34(11), 2183-2201.
 
 Sozu, T., Sugimoto, T., & Hamasaki, T. (2010). Sample size determination in clinical trials with multiple co-primary binary endpoints. *Statistics in Medicine*, 29(21), 2169-2179.
 

@@ -148,7 +148,7 @@ test_that("ss2BinaryExact returns valid sample size with large effect", {
 })
 
 # ==============================================================================
-# ss2MixedContinuousBinary tests (excluding Fisher test)
+# ss2MixedContinuousBinary tests (Fisher is covered in test-mixed_fisher.R)
 # ==============================================================================
 
 test_that("ss2MixedContinuousBinary returns valid sample size", {

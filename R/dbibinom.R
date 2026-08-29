@@ -27,7 +27,7 @@
 #' @references
 #' Homma, G., & Yoshida, T. (2025). Exact power and sample size in clinical
 #' trials with two co-primary binary endpoints. \emph{Statistical Methods in
-#' Medical Research}, 34(1), 1-19.
+#' Medical Research}, 34(11), 2183-2201.
 #'
 #' @examples
 #' # Calculate single probability mass
@@ -85,21 +85,13 @@ dbibinom <- function(N, y1, y2, p1, p2, rho) {
     (1 - rho * sqrt(p2 * (1 - p2) / (p1 * (1 - p1))))
   )
 
-  # Define the set M = {m: m = max(0, y2 - (N - y1)), ..., min(y1, y2)}
-  m <- Map(':', pmax(0, y2 - (N - y1)), pmin(y1, y2))
-  m <- t(sapply(m, `length<-`, max(lengths(m))))
-
   # Define xi (see Homma and Yoshida (2025))
   xi <- p2 + gamma * (p2 - p1)
 
-  # Calculate g(y2|y1, N, p1, p2, gamma)
-  g <- (1 + gamma) ^ (-N) * rowSums(
-    '*'(
-      choose(y1, m) * choose(N - y1, y2 - m) * (xi + gamma) ^ m,
-      (1 - xi) ^ (y1 - m) * xi ^ (y2 - m) * (1 - xi + gamma) ^ (N - y1 - (y2 - m))
-    ),
-    na.rm = TRUE
-  )
+  # Calculate g(y2|y1, N, p1, p2, gamma). The sum over the set
+  # M = {m: m = max(0, y2 - (N - y1)), ..., min(y1, y2)} is formed in compiled
+  # code, which avoids padding that ragged set into a rectangular matrix.
+  g <- dbibinom_g(as.integer(N), as.integer(y1), as.integer(y2), xi, gamma)
 
   # Calculate P(Y1 = y1, Y2 = y2|N, p1, p2, gamma) using equation (3)
   return(dbinom(y1, N, p1) * g)

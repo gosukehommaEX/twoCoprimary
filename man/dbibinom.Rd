@@ -53,5 +53,5 @@ sum(outer(0:N, 0:N, function(x, y) dbibinom(N, x, y, p1, p2, rho)))
 \references{
 Homma, G., & Yoshida, T. (2025). Exact power and sample size in clinical
 trials with two co-primary binary endpoints. \emph{Statistical Methods in
-Medical Research}, 34(1), 1-19.
+Medical Research}, 34(11), 2183-2201.
 }

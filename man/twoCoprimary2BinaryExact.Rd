@@ -16,7 +16,8 @@ twoCoprimary2BinaryExact(
   power = NULL,
   r = NULL,
   alpha = 0.025,
-  Test = "Fisher"
+  Test = "Fisher",
+  n_grid = 100
 )
 }
 \arguments{
@@ -45,6 +46,14 @@ twoCoprimary2BinaryExact(
 \item{Test}{Test method: "Fisher" (Fisher's exact test), "Chisq"
 (Chi-squared test), "Z-pooled" (Z-pooled exact unconditional test),
 or "Boschloo" (Boschloo's exact unconditional test)}
+
+\item{n_grid}{Number of grid points used to maximize the null tail probability
+over the nuisance parameter in the two exact unconditional tests, that is
+\code{"Z-pool"} and \code{"Boschloo"} (default is 100). The other three
+tests read their p-values off a distribution and ignore this argument. A
+finer grid locates the maximum more accurately at a proportionally higher
+computational cost, and the default reproduces the results of earlier
+versions of the package.}
 }
 \value{
 An object of class "twoCoprimary" containing either:

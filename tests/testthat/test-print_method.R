@@ -89,9 +89,15 @@ test_that("print.twoCoprimary returns invisibly", {
     known_var = TRUE
   )
 
-  # Print should return the object invisibly
-  expect_invisible(print(result))
-  returned <- withVisible(print(result))
+  # Print should return the object invisibly. Both calls are wrapped in
+  # capture.output() so that the formatted result does not reach the console
+  # during a test run.
+  returned <- NULL
+  invisible(capture.output({
+    expect_invisible(print(result))
+    returned <- withVisible(print(result))
+  }))
+
   expect_false(returned$visible)
   expect_identical(returned$value, result)
 })

@@ -20,6 +20,13 @@
 #'   * `"Z-pool"`: Z-pooled exact unconditional test
 #'   * `"Boschloo"`: Boschloo exact unconditional test
 #'
+#' @param n_grid Number of grid points used to maximize the null tail probability
+#'   over the nuisance parameter in the two exact unconditional tests, that is
+#'   \code{"Z-pool"} and \code{"Boschloo"} (default is 100). The other three
+#'   tests read their p-values off a distribution and ignore this argument. A
+#'   finer grid locates the maximum more accurately at a proportionally higher
+#'   computational cost, and the default reproduces the results of earlier
+#'   versions of the package.
 #' @return A data frame with the following columns:
 #'   \item{p11, p12, p21, p22}{Response probabilities}
 #'   \item{rho1, rho2}{Correlations}
@@ -54,7 +61,7 @@
 #' @references
 #' Homma, G., & Yoshida, T. (2025). Exact power and sample size in clinical
 #' trials with two co-primary binary endpoints. \emph{Statistical Methods in
-#' Medical Research}, 34(1), 1-19.
+#' Medical Research}, 34(11), 2183-2201.
 #'
 #' @examples
 #' # Quick example with Chi-squared test (faster)
@@ -89,7 +96,8 @@
 #'
 #' @export
 #' @import fpCompare
-ss2BinaryExact <- function(p11, p12, p21, p22, rho1, rho2, r, alpha, beta, Test) {
+ss2BinaryExact <- function(p11, p12, p21, p22, rho1, rho2, r, alpha, beta, Test,
+                           n_grid = 100) {
 
   # Input validation
   if (length(p11) != 1 || length(p12) != 1 || length(p21) != 1 ||
@@ -140,7 +148,7 @@ ss2BinaryExact <- function(p11, p12, p21, p22, rho1, rho2, r, alpha, beta, Test)
     power_fun = power2BinaryExact,
     p11 = p11, p12 = p12, p21 = p21, p22 = p22,
     rho1 = rho1, rho2 = rho2,
-    alpha = alpha, Test = Test
+    alpha = alpha, Test = Test, n_grid = n_grid
   )
 
   n1 <- result_ss$n1

@@ -15,6 +15,13 @@
 #'     \item \code{"Boschloo"}: Boschloo exact unconditional test
 #'   }
 #'
+#' @param n_grid Number of grid points used to maximize the null tail probability
+#'   over the nuisance parameter in the two exact unconditional tests, that is
+#'   \code{"Z-pool"} and \code{"Boschloo"} (default is 100). The other three
+#'   tests read their p-values off a distribution and ignore this argument. A
+#'   finer grid locates the maximum more accurately at a proportionally higher
+#'   computational cost, and the default reproduces the results of earlier
+#'   versions of the package.
 #' @return A logical matrix of dimensions (n1+1) x (n2+1), where TRUE indicates
 #'   rejection of the null hypothesis. Rows correspond to the number of responders
 #'   in group 1 (0 to n1), and columns correspond to the number of responders in
@@ -38,10 +45,20 @@
 #' \strong{Boschloo test:} Exact unconditional test similar to Z-pooled but based
 #' on Fisher's exact p-values, maximizing over the nuisance parameter.
 #'
+#' For the two exact unconditional tests the outcomes are ordered from the most
+#' extreme to the least extreme value of the ordering statistic, and the null
+#' tail probability is accumulated along that order before being maximized over
+#' the nuisance parameter. Outcomes that share the same value of the ordering
+#' statistic form a tie group, and since the tail event is the set of outcomes at
+#' least as extreme as the observed one, every member of a tie group receives the
+#' tail probability accumulated up to the last member of that group. This makes
+#' the p-value independent of the order in which tied outcomes happen to be
+#' sorted.
+#'
 #' @references
 #' Homma, G., & Yoshida, T. (2025). Exact power and sample size in clinical
 #' trials with two co-primary binary endpoints. \emph{Statistical Methods in
-#' Medical Research}, 34(1), 1-19.
+#' Medical Research}, 34(11), 2183-2201.
 #'
 #' @examples
 #' # Simple example with small sample sizes
@@ -66,7 +83,7 @@
 #' @export
 #' @import fpCompare
 #' @importFrom stats pnorm dbinom phyper dhyper
-rr1Binary <- function(n1, n2, alpha, Test) {
+rr1Binary <- function(n1, n2, alpha, Test, n_grid = 100) {
 
   # Input validation
   if (length(n1) != 1 || length(n2) != 1) {
@@ -86,6 +103,13 @@ rr1Binary <- function(n1, n2, alpha, Test) {
   }
   if (!Test %in% c("Chisq", "Fisher", "Fisher-midP", "Z-pool", "Boschloo")) {
     stop("Test must be one of: Chisq, Fisher, Fisher-midP, Z-pool, Boschloo")
+  }
+  if (length(n_grid) != 1 || !is.finite(n_grid) || n_grid != round(n_grid)) {
+    stop("n_grid must be a single integer")
+  }
+  if (n_grid < 10) {
+    stop("n_grid must be at least 10. A coarser grid can miss the maximum over ",
+         "the nuisance parameter and return an anti-conservative p-value")
   }
 
   if ((Test == 'Chisq') | (Test == 'Z-pool')) {
@@ -118,15 +142,25 @@ rr1Binary <- function(n1, n2, alpha, Test) {
       # Calculate P_H0(X1 = i, X2 = j | theta) for theta in [0, 1]
       # This is the probability under the null hypothesis as a function of theta
       uniq_i <- sort(unique(i))
-      dbinom_i <- sapply(seq(0, 1, l = 100), function(theta) dbinom(uniq_i, n1, theta))
+      dbinom_i <- sapply(seq(0, 1, l = n_grid), function(theta) dbinom(uniq_i, n1, theta))
       uniq_j <- sort(unique(j))
-      dbinom_j <- sapply(seq(0, 1, l = 100), function(theta) dbinom(uniq_j, n2, theta))
+      dbinom_j <- sapply(seq(0, 1, l = n_grid), function(theta) dbinom(uniq_j, n2, theta))
 
       # Joint probability for each (i, j) pair across all theta values
       P_H0 <- dbinom_i[match(i, uniq_i), ] * dbinom_j[match(j, uniq_j), ]
 
+      # Position of the last member of the tie group of each ordered outcome.
+      # Outcomes sharing the same test statistic must receive the same tail
+      # probability, otherwise the p-value depends on the order that order()
+      # happens to return within a group of tied outcomes.
+      idx_last <- .tie_last(Z_ij_posi[order_Z_ij_posi])
+
       # Calculate p-values by maximizing over theta (nuisance parameter)
-      p_ij <- apply(apply(P_H0, 2, cumsum), 1, max)
+      cum_P_H0 <- apply(P_H0, 2, cumsum)
+      if (is.null(dim(cum_P_H0))) {
+        cum_P_H0 <- matrix(cum_P_H0, nrow = length(i))
+      }
+      p_ij <- apply(cum_P_H0[idx_last, , drop = FALSE], 1, max)
 
       # Assign p-values to the matrix (initialize with 1 for non-significant outcomes)
       p_val <- 1 ^ Z_ij
@@ -168,16 +202,23 @@ rr1Binary <- function(n1, n2, alpha, Test) {
 
       # Calculate P_H0(X1 = i, X2 = j | theta) for theta in [0, 1]
       uniq_i <- sort(unique(i))
-      dbinom_i <- sapply(seq(0, 1, l = 100), function(theta) dbinom(uniq_i, n1, theta))
+      dbinom_i <- sapply(seq(0, 1, l = n_grid), function(theta) dbinom(uniq_i, n1, theta))
       uniq_j <- sort(unique(j))
-      dbinom_j <- sapply(seq(0, 1, l = 100), function(theta) dbinom(uniq_j, n2, theta))
+      dbinom_j <- sapply(seq(0, 1, l = n_grid), function(theta) dbinom(uniq_j, n2, theta))
 
       # Joint probability for each (i, j) pair
       P_H0 <- dbinom_i[match(i, uniq_i) - min(match(i, uniq_i)) + 1, ] *
         dbinom_j[match(j, uniq_j), ]
 
+      # Position of the last member of the tie group of each ordered outcome
+      idx_last <- .tie_last(p_fisher_posi[order_p_fisher_posi])
+
       # Calculate p-values by maximizing over theta
-      p_ij <- apply(apply(P_H0, 2, cumsum), 1, max)
+      cum_P_H0 <- apply(P_H0, 2, cumsum)
+      if (is.null(dim(cum_P_H0))) {
+        cum_P_H0 <- matrix(cum_P_H0, nrow = length(i))
+      }
+      p_ij <- apply(cum_P_H0[idx_last, , drop = FALSE], 1, max)
 
       # Assign p-values to the matrix
       p_val <- 1 ^ p_fisher

@@ -113,7 +113,7 @@ test_that("power2BinaryExact returns valid power with large effect", {
 })
 
 # ==============================================================================
-# power2MixedContinuousBinary tests (excluding Fisher test)
+# power2MixedContinuousBinary tests (Fisher is covered in test-mixed_fisher.R)
 # ==============================================================================
 
 test_that("power2MixedContinuousBinary returns valid power for AN", {
@@ -132,7 +132,7 @@ test_that("power2MixedContinuousBinary returns valid power for AN", {
 })
 
 test_that("power2MixedContinuousBinary works with different test methods", {
-  # Test approximate methods only (excluding Fisher for speed)
+  # The four asymptotic methods; Fisher is simulation based and is tested separately
   tests <- c("AN", "ANc", "AS", "ASc")
 
   for (test in tests) {

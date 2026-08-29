@@ -254,7 +254,7 @@ kable(table1_B_nu5,
 **Observations**:
 
 - Higher dispersion parameter $\nu$ (less overdispersion) requires **smaller** sample sizes
-- Correlation reduces sample size: approximately 2-4% at $\rho = 0.4$, 5-8% at $\rho = 0.8$
+- Correlation reduces sample size: about 2 to 3% at $\rho = 0.4$ and 7 to 9% at $\rho = 0.8$
 - The effect of correlation is moderate compared to other endpoint combinations
 
 ## Basic Usage Examples

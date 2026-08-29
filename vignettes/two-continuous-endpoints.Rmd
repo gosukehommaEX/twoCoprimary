@@ -223,7 +223,9 @@ result_table <- design_table(
 # Display table
 kable(result_table,
       caption = "Table 1: Sample Sizes Per Group (Sozu et al. 2011, alpha = 0.025, power = 0.8)",
-      digits = 2)
+      digits = c(2, 2, 0, 0, 0, 0, 0, 0),
+      col.names = c("δ₁", "δ₂", "σ₁", "σ₂",
+                    "ρ=0.0", "ρ=0.3", "ρ=0.5", "ρ=0.8"))
 ```
 
 **Interpretation**:
@@ -310,6 +312,10 @@ twoCoprimary2Continuous(
 When variances are unknown, use $t$-test with Monte Carlo simulation:
 
 ```{r unknown_variance}
+# The unknown variance case integrates over Wishart distributed variance
+# estimates by Monte Carlo, so a seed is needed for a reproducible result
+set.seed(20260829)
+
 # Sample size calculation with unknown variance
 ss_unknown <- ss2Continuous(
   delta1 = 0.5, delta2 = 0.5,
@@ -323,7 +329,9 @@ ss_unknown <- ss2Continuous(
 print(ss_unknown)
 ```
 
-Note: The unknown variance case requires more computation time due to Monte Carlo simulation.
+Note: the unknown variance case integrates over the sampling distribution of the variance estimates by Monte Carlo, so it costs more than the known variance case and, without `set.seed()`, returns a slightly different answer on each call. Increasing `nMC` reduces that variation.
+
+The power depends on the continuous endpoints only through the standardized effects $\delta_{k} / \sigma_{k}$, so multiplying every effect and every standard deviation by a common constant leaves the answer unchanged.
 
 ## Practical Considerations
 

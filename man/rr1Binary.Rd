@@ -4,7 +4,7 @@
 \alias{rr1Binary}
 \title{Rejection Region for Two-Arm Trials with a Single Binary Endpoint}
 \usage{
-rr1Binary(n1, n2, alpha, Test)
+rr1Binary(n1, n2, alpha, Test, n_grid = 100)
 }
 \arguments{
 \item{n1}{Sample size for group 1 (test group)}
@@ -21,6 +21,14 @@ rr1Binary(n1, n2, alpha, Test)
 \item \code{"Z-pool"}: Z-pooled exact unconditional test
 \item \code{"Boschloo"}: Boschloo exact unconditional test
 }}
+
+\item{n_grid}{Number of grid points used to maximize the null tail probability
+over the nuisance parameter in the two exact unconditional tests, that is
+\code{"Z-pool"} and \code{"Boschloo"} (default is 100). The other three
+tests read their p-values off a distribution and ignore this argument. A
+finer grid locates the maximum more accurately at a proportionally higher
+computational cost, and the default reproduces the results of earlier
+versions of the package.}
 }
 \value{
 A logical matrix of dimensions (n1+1) x (n2+1), where TRUE indicates
@@ -49,6 +57,16 @@ all possible values of the nuisance parameter (common success probability under 
 
 \strong{Boschloo test:} Exact unconditional test similar to Z-pooled but based
 on Fisher's exact p-values, maximizing over the nuisance parameter.
+
+For the two exact unconditional tests the outcomes are ordered from the most
+extreme to the least extreme value of the ordering statistic, and the null
+tail probability is accumulated along that order before being maximized over
+the nuisance parameter. Outcomes that share the same value of the ordering
+statistic form a tie group, and since the tail event is the set of outcomes at
+least as extreme as the observed one, every member of a tie group receives the
+tail probability accumulated up to the last member of that group. This makes
+the p-value independent of the order in which tied outcomes happen to be
+sorted.
 }
 \examples{
 # Simple example with small sample sizes
@@ -74,5 +92,5 @@ print(RR)
 \references{
 Homma, G., & Yoshida, T. (2025). Exact power and sample size in clinical
 trials with two co-primary binary endpoints. \emph{Statistical Methods in
-Medical Research}, 34(1), 1-19.
+Medical Research}, 34(11), 2183-2201.
 }

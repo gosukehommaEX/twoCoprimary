@@ -38,6 +38,13 @@
 #'   calculation) or "powerCoprimary" (co-primary power, default for power
 #'   calculation).
 #'
+#' @param n_grid Number of grid points used to maximize the null tail probability
+#'   over the nuisance parameter in the two exact unconditional tests, that is
+#'   \code{"Z-pool"} and \code{"Boschloo"} (default is 100). The other three
+#'   tests read their p-values off a distribution and ignore this argument. A
+#'   finer grid locates the maximum more accurately at a proportionally higher
+#'   computational cost, and the default reproduces the results of earlier
+#'   versions of the package.
 #' @return A data.frame of class "twoCoprimary_table" with:
 #'   \itemize{
 #'     \item Parameter columns (from param_grid)
@@ -62,9 +69,9 @@
 #' subsequent columns.
 #'
 #' @references
-#' Sozu, T., Kanou, T., Hamada, C., & Yoshimura, I. (2011). Power and sample
-#' size calculations in clinical trials with multiple primary variables.
-#' Japanese Journal of Biometrics, 27, 83-96.
+#' Sozu, T., Sugimoto, T., & Hamasaki, T. (2011). Sample size determination in
+#' superiority clinical trials with multiple co-primary correlated endpoints.
+#' \emph{Journal of Biopharmaceutical Statistics}, 21(4), 650-668.
 #'
 #' @examples
 #' # Sample size calculation for continuous endpoints
@@ -134,7 +141,8 @@ design_table <- function(param_grid,
                          Test = "AN",
                          known_var = TRUE,
                          nMC = 1000,
-                         output_var = NULL) {
+                         output_var = NULL,
+                         n_grid = 100) {
 
   # Match endpoint_type
   endpoint_type <- match.arg(endpoint_type)
@@ -178,12 +186,13 @@ design_table <- function(param_grid,
         if (is_power_calc) {
           # Power calculation
           result <- calculate_power_design_table(
-            params, rho, endpoint_type, alpha, Test, known_var, nMC
+            params, rho, endpoint_type, alpha, Test, known_var, nMC, n_grid
           )
         } else {
           # Sample size calculation
           result <- calculate_ss_design_table(
-            params, rho, r, alpha, beta, endpoint_type, Test, known_var, nMC
+            params, rho, r, alpha, beta, endpoint_type, Test, known_var, nMC,
+            n_grid
           )
         }
 
@@ -299,7 +308,8 @@ is_rho_valid <- function(params, rho, endpoint_type) {
 # ============================================================================
 
 calculate_power_design_table <- function(params, rho, endpoint_type,
-                                         alpha, Test, known_var, nMC) {
+                                         alpha, Test, known_var, nMC,
+                                         n_grid = 100) {
 
   if (endpoint_type == "continuous") {
     power2Continuous(
@@ -318,7 +328,7 @@ calculate_power_design_table <- function(params, rho, endpoint_type,
         p11 = params$p11, p12 = params$p12,
         p21 = params$p21, p22 = params$p22,
         rho1 = rho, rho2 = rho,
-        alpha = alpha, Test = Test
+        alpha = alpha, Test = Test, n_grid = n_grid
       )
     } else {
       power2BinaryApprox(
@@ -336,7 +346,7 @@ calculate_power_design_table <- function(params, rho, endpoint_type,
       delta = params$delta, sd = params$sd,
       p1 = params$p1, p2 = params$p2,
       rho = rho, alpha = alpha,
-      Test = Test, nMC = nMC
+      Test = Test
     )
 
   } else if (endpoint_type == "mixed_count_cont") {
@@ -357,7 +367,8 @@ calculate_power_design_table <- function(params, rho, endpoint_type,
 # ============================================================================
 
 calculate_ss_design_table <- function(params, rho, r, alpha, beta,
-                                      endpoint_type, Test, known_var, nMC) {
+                                      endpoint_type, Test, known_var, nMC,
+                                      n_grid = 100) {
 
   if (endpoint_type == "continuous") {
     ss2Continuous(
@@ -376,7 +387,7 @@ calculate_ss_design_table <- function(params, rho, r, alpha, beta,
         p21 = params$p21, p22 = params$p22,
         rho1 = rho, rho2 = rho,
         r = r, alpha = alpha, beta = beta,
-        Test = Test
+        Test = Test, n_grid = n_grid
       )
     } else {
       ss2BinaryApprox(
@@ -394,7 +405,7 @@ calculate_ss_design_table <- function(params, rho, r, alpha, beta,
       p1 = params$p1, p2 = params$p2,
       rho = rho, r = r,
       alpha = alpha, beta = beta,
-      Test = Test, nMC = nMC
+      Test = Test
     )
 
   } else if (endpoint_type == "mixed_count_cont") {
