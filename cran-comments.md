@@ -31,11 +31,10 @@ exact methods for binary endpoints, and adds one argument.
 
 ## Test environments
 
-* local Windows install, R 4.6.0
-* win-builder: R-devel, R-release, R-oldrelease
-* R-hub
-* GitHub Actions (ubuntu-latest, windows-latest, macos-latest): R-devel,
-  R-release, R-oldrel-1
+* local Windows 11 install, R 4.6.0
+* win-builder: R-devel (2026-08-27 r90452), R-release (4.6.1)
+* GitHub Actions: ubuntu-latest (R-devel, R-release, R-oldrel-1),
+  windows-latest (R-release), macos-latest (R-release)
 
 ## Downstream dependencies
 
