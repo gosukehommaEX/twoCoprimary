@@ -160,18 +160,18 @@ negative binomial distribution NB(lambda, nu) where:
 
 **Correlation:** The correlations rho1 and rho2 must satisfy feasibility
 constraints that depend on the parameters. Use
-[`corrbound2MixedCountContinuous`](https://gosukehommaEX.github.io/twoCoprimary/reference/corrbound2MixedCountContinuous.md)
+[`corrbound2MixedCountContinuous`](https://gosukehommaex.github.io/twoCoprimary/reference/corrbound2MixedCountContinuous.md)
 to check valid correlation bounds.
 
 ## References
 
-Homma, G., & Yoshida, T. (2024). Sample size calculation for count and
-continuous multiple co-primary endpoints. *Pharmaceutical Statistics*,
-23(3), 372-388.
+Homma, G., & Yoshida, T. (2024). Sample size calculation in clinical
+trials with two co-primary endpoints including overdispersed count and
+continuous outcomes. *Pharmaceutical Statistics*, 23(1), 46-59.
 
 Homma, G., & Yoshida, T. (2025). Exact power and sample size in clinical
 trials with two co-primary binary endpoints. *Statistical Methods in
-Medical Research*, 34(1), 1-19.
+Medical Research*, 34(11), 2183-2201.
 
 ## Examples
 
@@ -208,7 +208,10 @@ ss2MixedCountContinuous(
 #>            beta = 0.2
 #> 
 
-# With different dispersion parameter (more overdispersion)
+# \donttest{
+# With different dispersion parameter (more overdispersion). The sequential
+# search reaches several hundred subjects per group, so this is kept out of
+# the routinely executed examples.
 ss2MixedCountContinuous(
   r1 = 1.0,
   r2 = 1.25,
@@ -239,4 +242,5 @@ ss2MixedCountContinuous(
 #>           alpha = 0.025
 #>            beta = 0.2
 #> 
+# }
 ```

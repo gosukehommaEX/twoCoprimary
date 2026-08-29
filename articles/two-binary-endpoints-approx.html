@@ -12,8 +12,8 @@
 <link rel="icon" sizes="any" href="../favicon.ico">
 <link rel="manifest" href="../site.webmanifest">
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Two Binary Co-Primary Endpoints (Asymptotic Methods)">
 </head>
@@ -39,7 +39,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">twoCoprimary</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -97,7 +97,7 @@ trials with two co-primary binary endpoints using asymptotic normal
 approximation methods. The methodology is based on Sozu et
 al. (2010).</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://gosukehommaex.github.io/twoCoprimary/" class="external-link">twoCoprimary</a></span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://gosukehommaex.github.io/twoCoprimary/">twoCoprimary</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyr.tidyverse.org" class="external-link">tidyr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://yihui.org/knitr/" class="external-link">knitr</a></span><span class="op">)</span></span></code></pre></div>
@@ -117,7 +117,7 @@ Relief from the most bothersome migraine-related symptom
 the score on the psoriasis area-and-severity index (PASI) (yes/no) +
 Score on the physician’s global assessment of 0 or 1 (yes/no)</p></li>
 <li><p><strong>Primary myelofibrosis trials</strong>: Clinically
-relevant complete haematological response (yes/no) + Lack of progression
+relevant complete hematological response (yes/no) + Lack of progression
 of clinical symptoms (yes/no)</p></li>
 </ul>
 </div>
@@ -175,9 +175,9 @@ denote the success probability for outcome
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math>
 in group
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>j</mi><annotation encoding="application/x-tex">j</annotation></semantics></math>:</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mi>k</mi></mrow></msub><mo>=</mo><mtext mathvariant="normal">P</mtext><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>X</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mi>k</mi></mrow></msub><mo>=</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo><mspace width="1.0em"></mspace><mi>k</mi><mo>=</mo><mn>1</mn><mo>,</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">p_{j,k} = \text{P}(X_{i,j,k} = 1), \quad k = 1, 2</annotation></semantics></math></p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mi>k</mi></mrow></msub><mo>=</mo><mtext mathvariant="normal">P</mtext><mo stretchy="false" form="prefix">(</mo><msub><mi>X</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mi>k</mi></mrow></msub><mo>=</mo><mn>1</mn><mo stretchy="false" form="postfix">)</mo><mo>,</mo><mspace width="1.0em"></mspace><mi>k</mi><mo>=</mo><mn>1</mn><mo>,</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">p_{j,k} = \text{P}(X_{i,j,k} = 1), \quad k = 1, 2</annotation></semantics></math></p>
 <p>For details on the joint distribution of
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>X</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mn>1</mn></mrow></msub><mo>,</mo><msub><mi>X</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mn>2</mn></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(X_{i,j,1}, X_{i,j,2})</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><msub><mi>X</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mn>1</mn></mrow></msub><mo>,</mo><msub><mi>X</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mn>2</mn></mrow></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(X_{i,j,1}, X_{i,j,2})</annotation></semantics></math>,
 see Homma and Yoshida (2025) Section 2.1 or Sozu et al. (2010).</p>
 </div>
 <div class="section level3">
@@ -188,9 +188,9 @@ see Homma and Yoshida (2025) Section 2.1 or Sozu et al. (2010).</p>
 between the two binary outcomes in group
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>j</mi><annotation encoding="application/x-tex">j</annotation></semantics></math>
 is defined as (Homma and Yoshida, 2025):</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>ρ</mi><mi>j</mi></msub><mo>=</mo><mtext mathvariant="normal">Cor</mtext><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>X</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mn>1</mn></mrow></msub><mo>,</mo><msub><mi>X</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mn>2</mn></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mfrac><mrow><msub><mi>ϕ</mi><mi>j</mi></msub><mo>−</mo><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mn>1</mn></mrow></msub><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mn>2</mn></mrow></msub></mrow><msqrt><mrow><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mn>1</mn></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mn>1</mn></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mn>2</mn></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mn>2</mn></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow></msqrt></mfrac></mrow><annotation encoding="application/x-tex">\rho_j = \text{Cor}(X_{i,j,1}, X_{i,j,2}) = \frac{\phi_j - p_{j,1}p_{j,2}}{\sqrt{p_{j,1}(1-p_{j,1})p_{j,2}(1-p_{j,2})}}</annotation></semantics></math></p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>ρ</mi><mi>j</mi></msub><mo>=</mo><mtext mathvariant="normal">Cor</mtext><mo stretchy="false" form="prefix">(</mo><msub><mi>X</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mn>1</mn></mrow></msub><mo>,</mo><msub><mi>X</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mn>2</mn></mrow></msub><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mfrac><mrow><msub><mi>ϕ</mi><mi>j</mi></msub><mo>−</mo><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mn>1</mn></mrow></msub><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mn>2</mn></mrow></msub></mrow><msqrt><mrow><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mn>1</mn></mrow></msub><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mn>1</mn></mrow></msub><mo stretchy="false" form="postfix">)</mo><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mn>2</mn></mrow></msub><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mn>2</mn></mrow></msub><mo stretchy="false" form="postfix">)</mo></mrow></msqrt></mfrac></mrow><annotation encoding="application/x-tex">\rho_j = \text{Cor}(X_{i,j,1}, X_{i,j,2}) = \frac{\phi_j - p_{j,1}p_{j,2}}{\sqrt{p_{j,1}(1-p_{j,1})p_{j,2}(1-p_{j,2})}}</annotation></semantics></math></p>
 <p>where
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>ϕ</mi><mi>j</mi></msub><mo>=</mo><mtext mathvariant="normal">P</mtext><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>X</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mn>1</mn></mrow></msub><mo>=</mo><mn>1</mn><mo>,</mo><msub><mi>X</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mn>2</mn></mrow></msub><mo>=</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\phi_j = \text{P}(X_{i,j,1} = 1, X_{i,j,2} = 1)</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>ϕ</mi><mi>j</mi></msub><mo>=</mo><mtext mathvariant="normal">P</mtext><mo stretchy="false" form="prefix">(</mo><msub><mi>X</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mn>1</mn></mrow></msub><mo>=</mo><mn>1</mn><mo>,</mo><msub><mi>X</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mn>2</mn></mrow></msub><mo>=</mo><mn>1</mn><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\phi_j = \text{P}(X_{i,j,1} = 1, X_{i,j,2} = 1)</annotation></semantics></math>
 is the joint probability that both outcomes are successful.</p>
 <p><strong>Practical interpretation</strong>:
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>ρ</mi><mi>j</mi></msub><mo>&gt;</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">\rho_{j} &gt; 0</annotation></semantics></math>
@@ -201,18 +201,18 @@ outcome 2.</p>
 the correlation
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>ρ</mi><mi>j</mi></msub><annotation encoding="application/x-tex">\rho_{j}</annotation></semantics></math>
 is not free to range over
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="true" form="prefix">[</mo><mo>−</mo><mn>1</mn><mo>,</mo><mn>1</mn><mo stretchy="true" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">[-1, 1]</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">[</mo><mi>−</mi><mn>1</mn><mo>,</mo><mn>1</mn><mo stretchy="false" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">[-1, 1]</annotation></semantics></math>,
 but is bounded by (Homma and Yoshida, 2025, Equation 2):</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>ρ</mi><mi>j</mi></msub><mo>∈</mo><mrow><mo stretchy="true" form="prefix">[</mo><mi>L</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mn>1</mn></mrow></msub><mo>,</mo><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mn>2</mn></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo><mi>U</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mn>1</mn></mrow></msub><mo>,</mo><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mn>2</mn></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">]</mo></mrow><mo>⊆</mo><mrow><mo stretchy="true" form="prefix">[</mo><mo>−</mo><mn>1</mn><mo>,</mo><mn>1</mn><mo stretchy="true" form="postfix">]</mo></mrow></mrow><annotation encoding="application/x-tex">\rho_j \in [L(p_{j,1}, p_{j,2}), U(p_{j,1}, p_{j,2})] \subseteq [-1, 1]</annotation></semantics></math></p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>ρ</mi><mi>j</mi></msub><mo>∈</mo><mo stretchy="false" form="prefix">[</mo><mi>L</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mn>1</mn></mrow></msub><mo>,</mo><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mn>2</mn></mrow></msub><mo stretchy="false" form="postfix">)</mo><mo>,</mo><mi>U</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mn>1</mn></mrow></msub><mo>,</mo><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mn>2</mn></mrow></msub><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">]</mo><mo>⊆</mo><mo stretchy="false" form="prefix">[</mo><mi>−</mi><mn>1</mn><mo>,</mo><mn>1</mn><mo stretchy="false" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">\rho_j \in [L(p_{j,1}, p_{j,2}), U(p_{j,1}, p_{j,2})] \subseteq [-1, 1]</annotation></semantics></math></p>
 <p>where:</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>L</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mn>1</mn></mrow></msub><mo>,</mo><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mn>2</mn></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mo>max</mo><mrow><mo stretchy="true" form="prefix">{</mo><mo>−</mo><msqrt><mfrac><mrow><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mn>1</mn></mrow></msub><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mn>2</mn></mrow></msub></mrow><mrow><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mn>1</mn></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mn>2</mn></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac></msqrt><mo>,</mo><mo>−</mo><msqrt><mfrac><mrow><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mn>1</mn></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mn>2</mn></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mn>1</mn></mrow></msub><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mn>2</mn></mrow></msub></mrow></mfrac></msqrt><mo stretchy="true" form="postfix">}</mo></mrow></mrow><annotation encoding="application/x-tex">L(p_{j,1}, p_{j,2}) = \max\left\{-\sqrt{\frac{p_{j,1}p_{j,2}}{(1-p_{j,1})(1-p_{j,2})}}, -\sqrt{\frac{(1-p_{j,1})(1-p_{j,2})}{p_{j,1}p_{j,2}}}\right\}</annotation></semantics></math></p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>U</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mn>1</mn></mrow></msub><mo>,</mo><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mn>2</mn></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mo>min</mo><mrow><mo stretchy="true" form="prefix">{</mo><msqrt><mfrac><mrow><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mn>1</mn></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mn>2</mn></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mn>2</mn></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mn>1</mn></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac></msqrt><mo>,</mo><msqrt><mfrac><mrow><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mn>2</mn></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mn>1</mn></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mn>1</mn></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mn>2</mn></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac></msqrt><mo stretchy="true" form="postfix">}</mo></mrow></mrow><annotation encoding="application/x-tex">U(p_{j,1}, p_{j,2}) = \min\left\{\sqrt{\frac{p_{j,1}(1-p_{j,2})}{p_{j,2}(1-p_{j,1})}}, \sqrt{\frac{p_{j,2}(1-p_{j,1})}{p_{j,1}(1-p_{j,2})}}\right\}</annotation></semantics></math></p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>L</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mn>1</mn></mrow></msub><mo>,</mo><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mn>2</mn></mrow></msub><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mrow><mi mathvariant="normal">max</mi><mo>⁡</mo></mrow><mrow><mo stretchy="true" form="prefix">{</mo><mi>−</mi><msqrt><mfrac><mrow><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mn>1</mn></mrow></msub><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mn>2</mn></mrow></msub></mrow><mrow><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mn>1</mn></mrow></msub><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mn>2</mn></mrow></msub><mo stretchy="false" form="postfix">)</mo></mrow></mfrac></msqrt><mo>,</mo><mi>−</mi><msqrt><mfrac><mrow><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mn>1</mn></mrow></msub><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mn>2</mn></mrow></msub><mo stretchy="false" form="postfix">)</mo></mrow><mrow><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mn>1</mn></mrow></msub><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mn>2</mn></mrow></msub></mrow></mfrac></msqrt><mo stretchy="true" form="postfix">}</mo></mrow></mrow><annotation encoding="application/x-tex">L(p_{j,1}, p_{j,2}) = \max\left\{-\sqrt{\frac{p_{j,1}p_{j,2}}{(1-p_{j,1})(1-p_{j,2})}}, -\sqrt{\frac{(1-p_{j,1})(1-p_{j,2})}{p_{j,1}p_{j,2}}}\right\}</annotation></semantics></math></p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>U</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mn>1</mn></mrow></msub><mo>,</mo><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mn>2</mn></mrow></msub><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mrow><mi mathvariant="normal">min</mi><mo>⁡</mo></mrow><mrow><mo stretchy="true" form="prefix">{</mo><msqrt><mfrac><mrow><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mn>1</mn></mrow></msub><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mn>2</mn></mrow></msub><mo stretchy="false" form="postfix">)</mo></mrow><mrow><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mn>2</mn></mrow></msub><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mn>1</mn></mrow></msub><mo stretchy="false" form="postfix">)</mo></mrow></mfrac></msqrt><mo>,</mo><msqrt><mfrac><mrow><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mn>2</mn></mrow></msub><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mn>1</mn></mrow></msub><mo stretchy="false" form="postfix">)</mo></mrow><mrow><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mn>1</mn></mrow></msub><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mn>2</mn></mrow></msub><mo stretchy="false" form="postfix">)</mo></mrow></mfrac></msqrt><mo stretchy="true" form="postfix">}</mo></mrow></mrow><annotation encoding="application/x-tex">U(p_{j,1}, p_{j,2}) = \min\left\{\sqrt{\frac{p_{j,1}(1-p_{j,2})}{p_{j,2}(1-p_{j,1})}}, \sqrt{\frac{p_{j,2}(1-p_{j,1})}{p_{j,1}(1-p_{j,2})}}\right\}</annotation></semantics></math></p>
 <p>If
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mn>1</mn></mrow></msub><mo>=</mo><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mn>2</mn></mrow></msub></mrow><annotation encoding="application/x-tex">p_{j,1} = p_{j,2}</annotation></semantics></math>,
 then
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>U</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mn>1</mn></mrow></msub><mo>,</mo><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mn>2</mn></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">U(p_{j,1}, p_{j,2}) = 1</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>U</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mn>1</mn></mrow></msub><mo>,</mo><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mn>2</mn></mrow></msub><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">U(p_{j,1}, p_{j,2}) = 1</annotation></semantics></math>,
 whereas
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>L</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mn>1</mn></mrow></msub><mo>,</mo><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mn>2</mn></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mo>−</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">L(p_{j,1}, p_{j,2}) = -1</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>L</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mn>1</mn></mrow></msub><mo>,</mo><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mn>2</mn></mrow></msub><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mi>−</mi><mn>1</mn></mrow><annotation encoding="application/x-tex">L(p_{j,1}, p_{j,2}) = -1</annotation></semantics></math>
 for
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mn>1</mn></mrow></msub><mo>+</mo><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mn>2</mn></mrow></msub><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">p_{j,1} + p_{j,2} = 1</annotation></semantics></math>.</p>
 <p>These bounds can be computed using the
@@ -258,7 +258,7 @@ Sozu et al. (2010).</p>
 <strong>(Equation 3 in Sozu et al., 2010)</strong>:</p>
 <p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>Z</mi><mi>k</mi></msub><mo>=</mo><mfrac><mrow><msub><mover><mi>p</mi><mo accent="true">̂</mo></mover><mrow><mn>1</mn><mo>,</mo><mi>k</mi></mrow></msub><mo>−</mo><msub><mover><mi>p</mi><mo accent="true">̂</mo></mover><mrow><mn>2</mn><mo>,</mo><mi>k</mi></mrow></msub></mrow><mrow><mi>s</mi><msub><mi>e</mi><mrow><mi>k</mi><mn>0</mn></mrow></msub></mrow></mfrac></mrow><annotation encoding="application/x-tex">Z_k = \frac{\hat{p}_{1,k} - \hat{p}_{2,k}}{se_{k0}}</annotation></semantics></math></p>
 <p>where:
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>s</mi><msub><mi>e</mi><mrow><mi>k</mi><mn>0</mn></mrow></msub><mo>=</mo><msqrt><mrow><mrow><mo stretchy="true" form="prefix">(</mo><mfrac><mn>1</mn><msub><mi>n</mi><mn>1</mn></msub></mfrac><mo>+</mo><mfrac><mn>1</mn><msub><mi>n</mi><mn>2</mn></msub></mfrac><mo stretchy="true" form="postfix">)</mo></mrow><msub><mover><mi>p</mi><mo accent="true">‾</mo></mover><mi>k</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mover><mi>p</mi><mo accent="true">‾</mo></mover><mi>k</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow></msqrt></mrow><annotation encoding="application/x-tex">se_{k0} = \sqrt{\left(\frac{1}{n_1} + \frac{1}{n_2}\right) \bar{p}_k(1 - \bar{p}_k)}</annotation></semantics></math></p>
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>s</mi><msub><mi>e</mi><mrow><mi>k</mi><mn>0</mn></mrow></msub><mo>=</mo><msqrt><mrow><mrow><mo stretchy="true" form="prefix">(</mo><mfrac><mn>1</mn><msub><mi>n</mi><mn>1</mn></msub></mfrac><mo>+</mo><mfrac><mn>1</mn><msub><mi>n</mi><mn>2</mn></msub></mfrac><mo stretchy="true" form="postfix">)</mo></mrow><msub><mover><mi>p</mi><mo accent="true">‾</mo></mover><mi>k</mi></msub><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mover><mi>p</mi><mo accent="true">‾</mo></mover><mi>k</mi></msub><mo stretchy="false" form="postfix">)</mo></mrow></msqrt></mrow><annotation encoding="application/x-tex">se_{k0} = \sqrt{\left(\frac{1}{n_1} + \frac{1}{n_2}\right) \bar{p}_k(1 - \bar{p}_k)}</annotation></semantics></math></p>
 <p>and
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mi>p</mi><mo accent="true">‾</mo></mover><mi>k</mi></msub><mo>=</mo><mfrac><mrow><msub><mi>n</mi><mn>1</mn></msub><msub><mover><mi>p</mi><mo accent="true">̂</mo></mover><mrow><mn>1</mn><mo>,</mo><mi>k</mi></mrow></msub><mo>+</mo><msub><mi>n</mi><mn>2</mn></msub><msub><mover><mi>p</mi><mo accent="true">̂</mo></mover><mrow><mn>2</mn><mo>,</mo><mi>k</mi></mrow></msub></mrow><mrow><msub><mi>n</mi><mn>1</mn></msub><mo>+</mo><msub><mi>n</mi><mn>2</mn></msub></mrow></mfrac></mrow><annotation encoding="application/x-tex">\bar{p}_k = \frac{n_1 \hat{p}_{1,k} + n_2 \hat{p}_{2,k}}{n_1 + n_2}</annotation></semantics></math>
 is the <strong>pooled proportion</strong> under the null hypothesis.</p>
@@ -266,7 +266,7 @@ is the <strong>pooled proportion</strong> under the null hypothesis.</p>
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mtext mathvariant="normal">H</mtext><mrow><mn>0</mn><mi>k</mi></mrow></msub><annotation encoding="application/x-tex">\text{H}_{0k}</annotation></semantics></math>,
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>Z</mi><mi>k</mi></msub><annotation encoding="application/x-tex">Z_{k}</annotation></semantics></math>
 asymptotically follows
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">N</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\text{N}(0, 1)</annotation></semantics></math>.</p>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">N</mtext><mo stretchy="false" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\text{N}(0, 1)</annotation></semantics></math>.</p>
 <p><strong>Power formula</strong> (Equation 4 in Sozu et al., 2010):</p>
 <p>Under
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mtext mathvariant="normal">H</mtext><mrow><mn>1</mn><mi>k</mi></mrow></msub><annotation encoding="application/x-tex">\text{H}_{1k}</annotation></semantics></math>
@@ -275,7 +275,7 @@ with true probabilities
 and
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>p</mi><mrow><mn>2</mn><mo>,</mo><mi>k</mi></mrow></msub><annotation encoding="application/x-tex">p_{2,k}</annotation></semantics></math>,
 the power for a single endpoint is:</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mtext mathvariant="normal">Power</mtext><mi>k</mi></msub><mo>=</mo><mi>Φ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mfrac><mrow><msub><mi>δ</mi><mi>k</mi></msub><mo>−</mo><mi>s</mi><msub><mi>e</mi><mrow><mi>k</mi><mn>0</mn></mrow></msub><msub><mi>z</mi><mrow><mn>1</mn><mo>−</mo><mi>α</mi></mrow></msub></mrow><mrow><mi>s</mi><msub><mi>e</mi><mi>k</mi></msub></mrow></mfrac><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\text{Power}_k = \Phi\left(\frac{\delta_k - se_{k0} z_{1-\alpha}}{se_k}\right)</annotation></semantics></math></p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mtext mathvariant="normal">Power</mtext><mi>k</mi></msub><mo>=</mo><mi mathvariant="normal">Φ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mfrac><mrow><msub><mi>δ</mi><mi>k</mi></msub><mo>−</mo><mi>s</mi><msub><mi>e</mi><mrow><mi>k</mi><mn>0</mn></mrow></msub><msub><mi>z</mi><mrow><mn>1</mn><mo>−</mo><mi>α</mi></mrow></msub></mrow><mrow><mi>s</mi><msub><mi>e</mi><mi>k</mi></msub></mrow></mfrac><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\text{Power}_k = \Phi\left(\frac{\delta_k - se_{k0} z_{1-\alpha}}{se_k}\right)</annotation></semantics></math></p>
 <p>where:</p>
 <ul>
 <li>
@@ -284,12 +284,12 @@ is the true risk difference</li>
 <li>
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>s</mi><msub><mi>e</mi><mi>k</mi></msub><mo>=</mo><msqrt><mrow><mfrac><msub><mi>v</mi><mrow><mn>1</mn><mo>,</mo><mi>k</mi></mrow></msub><msub><mi>n</mi><mn>1</mn></msub></mfrac><mo>+</mo><mfrac><msub><mi>v</mi><mrow><mn>2</mn><mo>,</mo><mi>k</mi></mrow></msub><msub><mi>n</mi><mn>2</mn></msub></mfrac></mrow></msqrt></mrow><annotation encoding="application/x-tex">se_k = \sqrt{\frac{v_{1,k}}{n_1} + \frac{v_{2,k}}{n_2}}</annotation></semantics></math>
 with
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>v</mi><mrow><mi>j</mi><mo>,</mo><mi>k</mi></mrow></msub><mo>=</mo><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mi>k</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mi>k</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">v_{j,k} = p_{j,k}(1 - p_{j,k})</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>v</mi><mrow><mi>j</mi><mo>,</mo><mi>k</mi></mrow></msub><mo>=</mo><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mi>k</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mi>k</mi></mrow></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">v_{j,k} = p_{j,k}(1 - p_{j,k})</annotation></semantics></math>
 </li>
 <li>
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>z</mi><mrow><mn>1</mn><mo>−</mo><mi>α</mi></mrow></msub><annotation encoding="application/x-tex">z_{1-\alpha}</annotation></semantics></math>
 is the
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><mi>α</mi><mo stretchy="true" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(1-\alpha)</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>−</mo><mi>α</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(1-\alpha)</annotation></semantics></math>
 quantile of the standard normal distribution</li>
 </ul>
 </div>
@@ -302,21 +302,21 @@ is applied <strong>(Equation 5 in Sozu et al., 2010)</strong>:</p>
 <p>where:
 <math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>c</mi><mo>=</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><mrow><mo stretchy="true" form="prefix">(</mo><mfrac><mn>1</mn><msub><mi>n</mi><mn>1</mn></msub></mfrac><mo>+</mo><mfrac><mn>1</mn><msub><mi>n</mi><mn>2</mn></msub></mfrac><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">c = \frac{1}{2}\left(\frac{1}{n_1} + \frac{1}{n_2}\right)</annotation></semantics></math></p>
 <p><strong>Power formula</strong>:
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mtext mathvariant="normal">Power</mtext><mi>k</mi></msub><mo>=</mo><mi>Φ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mfrac><mrow><msub><mi>δ</mi><mi>k</mi></msub><mo>−</mo><mi>s</mi><msub><mi>e</mi><mrow><mi>k</mi><mn>0</mn></mrow></msub><msub><mi>z</mi><mrow><mn>1</mn><mo>−</mo><mi>α</mi></mrow></msub><mo>−</mo><mi>c</mi></mrow><mrow><mi>s</mi><msub><mi>e</mi><mi>k</mi></msub></mrow></mfrac><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\text{Power}_k = \Phi\left(\frac{\delta_k - se_{k0} z_{1-\alpha} - c}{se_k}\right)</annotation></semantics></math></p>
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mtext mathvariant="normal">Power</mtext><mi>k</mi></msub><mo>=</mo><mi mathvariant="normal">Φ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mfrac><mrow><msub><mi>δ</mi><mi>k</mi></msub><mo>−</mo><mi>s</mi><msub><mi>e</mi><mrow><mi>k</mi><mn>0</mn></mrow></msub><msub><mi>z</mi><mrow><mn>1</mn><mo>−</mo><mi>α</mi></mrow></msub><mo>−</mo><mi>c</mi></mrow><mrow><mi>s</mi><msub><mi>e</mi><mi>k</mi></msub></mrow></mfrac><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\text{Power}_k = \Phi\left(\frac{\delta_k - se_{k0} z_{1-\alpha} - c}{se_k}\right)</annotation></semantics></math></p>
 </div>
 <div class="section level4">
 <h4 id="method-3-arcsine-transformation-as">Method 3: Arcsine Transformation (AS)<a class="anchor" aria-label="anchor" href="#method-3-arcsine-transformation-as"></a>
 </h4>
 <p>The arcsine-square-root transformation stabilizes variance
 <strong>(Equation 6 in Sozu et al., 2010)</strong>:</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>Z</mi><mi>k</mi></msub><mo>=</mo><mfrac><mrow><mo>arcsin</mo><mrow><mo stretchy="true" form="prefix">(</mo><msqrt><msub><mover><mi>p</mi><mo accent="true">̂</mo></mover><mrow><mn>1</mn><mo>,</mo><mi>k</mi></mrow></msub></msqrt><mo stretchy="true" form="postfix">)</mo></mrow><mo>−</mo><mo>arcsin</mo><mrow><mo stretchy="true" form="prefix">(</mo><msqrt><msub><mover><mi>p</mi><mo accent="true">̂</mo></mover><mrow><mn>2</mn><mo>,</mo><mi>k</mi></mrow></msub></msqrt><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mi>s</mi><mi>e</mi></mrow></mfrac></mrow><annotation encoding="application/x-tex">Z_k = \frac{\arcsin(\sqrt{\hat{p}_{1,k}}) - \arcsin(\sqrt{\hat{p}_{2,k}})}{se}</annotation></semantics></math></p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>Z</mi><mi>k</mi></msub><mo>=</mo><mfrac><mrow><mrow><mi mathvariant="normal">arcsin</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><msqrt><msub><mover><mi>p</mi><mo accent="true">̂</mo></mover><mrow><mn>1</mn><mo>,</mo><mi>k</mi></mrow></msub></msqrt><mo stretchy="false" form="postfix">)</mo><mo>−</mo><mrow><mi mathvariant="normal">arcsin</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><msqrt><msub><mover><mi>p</mi><mo accent="true">̂</mo></mover><mrow><mn>2</mn><mo>,</mo><mi>k</mi></mrow></msub></msqrt><mo stretchy="false" form="postfix">)</mo></mrow><mrow><mi>s</mi><mi>e</mi></mrow></mfrac></mrow><annotation encoding="application/x-tex">Z_k = \frac{\arcsin(\sqrt{\hat{p}_{1,k}}) - \arcsin(\sqrt{\hat{p}_{2,k}})}{se}</annotation></semantics></math></p>
 <p>where:
 <math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>s</mi><mi>e</mi><mo>=</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><msqrt><mrow><mfrac><mn>1</mn><msub><mi>n</mi><mn>1</mn></msub></mfrac><mo>+</mo><mfrac><mn>1</mn><msub><mi>n</mi><mn>2</mn></msub></mfrac></mrow></msqrt></mrow><annotation encoding="application/x-tex">se = \frac{1}{2}\sqrt{\frac{1}{n_1} + \frac{1}{n_2}}</annotation></semantics></math></p>
 <p><strong>Power formula</strong>:</p>
 <p>Let
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>δ</mi><mi>k</mi><mtext mathvariant="normal">AS</mtext></msubsup><mo>=</mo><mo>arcsin</mo><mrow><mo stretchy="true" form="prefix">(</mo><msqrt><msub><mi>p</mi><mrow><mn>1</mn><mi>k</mi></mrow></msub></msqrt><mo stretchy="true" form="postfix">)</mo></mrow><mo>−</mo><mo>arcsin</mo><mrow><mo stretchy="true" form="prefix">(</mo><msqrt><msub><mi>p</mi><mrow><mn>2</mn><mi>k</mi></mrow></msub></msqrt><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\delta_k^\text{AS} = \arcsin(\sqrt{p_{1k}}) - \arcsin(\sqrt{p_{2k}})</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>δ</mi><mi>k</mi><mtext mathvariant="normal">AS</mtext></msubsup><mo>=</mo><mrow><mi mathvariant="normal">arcsin</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><msqrt><msub><mi>p</mi><mrow><mn>1</mn><mi>k</mi></mrow></msub></msqrt><mo stretchy="false" form="postfix">)</mo><mo>−</mo><mrow><mi mathvariant="normal">arcsin</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><msqrt><msub><mi>p</mi><mrow><mn>2</mn><mi>k</mi></mrow></msub></msqrt><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\delta_k^\text{AS} = \arcsin(\sqrt{p_{1k}}) - \arcsin(\sqrt{p_{2k}})</annotation></semantics></math>,
 then:</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mtext mathvariant="normal">Power</mtext><mi>k</mi></msub><mo>=</mo><mi>Φ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mfrac><msubsup><mi>δ</mi><mi>k</mi><mtext mathvariant="normal">AS</mtext></msubsup><mrow><mi>s</mi><mi>e</mi></mrow></mfrac><mo>−</mo><msub><mi>z</mi><mrow><mn>1</mn><mo>−</mo><mi>α</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\text{Power}_k = \Phi\left(\frac{\delta_k^\text{AS}}{se} - z_{1-\alpha}\right)</annotation></semantics></math></p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mtext mathvariant="normal">Power</mtext><mi>k</mi></msub><mo>=</mo><mi mathvariant="normal">Φ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mfrac><msubsup><mi>δ</mi><mi>k</mi><mtext mathvariant="normal">AS</mtext></msubsup><mrow><mi>s</mi><mi>e</mi></mrow></mfrac><mo>−</mo><msub><mi>z</mi><mrow><mn>1</mn><mo>−</mo><mi>α</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\text{Power}_k = \Phi\left(\frac{\delta_k^\text{AS}}{se} - z_{1-\alpha}\right)</annotation></semantics></math></p>
 </div>
 <div class="section level4">
 <h4 id="method-4-arcsine-transformation-with-continuity-correction-asc">Method 4: Arcsine Transformation with Continuity Correction
@@ -324,19 +324,19 @@ then:</p>
 </h4>
 <p>Walters’ continuity correction for the arcsine method
 <strong>(Equation 7 in Sozu et al., 2010)</strong>:</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>Z</mi><mi>k</mi></msub><mo>=</mo><mfrac><mrow><mo>arcsin</mo><mrow><mo stretchy="true" form="prefix">(</mo><msqrt><mrow><msub><mover><mi>p</mi><mo accent="true">̂</mo></mover><mrow><mn>1</mn><mo>,</mo><mi>k</mi></mrow></msub><mo>+</mo><msub><mi>c</mi><mn>1</mn></msub></mrow></msqrt><mo stretchy="true" form="postfix">)</mo></mrow><mo>−</mo><mo>arcsin</mo><mrow><mo stretchy="true" form="prefix">(</mo><msqrt><mrow><msub><mover><mi>p</mi><mo accent="true">̂</mo></mover><mrow><mn>2</mn><mo>,</mo><mi>k</mi></mrow></msub><mo>+</mo><msub><mi>c</mi><mn>2</mn></msub></mrow></msqrt><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mi>s</mi><mi>e</mi></mrow></mfrac></mrow><annotation encoding="application/x-tex">Z_k = \frac{\arcsin(\sqrt{\hat{p}_{1,k} + c_1}) - \arcsin(\sqrt{\hat{p}_{2,k} + c_2})}{se}</annotation></semantics></math></p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>Z</mi><mi>k</mi></msub><mo>=</mo><mfrac><mrow><mrow><mi mathvariant="normal">arcsin</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><msqrt><mrow><msub><mover><mi>p</mi><mo accent="true">̂</mo></mover><mrow><mn>1</mn><mo>,</mo><mi>k</mi></mrow></msub><mo>+</mo><msub><mi>c</mi><mn>1</mn></msub></mrow></msqrt><mo stretchy="false" form="postfix">)</mo><mo>−</mo><mrow><mi mathvariant="normal">arcsin</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><msqrt><mrow><msub><mover><mi>p</mi><mo accent="true">̂</mo></mover><mrow><mn>2</mn><mo>,</mo><mi>k</mi></mrow></msub><mo>+</mo><msub><mi>c</mi><mn>2</mn></msub></mrow></msqrt><mo stretchy="false" form="postfix">)</mo></mrow><mrow><mi>s</mi><mi>e</mi></mrow></mfrac></mrow><annotation encoding="application/x-tex">Z_k = \frac{\arcsin(\sqrt{\hat{p}_{1,k} + c_1}) - \arcsin(\sqrt{\hat{p}_{2,k} + c_2})}{se}</annotation></semantics></math></p>
 <p>where:
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>c</mi><mn>1</mn></msub><mo>=</mo><mo>−</mo><mfrac><mn>1</mn><mrow><mn>2</mn><msub><mi>n</mi><mn>1</mn></msub></mrow></mfrac><mo>,</mo><mspace width="1.0em"></mspace><msub><mi>c</mi><mn>2</mn></msub><mo>=</mo><mfrac><mn>1</mn><mrow><mn>2</mn><msub><mi>n</mi><mn>2</mn></msub></mrow></mfrac></mrow><annotation encoding="application/x-tex">c_1 = -\frac{1}{2n_1}, \quad c_2 = \frac{1}{2n_2}</annotation></semantics></math></p>
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>c</mi><mn>1</mn></msub><mo>=</mo><mi>−</mi><mfrac><mn>1</mn><mrow><mn>2</mn><msub><mi>n</mi><mn>1</mn></msub></mrow></mfrac><mo>,</mo><mspace width="1.0em"></mspace><msub><mi>c</mi><mn>2</mn></msub><mo>=</mo><mfrac><mn>1</mn><mrow><mn>2</mn><msub><mi>n</mi><mn>2</mn></msub></mrow></mfrac></mrow><annotation encoding="application/x-tex">c_1 = -\frac{1}{2n_1}, \quad c_2 = \frac{1}{2n_2}</annotation></semantics></math></p>
 <p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>s</mi><mi>e</mi><mo>=</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><msqrt><mrow><mfrac><mn>1</mn><msub><mi>n</mi><mn>1</mn></msub></mfrac><mo>+</mo><mfrac><mn>1</mn><msub><mi>n</mi><mn>2</mn></msub></mfrac></mrow></msqrt></mrow><annotation encoding="application/x-tex">se = \frac{1}{2}\sqrt{\frac{1}{n_1} + \frac{1}{n_2}}</annotation></semantics></math></p>
 <p><strong>Power formula</strong>:</p>
 <p>Let:</p>
 <ul>
-<li><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>δ</mi><mi>k</mi><mrow><mi>A</mi><mi>S</mi><mi>c</mi></mrow></msubsup><mo>=</mo><mo>arcsin</mo><mrow><mo stretchy="true" form="prefix">(</mo><msqrt><mrow><msub><mi>p</mi><mrow><mn>1</mn><mo>,</mo><mi>k</mi></mrow></msub><mo>+</mo><msub><mi>c</mi><mn>1</mn></msub></mrow></msqrt><mo stretchy="true" form="postfix">)</mo></mrow><mo>−</mo><mo>arcsin</mo><mrow><mo stretchy="true" form="prefix">(</mo><msqrt><mrow><msub><mi>p</mi><mrow><mn>2</mn><mo>,</mo><mi>k</mi></mrow></msub><mo>+</mo><msub><mi>c</mi><mn>2</mn></msub></mrow></msqrt><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\delta_k^{ASc} = \arcsin(\sqrt{p_{1,k} + c_1}) - \arcsin(\sqrt{p_{2,k} + c_2})</annotation></semantics></math></li>
-<li><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>v</mi><mrow><mi>j</mi><mo>,</mo><mi>k</mi></mrow><mi>c</mi></msubsup><mo>=</mo><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mi>k</mi></mrow></msub><mo>+</mo><msub><mi>c</mi><mi>j</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mi>k</mi></mrow></msub><mo>−</mo><msub><mi>c</mi><mi>j</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">v_{j,k}^c = (p_{j,k} + c_j)(1 - p_{j,k} - c_j)</annotation></semantics></math></li>
+<li><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>δ</mi><mi>k</mi><mrow><mi>A</mi><mi>S</mi><mi>c</mi></mrow></msubsup><mo>=</mo><mrow><mi mathvariant="normal">arcsin</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><msqrt><mrow><msub><mi>p</mi><mrow><mn>1</mn><mo>,</mo><mi>k</mi></mrow></msub><mo>+</mo><msub><mi>c</mi><mn>1</mn></msub></mrow></msqrt><mo stretchy="false" form="postfix">)</mo><mo>−</mo><mrow><mi mathvariant="normal">arcsin</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><msqrt><mrow><msub><mi>p</mi><mrow><mn>2</mn><mo>,</mo><mi>k</mi></mrow></msub><mo>+</mo><msub><mi>c</mi><mn>2</mn></msub></mrow></msqrt><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\delta_k^{ASc} = \arcsin(\sqrt{p_{1,k} + c_1}) - \arcsin(\sqrt{p_{2,k} + c_2})</annotation></semantics></math></li>
+<li><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>v</mi><mrow><mi>j</mi><mo>,</mo><mi>k</mi></mrow><mi>c</mi></msubsup><mo>=</mo><mo stretchy="false" form="prefix">(</mo><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mi>k</mi></mrow></msub><mo>+</mo><msub><mi>c</mi><mi>j</mi></msub><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mi>k</mi></mrow></msub><mo>−</mo><msub><mi>c</mi><mi>j</mi></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">v_{j,k}^c = (p_{j,k} + c_j)(1 - p_{j,k} - c_j)</annotation></semantics></math></li>
 <li><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>s</mi><msub><mi>e</mi><mi>k</mi></msub><mo>=</mo><msqrt><mrow><mfrac><msub><mi>v</mi><mrow><mn>1</mn><mo>,</mo><mi>k</mi></mrow></msub><mrow><mn>4</mn><msub><mi>n</mi><mn>1</mn></msub><msubsup><mi>v</mi><mrow><mn>1</mn><mo>,</mo><mi>k</mi></mrow><mi>c</mi></msubsup></mrow></mfrac><mo>+</mo><mfrac><msub><mi>v</mi><mrow><mn>2</mn><mo>,</mo><mi>k</mi></mrow></msub><mrow><mn>4</mn><msub><mi>n</mi><mn>2</mn></msub><msubsup><mi>v</mi><mrow><mn>2</mn><mo>,</mo><mi>k</mi></mrow><mi>c</mi></msubsup></mrow></mfrac></mrow></msqrt></mrow><annotation encoding="application/x-tex">se_k = \sqrt{\frac{v_{1,k}}{4n_1 v_{1,k}^c} + \frac{v_{2,k}}{4n_2 v_{2,k}^c}}</annotation></semantics></math></li>
 </ul>
 <p>Then:
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mtext mathvariant="normal">Power</mtext><mi>k</mi></msub><mo>=</mo><mi>Φ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mfrac><mrow><msubsup><mi>δ</mi><mi>k</mi><mrow><mi>A</mi><mi>S</mi><mi>c</mi></mrow></msubsup><mo>−</mo><mi>s</mi><mi>e</mi><mo>⋅</mo><msub><mi>z</mi><mrow><mn>1</mn><mo>−</mo><mi>α</mi></mrow></msub></mrow><mrow><mi>s</mi><msub><mi>e</mi><mi>k</mi></msub></mrow></mfrac><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\text{Power}_k = \Phi\left(\frac{\delta_k^{ASc} - se \cdot z_{1-\alpha}}{se_k}\right)</annotation></semantics></math></p>
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mtext mathvariant="normal">Power</mtext><mi>k</mi></msub><mo>=</mo><mi mathvariant="normal">Φ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mfrac><mrow><msubsup><mi>δ</mi><mi>k</mi><mrow><mi>A</mi><mi>S</mi><mi>c</mi></mrow></msubsup><mo>−</mo><mi>s</mi><mi>e</mi><mo>⋅</mo><msub><mi>z</mi><mrow><mn>1</mn><mo>−</mo><mi>α</mi></mrow></msub></mrow><mrow><mi>s</mi><msub><mi>e</mi><mi>k</mi></msub></mrow></mfrac><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\text{Power}_k = \Phi\left(\frac{\delta_k^{ASc} - se \cdot z_{1-\alpha}}{se_k}\right)</annotation></semantics></math></p>
 </div>
 </div>
 <div class="section level3">
@@ -344,7 +344,7 @@ then:</p>
 </h3>
 <p>Under
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mtext mathvariant="normal">H</mtext><mn>1</mn></msub><annotation encoding="application/x-tex">\text{H}_{1}</annotation></semantics></math>,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>Z</mi><mn>1</mn></msub><mo>,</mo><msub><mi>Z</mi><mn>2</mn></msub><mo stretchy="true" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(Z_{1}, Z_{2})</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><msub><mi>Z</mi><mn>1</mn></msub><mo>,</mo><msub><mi>Z</mi><mn>2</mn></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(Z_{1}, Z_{2})</annotation></semantics></math>
 asymptotically follows a bivariate normal distribution:</p>
 <p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mo stretchy="true" form="prefix">(</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><msub><mi>Z</mi><mn>1</mn></msub></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><msub><mi>Z</mi><mn>2</mn></msub></mtd></mtr></mtable><mo stretchy="true" form="postfix">)</mo></mrow><mo>∼</mo><mtext mathvariant="normal">BN</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mrow><mo stretchy="true" form="prefix">(</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><msub><mi>ω</mi><mn>1</mn></msub></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><msub><mi>ω</mi><mn>2</mn></msub></mtd></mtr></mtable><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo><mrow><mo stretchy="true" form="prefix">(</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><mn>1</mn></mtd><mtd columnalign="center" style="text-align: center"><mi>γ</mi></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mi>γ</mi></mtd><mtd columnalign="center" style="text-align: center"><mn>1</mn></mtd></mtr></mtable><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\begin{pmatrix} Z_1 \\ Z_2 \end{pmatrix} \sim \text{BN}\left(\begin{pmatrix} \omega_1 \\ \omega_2 \end{pmatrix}, \begin{pmatrix} 1 &amp; \gamma \\ \gamma &amp; 1 \end{pmatrix}\right)</annotation></semantics></math></p>
 <p>The correlation
@@ -361,11 +361,11 @@ approximation formulas, see Sozu et al. (2010) and Homma and Yoshida
 </h3>
 <p>The overall power (probability of rejecting both null hypotheses)
 is:</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>−</mo><mi>β</mi><mo>=</mo><mtext mathvariant="normal">P</mtext><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>Z</mi><mn>1</mn></msub><mo>&gt;</mo><msub><mi>z</mi><mrow><mn>1</mn><mo>−</mo><mi>α</mi></mrow></msub><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> and </mtext><mspace width="0.333em"></mspace></mrow><msub><mi>Z</mi><mn>2</mn></msub><mo>&gt;</mo><msub><mi>z</mi><mrow><mn>1</mn><mo>−</mo><mi>α</mi></mrow></msub><mo>∣</mo><msub><mtext mathvariant="normal">H</mtext><mn>1</mn></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">1 - \beta = \text{P}(Z_1 &gt; z_{1-\alpha} \text{ and } Z_2 &gt; z_{1-\alpha} \mid \text{H}_1)</annotation></semantics></math></p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>−</mo><mi>β</mi><mo>=</mo><mtext mathvariant="normal">P</mtext><mo stretchy="false" form="prefix">(</mo><msub><mi>Z</mi><mn>1</mn></msub><mo>&gt;</mo><msub><mi>z</mi><mrow><mn>1</mn><mo>−</mo><mi>α</mi></mrow></msub><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> and </mtext><mspace width="0.333em"></mspace></mrow><msub><mi>Z</mi><mn>2</mn></msub><mo>&gt;</mo><msub><mi>z</mi><mrow><mn>1</mn><mo>−</mo><mi>α</mi></mrow></msub><mo>∣</mo><msub><mtext mathvariant="normal">H</mtext><mn>1</mn></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">1 - \beta = \text{P}(Z_1 &gt; z_{1-\alpha} \text{ and } Z_2 &gt; z_{1-\alpha} \mid \text{H}_1)</annotation></semantics></math></p>
 <p>Using the bivariate normal distribution:</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>−</mo><mi>β</mi><mo>=</mo><msub><mi>Φ</mi><mn>2</mn></msub><mrow><mo stretchy="true" form="prefix">(</mo><mo>−</mo><msub><mi>z</mi><mrow><mn>1</mn><mo>−</mo><mi>α</mi></mrow></msub><mo>+</mo><msub><mi>ω</mi><mn>1</mn></msub><mo>,</mo><mo>−</mo><msub><mi>z</mi><mrow><mn>1</mn><mo>−</mo><mi>α</mi></mrow></msub><mo>+</mo><msub><mi>ω</mi><mn>2</mn></msub><mo>∣</mo><mi>γ</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">1 - \beta = \Phi_2(-z_{1-\alpha} + \omega_1, -z_{1-\alpha} + \omega_2 \mid \gamma)</annotation></semantics></math></p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>−</mo><mi>β</mi><mo>=</mo><msub><mi mathvariant="normal">Φ</mi><mn>2</mn></msub><mo stretchy="false" form="prefix">(</mo><mi>−</mi><msub><mi>z</mi><mrow><mn>1</mn><mo>−</mo><mi>α</mi></mrow></msub><mo>+</mo><msub><mi>ω</mi><mn>1</mn></msub><mo>,</mo><mi>−</mi><msub><mi>z</mi><mrow><mn>1</mn><mo>−</mo><mi>α</mi></mrow></msub><mo>+</mo><msub><mi>ω</mi><mn>2</mn></msub><mo>∣</mo><mi>γ</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">1 - \beta = \Phi_2(-z_{1-\alpha} + \omega_1, -z_{1-\alpha} + \omega_2 \mid \gamma)</annotation></semantics></math></p>
 <p>where
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>Φ</mi><mn>2</mn></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>a</mi><mo>,</mo><mi>b</mi><mo>∣</mo><mi>γ</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\Phi_{2}(a, b \mid \gamma)</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi mathvariant="normal">Φ</mi><mn>2</mn></msub><mo stretchy="false" form="prefix">(</mo><mi>a</mi><mo>,</mo><mi>b</mi><mo>∣</mo><mi>γ</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\Phi_{2}(a, b \mid \gamma)</annotation></semantics></math>
 is the CDF of the standard bivariate normal distribution with
 correlation
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>γ</mi><annotation encoding="application/x-tex">\gamma</annotation></semantics></math>.</p>
@@ -380,7 +380,7 @@ and balanced design
 we solve the power formula shown above numerically for
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>n</mi><mn>2</mn></msub><annotation encoding="application/x-tex">n_{2}</annotation></semantics></math>.
 Then, the total sample size is obtained as
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo>=</mo><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>+</mo><mi>r</mi><mo stretchy="true" form="postfix">)</mo></mrow><msub><mi>n</mi><mn>2</mn></msub></mrow><annotation encoding="application/x-tex">N = (1+r)n_{2}</annotation></semantics></math>.</p>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo>=</mo><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>+</mo><mi>r</mi><mo stretchy="false" form="postfix">)</mo><msub><mi>n</mi><mn>2</mn></msub></mrow><annotation encoding="application/x-tex">N = (1+r)n_{2}</annotation></semantics></math>.</p>
 </div>
 </div>
 <div class="section level2">
@@ -446,7 +446,7 @@ and the second subscript denotes the endpoint (1 or 2).</p>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">result_bin_ss</span>,</span>
 <span>      caption <span class="op">=</span> <span class="st">"Table III: Sample Size per Group (n) for Two Co-Primary Binary Endpoints (α = 0.025, 1-β = 0.80)^a,b^"</span>,</span>
-<span>      digits <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>      digits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">2</span>, <span class="fl">2</span>, <span class="fl">2</span>, <span class="fl">1</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span><span class="op">)</span>,</span>
 <span>      col.names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"p₁,₁"</span>, <span class="st">"p₁,₂"</span>, <span class="st">"p₂,₁"</span>, <span class="st">"p₂,₂"</span>, <span class="st">"ρ"</span>, <span class="st">"AN"</span>, <span class="st">"ANc"</span>, <span class="st">"AS"</span>, <span class="st">"ASc"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <caption>Table III: Sample Size per Group (n) for Two Co-Primary Binary
@@ -465,176 +465,176 @@ Endpoints (α = 0.025, 1-β = 0.80)<sup>a,b</sup>
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="right">1</td>
-<td align="right">1</td>
-<td align="right">0</td>
-<td align="right">0</td>
-<td align="right">0</td>
+<td align="right">0.70</td>
+<td align="right">0.70</td>
+<td align="right">0.5</td>
+<td align="right">0.5</td>
+<td align="right">-0.3</td>
 <td align="right">124</td>
 <td align="right">134</td>
 <td align="right">124</td>
 <td align="right">134</td>
 </tr>
 <tr class="even">
-<td align="right">1</td>
-<td align="right">1</td>
-<td align="right">0</td>
-<td align="right">0</td>
-<td align="right">0</td>
+<td align="right">0.70</td>
+<td align="right">0.70</td>
+<td align="right">0.5</td>
+<td align="right">0.5</td>
+<td align="right">0.0</td>
 <td align="right">122</td>
 <td align="right">132</td>
 <td align="right">122</td>
 <td align="right">132</td>
 </tr>
 <tr class="odd">
-<td align="right">1</td>
-<td align="right">1</td>
-<td align="right">0</td>
-<td align="right">0</td>
-<td align="right">0</td>
+<td align="right">0.70</td>
+<td align="right">0.70</td>
+<td align="right">0.5</td>
+<td align="right">0.5</td>
+<td align="right">0.3</td>
 <td align="right">119</td>
 <td align="right">129</td>
 <td align="right">119</td>
 <td align="right">129</td>
 </tr>
 <tr class="even">
-<td align="right">1</td>
-<td align="right">1</td>
-<td align="right">0</td>
-<td align="right">0</td>
-<td align="right">0</td>
+<td align="right">0.70</td>
+<td align="right">0.70</td>
+<td align="right">0.5</td>
+<td align="right">0.5</td>
+<td align="right">0.5</td>
 <td align="right">116</td>
 <td align="right">126</td>
 <td align="right">116</td>
 <td align="right">126</td>
 </tr>
 <tr class="odd">
-<td align="right">1</td>
-<td align="right">1</td>
-<td align="right">0</td>
-<td align="right">0</td>
-<td align="right">1</td>
+<td align="right">0.70</td>
+<td align="right">0.70</td>
+<td align="right">0.5</td>
+<td align="right">0.5</td>
+<td align="right">0.8</td>
 <td align="right">109</td>
 <td align="right">119</td>
 <td align="right">109</td>
 <td align="right">118</td>
 </tr>
 <tr class="even">
-<td align="right">1</td>
-<td align="right">1</td>
-<td align="right">1</td>
-<td align="right">0</td>
-<td align="right">0</td>
+<td align="right">0.87</td>
+<td align="right">0.70</td>
+<td align="right">0.7</td>
+<td align="right">0.5</td>
+<td align="right">0.0</td>
 <td align="right">121</td>
 <td align="right">131</td>
 <td align="right">119</td>
 <td align="right">130</td>
 </tr>
 <tr class="odd">
-<td align="right">1</td>
-<td align="right">1</td>
-<td align="right">1</td>
-<td align="right">0</td>
-<td align="right">0</td>
+<td align="right">0.87</td>
+<td align="right">0.70</td>
+<td align="right">0.7</td>
+<td align="right">0.5</td>
+<td align="right">0.3</td>
 <td align="right">118</td>
 <td align="right">128</td>
 <td align="right">116</td>
 <td align="right">127</td>
 </tr>
 <tr class="even">
-<td align="right">1</td>
-<td align="right">1</td>
-<td align="right">1</td>
-<td align="right">0</td>
-<td align="right">0</td>
+<td align="right">0.87</td>
+<td align="right">0.70</td>
+<td align="right">0.7</td>
+<td align="right">0.5</td>
+<td align="right">0.5</td>
 <td align="right">115</td>
 <td align="right">125</td>
 <td align="right">113</td>
 <td align="right">124</td>
 </tr>
 <tr class="odd">
-<td align="right">1</td>
-<td align="right">1</td>
-<td align="right">1</td>
-<td align="right">1</td>
-<td align="right">0</td>
+<td align="right">0.90</td>
+<td align="right">0.90</td>
+<td align="right">0.7</td>
+<td align="right">0.7</td>
+<td align="right">0.0</td>
 <td align="right">81</td>
 <td align="right">91</td>
 <td align="right">78</td>
 <td align="right">88</td>
 </tr>
 <tr class="even">
-<td align="right">1</td>
-<td align="right">1</td>
-<td align="right">1</td>
-<td align="right">1</td>
-<td align="right">0</td>
+<td align="right">0.90</td>
+<td align="right">0.90</td>
+<td align="right">0.7</td>
+<td align="right">0.7</td>
+<td align="right">0.3</td>
 <td align="right">79</td>
 <td align="right">89</td>
 <td align="right">76</td>
 <td align="right">86</td>
 </tr>
 <tr class="odd">
-<td align="right">1</td>
-<td align="right">1</td>
-<td align="right">1</td>
-<td align="right">1</td>
-<td align="right">0</td>
+<td align="right">0.90</td>
+<td align="right">0.90</td>
+<td align="right">0.7</td>
+<td align="right">0.7</td>
+<td align="right">0.5</td>
 <td align="right">77</td>
 <td align="right">87</td>
 <td align="right">74</td>
 <td align="right">84</td>
 </tr>
 <tr class="even">
-<td align="right">1</td>
-<td align="right">1</td>
-<td align="right">1</td>
-<td align="right">1</td>
-<td align="right">1</td>
+<td align="right">0.90</td>
+<td align="right">0.90</td>
+<td align="right">0.7</td>
+<td align="right">0.7</td>
+<td align="right">0.8</td>
 <td align="right">72</td>
 <td align="right">82</td>
 <td align="right">69</td>
 <td align="right">79</td>
 </tr>
 <tr class="odd">
-<td align="right">1</td>
-<td align="right">1</td>
-<td align="right">1</td>
-<td align="right">1</td>
-<td align="right">0</td>
+<td align="right">0.95</td>
+<td align="right">0.95</td>
+<td align="right">0.9</td>
+<td align="right">0.9</td>
+<td align="right">0.0</td>
 <td align="right">571</td>
 <td align="right">610</td>
 <td align="right">557</td>
 <td align="right">596</td>
 </tr>
 <tr class="even">
-<td align="right">1</td>
-<td align="right">1</td>
-<td align="right">1</td>
-<td align="right">1</td>
-<td align="right">0</td>
+<td align="right">0.95</td>
+<td align="right">0.95</td>
+<td align="right">0.9</td>
+<td align="right">0.9</td>
+<td align="right">0.3</td>
 <td align="right">556</td>
 <td align="right">596</td>
 <td align="right">543</td>
 <td align="right">582</td>
 </tr>
 <tr class="odd">
-<td align="right">1</td>
-<td align="right">1</td>
-<td align="right">1</td>
-<td align="right">1</td>
-<td align="right">0</td>
+<td align="right">0.95</td>
+<td align="right">0.95</td>
+<td align="right">0.9</td>
+<td align="right">0.9</td>
+<td align="right">0.5</td>
 <td align="right">542</td>
 <td align="right">581</td>
 <td align="right">529</td>
 <td align="right">568</td>
 </tr>
 <tr class="even">
-<td align="right">1</td>
-<td align="right">1</td>
-<td align="right">1</td>
-<td align="right">1</td>
-<td align="right">1</td>
+<td align="right">0.95</td>
+<td align="right">0.95</td>
+<td align="right">0.9</td>
+<td align="right">0.9</td>
+<td align="right">0.8</td>
 <td align="right">507</td>
 <td align="right">546</td>
 <td align="right">495</td>
@@ -672,15 +672,17 @@ provides intermediate sample size</li>
 <p><strong>Test method comparison</strong>:</p>
 <ul>
 <li>
-<strong>AN</strong>: Generally smallest sample size, most
-efficient</li>
+<strong>AS</strong>: Smallest sample size of the four, or equal to
+AN</li>
 <li>
-<strong>ANc</strong>: Slightly larger than AN due to continuity
+<strong>AN</strong>: Equal to AS for moderate probabilities,
+slightly larger when the probabilities are close to one</li>
+<li>
+<strong>ASc</strong>: Larger than AS by the continuity
 correction</li>
 <li>
-<strong>AS</strong>: Similar to AN for moderate probabilities</li>
-<li>
-<strong>ASc</strong>: Largest sample size, most conservative</li>
+<strong>ANc</strong>: Largest sample size of the four, and the most
+conservative</li>
 </ul>
 </div>
 </div>
@@ -863,8 +865,13 @@ the endpoint with smaller effect size.</p>
 <span>     ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">ss_by_rho</span><span class="op">)</span> <span class="op">*</span> <span class="fl">0.9</span>, <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">ss_by_rho</span><span class="op">)</span> <span class="op">*</span> <span class="fl">1.1</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/grid.html" class="external-link">grid</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p><img src="two-binary-endpoints-approx_files/figure-html/correlation_effect-1.png" class="r-plt" alt="" width="672"></p>
-<p><strong>Interpretation</strong>: Higher positive correlation
-substantially reduces required sample size.</p>
+<p><strong>Interpretation</strong>: Higher positive correlation reduces
+the required sample size. In this scenario the sample size per group
+falls from 124 at
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ρ</mi><mo>=</mo><mi>−</mi><mn>0.3</mn></mrow><annotation encoding="application/x-tex">\rho = -0.3</annotation></semantics></math>
+to 109 at
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ρ</mi><mo>=</mo><mn>0.8</mn></mrow><annotation encoding="application/x-tex">\rho = 0.8</annotation></semantics></math>,
+a reduction of about 12%.</p>
 </div>
 <div class="section level3">
 <h3 id="example-4-unbalanced-allocation">Example 4: Unbalanced Allocation<a class="anchor" aria-label="anchor" href="#example-4-unbalanced-allocation"></a>
@@ -960,14 +967,15 @@ substantially reduces required sample size.</p>
 <span><span class="va">comparison_table</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html" class="external-link">bind_rows</a></span><span class="op">(</span><span class="va">comparison</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">comparison_table</span>,</span>
-<span>      caption <span class="op">=</span> <span class="st">"Comparison of Test Methods (p₁,₁ = p₁,₂ = 0.7, p₂,₁ = p₂,₂ = 0.5, ρ = 0.5)"</span><span class="op">)</span></span></code></pre></div>
+<span>      caption <span class="op">=</span> <span class="st">"Comparison of Test Methods (p₁,₁ = 0.80, p₁,₂ = 0.70, p₂,₁ = 0.55, p₂,₂ = 0.45, ρ = 0.7)"</span>,</span>
+<span>      col.names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Test Method"</span>, <span class="st">"n per group"</span>, <span class="st">"N total"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
-<caption>Comparison of Test Methods (p₁,₁ = p₁,₂ = 0.7, p₂,₁ = p₂,₂ =
-0.5, ρ = 0.5)</caption>
+<caption>Comparison of Test Methods (p₁,₁ = 0.80, p₁,₂ = 0.70, p₂,₁ =
+0.55, p₂,₂ = 0.45, ρ = 0.7)</caption>
 <thead><tr class="header">
-<th align="left">Method</th>
-<th align="right">n_per_group</th>
-<th align="right">N_total</th>
+<th align="left">Test Method</th>
+<th align="right">n per group</th>
+<th align="right">N total</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
@@ -1046,7 +1054,7 @@ sample sizes and better Type I error control in these situations.</p>
 </h2>
 <p>Homma, G., &amp; Yoshida, T. (2025). Exact power and sample size in
 clinical trials with two co-primary binary endpoints. <em>Statistical
-Methods in Medical Research</em>, 34(1), 1-19.</p>
+Methods in Medical Research</em>, 34(11), 2183-2201.</p>
 <p>Sozu, T., Sugimoto, T., &amp; Hamasaki, T. (2010). Sample size
 determination in clinical trials with multiple co-primary binary
 endpoints. <em>Statistics in Medicine</em>, 29(21), 2169-2179.</p>

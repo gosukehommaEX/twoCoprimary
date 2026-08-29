@@ -12,8 +12,8 @@
 <link rel="icon" sizes="any" href="../favicon.ico">
 <link rel="manifest" href="../site.webmanifest">
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Overview of Two Co-Primary Endpoints Analysis">
 </head>
@@ -39,7 +39,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">twoCoprimary</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -97,7 +97,7 @@ for sample size calculation and power analysis in clinical trials with
 two co-primary endpoints. This package implements methodologies from
 multiple publications and supports various endpoint types.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://gosukehommaex.github.io/twoCoprimary/" class="external-link">twoCoprimary</a></span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://gosukehommaex.github.io/twoCoprimary/">twoCoprimary</a></span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="what-are-co-primary-endpoints">What are Co-Primary Endpoints?<a class="anchor" aria-label="anchor" href="#what-are-co-primary-endpoints"></a>
@@ -119,7 +119,7 @@ control</li>
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>α</mi><annotation encoding="application/x-tex">\alpha</annotation></semantics></math>
 without Bonferroni correction</li>
 <li>The overall power is the joint probability: Power =
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>Pr</mo><mrow><mo stretchy="true" form="prefix">(</mo><mrow><mtext mathvariant="normal">Reject </mtext><mspace width="0.333em"></mspace></mrow><msub><mtext mathvariant="normal">H</mtext><mn>01</mn></msub><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> and Reject </mtext><mspace width="0.333em"></mspace></mrow><msub><mtext mathvariant="normal">H</mtext><mn>02</mn></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\Pr(\text{Reject } \text{H}_{01} \text{ and Reject } \text{H}_{02})</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">Pr</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><mrow><mtext mathvariant="normal">Reject </mtext><mspace width="0.333em"></mspace></mrow><msub><mtext mathvariant="normal">H</mtext><mn>01</mn></msub><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> and Reject </mtext><mspace width="0.333em"></mspace></mrow><msub><mtext mathvariant="normal">H</mtext><mn>02</mn></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\Pr(\text{Reject } \text{H}_{01} \text{ and Reject } \text{H}_{02})</annotation></semantics></math>
 </li>
 <li>Accounting for <strong>correlation</strong> between endpoints can
 improve efficiency</li>
@@ -164,14 +164,14 @@ if and only if:
 <p>where
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>z</mi><mrow><mn>1</mn><mo>−</mo><mi>α</mi></mrow></msub><annotation encoding="application/x-tex">z_{1-\alpha}</annotation></semantics></math>
 is the
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><mi>α</mi><mo stretchy="true" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(1-\alpha)</annotation></semantics></math>-th
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>−</mo><mi>α</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(1-\alpha)</annotation></semantics></math>-th
 quantile of the standard normal distribution.</p>
 </div>
 <div class="section level3">
 <h3 id="type-i-error-control">Type I Error Control<a class="anchor" aria-label="anchor" href="#type-i-error-control"></a>
 </h3>
 <p>The overall Type I error rate is:</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>α</mi><mtext mathvariant="normal">overall</mtext></msub><mo>=</mo><mo>Pr</mo><mrow><mo stretchy="true" form="prefix">(</mo><mrow><mtext mathvariant="normal">Reject </mtext><mspace width="0.333em"></mspace></mrow><msub><mtext mathvariant="normal">H</mtext><mn>0</mn></msub><mo>∣</mo><msub><mtext mathvariant="normal">H</mtext><mn>0</mn></msub><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> true</mtext></mrow><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\alpha_{\text{overall}} = \Pr(\text{Reject } \text{H}_{0} \mid \text{H}_{0} \text{ true})</annotation></semantics></math></p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>α</mi><mtext mathvariant="normal">overall</mtext></msub><mo>=</mo><mrow><mi mathvariant="normal">Pr</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><mrow><mtext mathvariant="normal">Reject </mtext><mspace width="0.333em"></mspace></mrow><msub><mtext mathvariant="normal">H</mtext><mn>0</mn></msub><mo>∣</mo><msub><mtext mathvariant="normal">H</mtext><mn>0</mn></msub><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> true</mtext></mrow><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\alpha_{\text{overall}} = \Pr(\text{Reject } \text{H}_{0} \mid \text{H}_{0} \text{ true})</annotation></semantics></math></p>
 <p>Under the intersection-union test, this is automatically controlled
 at level
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>α</mi><annotation encoding="application/x-tex">\alpha</annotation></semantics></math>
@@ -187,16 +187,16 @@ exceed the threshold is more conservative than rejecting when
 <p>Under the alternative hypothesis
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mtext mathvariant="normal">H</mtext><mn>1</mn></msub><annotation encoding="application/x-tex">\text{H}_{1}</annotation></semantics></math>,
 the overall power is:</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>−</mo><mi>β</mi><mo>=</mo><mo>Pr</mo><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>Z</mi><mn>1</mn></msub><mo>&gt;</mo><msub><mi>z</mi><mrow><mn>1</mn><mo>−</mo><mi>α</mi></mrow></msub><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> and </mtext><mspace width="0.333em"></mspace></mrow><msub><mi>Z</mi><mn>2</mn></msub><mo>&gt;</mo><msub><mi>z</mi><mrow><mn>1</mn><mo>−</mo><mi>α</mi></mrow></msub><mo>∣</mo><msub><mtext mathvariant="normal">H</mtext><mn>1</mn></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">1 - \beta = \Pr(Z_{1} &gt; z_{1-\alpha} \text{ and } Z_{2} &gt; z_{1-\alpha} \mid \text{H}_{1})</annotation></semantics></math></p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>−</mo><mi>β</mi><mo>=</mo><mrow><mi mathvariant="normal">Pr</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><msub><mi>Z</mi><mn>1</mn></msub><mo>&gt;</mo><msub><mi>z</mi><mrow><mn>1</mn><mo>−</mo><mi>α</mi></mrow></msub><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> and </mtext><mspace width="0.333em"></mspace></mrow><msub><mi>Z</mi><mn>2</mn></msub><mo>&gt;</mo><msub><mi>z</mi><mrow><mn>1</mn><mo>−</mo><mi>α</mi></mrow></msub><mo>∣</mo><msub><mtext mathvariant="normal">H</mtext><mn>1</mn></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">1 - \beta = \Pr(Z_{1} &gt; z_{1-\alpha} \text{ and } Z_{2} &gt; z_{1-\alpha} \mid \text{H}_{1})</annotation></semantics></math></p>
 <p>When
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>Z</mi><mn>1</mn></msub><mo>,</mo><msub><mi>Z</mi><mn>2</mn></msub><mo stretchy="true" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(Z_{1}, Z_{2})</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><msub><mi>Z</mi><mn>1</mn></msub><mo>,</mo><msub><mi>Z</mi><mn>2</mn></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(Z_{1}, Z_{2})</annotation></semantics></math>
 follow a bivariate normal distribution with correlation
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>ρ</mi><annotation encoding="application/x-tex">\rho</annotation></semantics></math>:</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>−</mo><mi>β</mi><mo>=</mo><msub><mi>Φ</mi><mn>2</mn></msub><mrow><mo stretchy="true" form="prefix">(</mo><mo>−</mo><msub><mi>z</mi><mrow><mn>1</mn><mo>−</mo><mi>α</mi></mrow></msub><mo>+</mo><msub><mi>ω</mi><mn>1</mn></msub><mo>,</mo><mo>−</mo><msub><mi>z</mi><mrow><mn>1</mn><mo>−</mo><mi>α</mi></mrow></msub><mo>+</mo><msub><mi>ω</mi><mn>2</mn></msub><mo>∣</mo><mi>ρ</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">1 - \beta = \Phi_{2}(-z_{1-\alpha} + \omega_{1}, -z_{1-\alpha} + \omega_{2} \mid \rho)</annotation></semantics></math></p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>−</mo><mi>β</mi><mo>=</mo><msub><mi mathvariant="normal">Φ</mi><mn>2</mn></msub><mo stretchy="false" form="prefix">(</mo><mi>−</mi><msub><mi>z</mi><mrow><mn>1</mn><mo>−</mo><mi>α</mi></mrow></msub><mo>+</mo><msub><mi>ω</mi><mn>1</mn></msub><mo>,</mo><mi>−</mi><msub><mi>z</mi><mrow><mn>1</mn><mo>−</mo><mi>α</mi></mrow></msub><mo>+</mo><msub><mi>ω</mi><mn>2</mn></msub><mo>∣</mo><mi>ρ</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">1 - \beta = \Phi_{2}(-z_{1-\alpha} + \omega_{1}, -z_{1-\alpha} + \omega_{2} \mid \rho)</annotation></semantics></math></p>
 <p>where:</p>
 <ul>
 <li>
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>Φ</mi><mn>2</mn></msub><mrow><mo stretchy="true" form="prefix">(</mo><mo>⋅</mo><mo>,</mo><mo>⋅</mo><mo>∣</mo><mi>ρ</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\Phi_{2}(\cdot, \cdot \mid \rho)</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi mathvariant="normal">Φ</mi><mn>2</mn></msub><mo stretchy="false" form="prefix">(</mo><mi>⋅</mi><mo>,</mo><mi>⋅</mi><mo>∣</mo><mi>ρ</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\Phi_{2}(\cdot, \cdot \mid \rho)</annotation></semantics></math>
 is the bivariate normal cumulative distribution function with
 correlation
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>ρ</mi><annotation encoding="application/x-tex">\rho</annotation></semantics></math>
@@ -231,10 +231,13 @@ Test statistics are independent</li>
 Decreases power and increases required sample size</li>
 </ul>
 <p><strong>Key insight</strong>: Accounting for positive correlation
-between endpoints can lead to substantial sample size reductions
-(typically 5-15% for
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ρ</mi><mo>=</mo><mn>0.5</mn></mrow><annotation encoding="application/x-tex">\rho = 0.5</annotation></semantics></math>-0.8)
-compared to assuming independence.</p>
+between endpoints reduces the required sample size compared to assuming
+independence. How much depends on the endpoint types and on how similar
+the individual powers are: across the scenarios in these vignettes the
+reduction ranges from about 2% to about 11% as
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>ρ</mi><annotation encoding="application/x-tex">\rho</annotation></semantics></math>
+moves from 0 to 0.8, and it is largest when the two endpoints carry
+comparable effect sizes.</p>
 </div>
 </div>
 <div class="section level2">
@@ -572,7 +575,7 @@ is large,
 is also likely to be large</li>
 <li>
 <strong>Higher probability of rejecting both nulls</strong>:
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>Pr</mo><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>Z</mi><mn>1</mn></msub><mo>&gt;</mo><mi>c</mi><mo>,</mo><msub><mi>Z</mi><mn>2</mn></msub><mo>&gt;</mo><mi>c</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\Pr(Z_{1} &gt; c, Z_{2} &gt; c)</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">Pr</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><msub><mi>Z</mi><mn>1</mn></msub><mo>&gt;</mo><mi>c</mi><mo>,</mo><msub><mi>Z</mi><mn>2</mn></msub><mo>&gt;</mo><mi>c</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\Pr(Z_{1} &gt; c, Z_{2} &gt; c)</annotation></semantics></math>
 increases with
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>ρ</mi><annotation encoding="application/x-tex">\rho</annotation></semantics></math>
 </li>
@@ -581,10 +584,10 @@ increases with
 achieve target power</li>
 </ol>
 <p>Mathematically, for bivariate normal
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>Z</mi><mn>1</mn></msub><mo>,</mo><msub><mi>Z</mi><mn>2</mn></msub><mo stretchy="true" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(Z_{1}, Z_{2})</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><msub><mi>Z</mi><mn>1</mn></msub><mo>,</mo><msub><mi>Z</mi><mn>2</mn></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(Z_{1}, Z_{2})</annotation></semantics></math>
 with correlation
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>ρ</mi><annotation encoding="application/x-tex">\rho</annotation></semantics></math>:</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>Pr</mo><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>Z</mi><mn>1</mn></msub><mo>&gt;</mo><mi>c</mi><mo>,</mo><msub><mi>Z</mi><mn>2</mn></msub><mo>&gt;</mo><mi>c</mi><mo>∣</mo><mi>ρ</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>&gt;</mo><mo>Pr</mo><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>Z</mi><mn>1</mn></msub><mo>&gt;</mo><mi>c</mi><mo>,</mo><msub><mi>Z</mi><mn>2</mn></msub><mo>&gt;</mo><mi>c</mi><mo>∣</mo><mi>ρ</mi><mo>=</mo><mn>0</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\Pr(Z_{1} &gt; c, Z_{2} &gt; c \mid \rho) &gt; \Pr(Z_{1} &gt; c, Z_{2} &gt; c \mid \rho = 0)</annotation></semantics></math></p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">Pr</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><msub><mi>Z</mi><mn>1</mn></msub><mo>&gt;</mo><mi>c</mi><mo>,</mo><msub><mi>Z</mi><mn>2</mn></msub><mo>&gt;</mo><mi>c</mi><mo>∣</mo><mi>ρ</mi><mo stretchy="false" form="postfix">)</mo><mo>&gt;</mo><mrow><mi mathvariant="normal">Pr</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><msub><mi>Z</mi><mn>1</mn></msub><mo>&gt;</mo><mi>c</mi><mo>,</mo><msub><mi>Z</mi><mn>2</mn></msub><mo>&gt;</mo><mi>c</mi><mo>∣</mo><mi>ρ</mi><mo>=</mo><mn>0</mn><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\Pr(Z_{1} &gt; c, Z_{2} &gt; c \mid \rho) &gt; \Pr(Z_{1} &gt; c, Z_{2} &gt; c \mid \rho = 0)</annotation></semantics></math></p>
 <p>when
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ρ</mi><mo>&gt;</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">\rho &gt; 0</annotation></semantics></math>
 and both endpoints have positive treatment effects.</p>
@@ -723,7 +726,7 @@ count and continuous outcomes. <em>Pharmaceutical Statistics</em>,
 23(1), 46-59.</p>
 <p>Homma, G., &amp; Yoshida, T. (2025). Exact power and sample size in
 clinical trials with two co-primary binary endpoints. <em>Statistical
-Methods in Medical Research</em>, 34(1), 1-19.</p>
+Methods in Medical Research</em>, 34(11), 2183-2201.</p>
 <p>Sozu, T., Sugimoto, T., &amp; Hamasaki, T. (2010). Sample size
 determination in clinical trials with multiple co-primary binary
 endpoints. <em>Statistics in Medicine</em>, 29(21), 2169-2179.</p>

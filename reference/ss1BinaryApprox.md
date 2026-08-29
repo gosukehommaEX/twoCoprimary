@@ -95,9 +95,9 @@ endpoint trials using five different methods.
 
 **Important:** This function is designed for a **single binary
 endpoint**. For co-primary endpoints, use
-[`ss2BinaryApprox`](https://gosukehommaEX.github.io/twoCoprimary/reference/ss2BinaryApprox.md)
+[`ss2BinaryApprox`](https://gosukehommaex.github.io/twoCoprimary/reference/ss2BinaryApprox.md)
 (for approximate methods) or
-[`ss2BinaryExact`](https://gosukehommaEX.github.io/twoCoprimary/reference/ss2BinaryExact.md)
+[`ss2BinaryExact`](https://gosukehommaex.github.io/twoCoprimary/reference/ss2BinaryExact.md)
 (for exact methods).
 
 **Notation:**

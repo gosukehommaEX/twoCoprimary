@@ -28,22 +28,37 @@ The package supports five combinations of co-primary endpoints:
 - **Mixed count and continuous** - Negative binomial for overdispersed
   counts (Homma & Yoshida, 2024)
 
-All methods provide: - ✅ Sample size calculation given target power -
-✅ Power calculation given sample size - ✅ Proper Type I error control
-without multiplicity adjustment - ✅ Accounting for correlation between
-endpoints - ✅ Support for unbalanced allocation ratios
+All methods provide:
+
+- ✅ Sample size calculation given target power
+- ✅ Power calculation given sample size
+- ✅ Proper Type I error control without multiplicity adjustment
+- ✅ Accounting for correlation between endpoints
+- ✅ Support for unbalanced allocation ratios
+
+The exact methods for binary endpoints use a compiled kernel for the
+bivariate binomial distribution and evaluate the co-primary power as a
+matrix product, so a complete sample size search at a total sample size
+of several hundred takes about a second. The rejection regions of the
+Z-pooled and Boschloo exact unconditional tests agree with those of the
+[Exact](https://CRAN.R-project.org/package=Exact) package.
+
+See [NEWS](https://gosukehommaEX.github.io/twoCoprimary/news/index.html)
+for what changed in version 1.1.0.
 
 ## Installation
 
 Install from CRAN:
 
 ``` r
+
 install.packages("twoCoprimary")
 ```
 
 Or install the development version from GitHub:
 
 ``` r
+
 # install.packages("pak")
 pak::pak("gosukehommaEX/twoCoprimary")
 ```
@@ -56,6 +71,7 @@ Calculate sample size for a trial with two continuous co-primary
 endpoints:
 
 ``` r
+
 library(twoCoprimary)
 
 # Sample size calculation
@@ -91,6 +107,7 @@ print(result)
 For small to medium sample sizes, use exact methods:
 
 ``` r
+
 # Sample size with exact inference
 result_exact <- ss2BinaryExact(
   p11 = 0.50, p12 = 0.30,    # Response rates for group 1
@@ -122,6 +139,7 @@ print(result_exact)
 For COPD/asthma trials with exacerbation count and lung function:
 
 ``` r
+
 # Sample size calculation
 result <- ss2MixedCountContinuous(
     r1 = 1.0,              # Count rate in treatment group
@@ -174,20 +192,20 @@ Comprehensive vignettes are available:
 
 ## References
 
-1.  Homma, G., & Yoshida, T. (2024). Sample size calculation for
-    clinical trials with co‐primary outcomes: Negative binomial and
-    continuous outcomes. *Pharmaceutical Statistics*, 23(3), 368-392.
+1.  Homma, G., & Yoshida, T. (2024). Sample size calculation in clinical
+    trials with two co-primary endpoints including overdispersed count
+    and continuous outcomes. *Pharmaceutical Statistics*, 23(1), 46-59.
     <https://doi.org/10.1002/pst.2337>
 
 2.  Homma, G., & Yoshida, T. (2025). Exact power and sample size in
     clinical trials with two co-primary binary endpoints. *Statistical
-    Methods in Medical Research*, 34(1).
+    Methods in Medical Research*, 34(11), 2183-2201.
     <https://doi.org/10.1177/09622802251368697>
 
-3.  Sozu, T., Sugimoto, T., Hamasaki, T., & Evans, S. R. (2010). Sample
-    size determination in superiority clinical trials with multiple
-    co-primary correlated endpoints. *Statistics in Medicine*, 29(21),
-    2219-2227. <https://doi.org/10.1002/sim.3972>
+3.  Sozu, T., Sugimoto, T., & Hamasaki, T. (2010). Sample size
+    determination in clinical trials with multiple co-primary binary
+    endpoints. *Statistics in Medicine*, 29(21), 2169-2179.
+    <https://doi.org/10.1002/sim.3972>
 
 4.  Sozu, T., Sugimoto, T., & Hamasaki, T. (2011). Sample size
     determination in superiority clinical trials with multiple
@@ -195,15 +213,15 @@ Comprehensive vignettes are available:
     Statistics*, 21(4), 650-668.
     <https://doi.org/10.1080/10543406.2011.551329>
 
-5.  Sozu, T., Sugimoto, T., Hamasaki, T., & Evans, S. R. (2012). Sample
-    size determination in clinical trials with multiple co-primary
-    binary endpoints including mixed binary and continuous endpoints.
-    *Biometrical Journal*, 54(5), 716-729.
-    <https://doi.org/10.1002/bimj.201100221>
+5.  Sozu, T., Sugimoto, T., & Hamasaki, T. (2012). Sample size
+    determination in clinical trials with multiple co-primary endpoints
+    including mixed continuous and binary variables. *Biometrical
+    Journal*, 54(5), 716-729. <https://doi.org/10.1002/bimj.201100221>
 
 ## Citation
 
 ``` r
+
 citation("twoCoprimary")
 ```
 
@@ -224,14 +242,14 @@ MIT © Gosuke Homma
 
 Functions for clinical trials with two continuous co-primary endpoints
 
-- [`ss2Continuous()`](https://gosukehommaEX.github.io/twoCoprimary/reference/ss2Continuous.md)
+- [`ss2Continuous()`](https://gosukehommaex.github.io/twoCoprimary/reference/ss2Continuous.md)
   : Sample Size Calculation for Two Co-Primary Continuous Endpoints
   (Approximate)
-- [`power2Continuous()`](https://gosukehommaEX.github.io/twoCoprimary/reference/power2Continuous.md)
+- [`power2Continuous()`](https://gosukehommaex.github.io/twoCoprimary/reference/power2Continuous.md)
   : Power Calculation for Two Co-Primary Continuous Endpoints
-- [`twoCoprimary2Continuous()`](https://gosukehommaEX.github.io/twoCoprimary/reference/twoCoprimary2Continuous.md)
+- [`twoCoprimary2Continuous()`](https://gosukehommaex.github.io/twoCoprimary/reference/twoCoprimary2Continuous.md)
   : Unified Interface for Two Co-Primary Continuous Endpoints
-- [`ss1Continuous()`](https://gosukehommaEX.github.io/twoCoprimary/reference/ss1Continuous.md)
+- [`ss1Continuous()`](https://gosukehommaex.github.io/twoCoprimary/reference/ss1Continuous.md)
   : Sample Size Calculation for a Single Continuous Endpoint
 
 ## Two Binary Endpoints (Asymptotic Methods)
@@ -239,15 +257,15 @@ Functions for clinical trials with two continuous co-primary endpoints
 Functions for clinical trials with two binary co-primary endpoints using
 asymptotic normal approximation
 
-- [`ss2BinaryApprox()`](https://gosukehommaEX.github.io/twoCoprimary/reference/ss2BinaryApprox.md)
+- [`ss2BinaryApprox()`](https://gosukehommaex.github.io/twoCoprimary/reference/ss2BinaryApprox.md)
   : Sample Size Calculation for Two Co-Primary Binary Endpoints
   (Asymptotic Approximation)
-- [`power2BinaryApprox()`](https://gosukehommaEX.github.io/twoCoprimary/reference/power2BinaryApprox.md)
+- [`power2BinaryApprox()`](https://gosukehommaex.github.io/twoCoprimary/reference/power2BinaryApprox.md)
   : Power Calculation for Two Co-Primary Binary Endpoints (Approximate)
-- [`twoCoprimary2BinaryApprox()`](https://gosukehommaEX.github.io/twoCoprimary/reference/twoCoprimary2BinaryApprox.md)
+- [`twoCoprimary2BinaryApprox()`](https://gosukehommaex.github.io/twoCoprimary/reference/twoCoprimary2BinaryApprox.md)
   : Unified Interface for Two Co-Primary Binary Endpoints (Approximate
   Methods)
-- [`ss1BinaryApprox()`](https://gosukehommaEX.github.io/twoCoprimary/reference/ss1BinaryApprox.md)
+- [`ss1BinaryApprox()`](https://gosukehommaex.github.io/twoCoprimary/reference/ss1BinaryApprox.md)
   : Sample Size Calculation for a Single Binary Endpoint
 
 ## Two Binary Endpoints (Exact Methods)
@@ -255,16 +273,16 @@ asymptotic normal approximation
 Functions for clinical trials with two binary co-primary endpoints using
 exact inference methods
 
-- [`ss2BinaryExact()`](https://gosukehommaEX.github.io/twoCoprimary/reference/ss2BinaryExact.md)
+- [`ss2BinaryExact()`](https://gosukehommaex.github.io/twoCoprimary/reference/ss2BinaryExact.md)
   : Exact Sample Size Calculation for Two Co-Primary Binary Endpoints
-- [`power2BinaryExact()`](https://gosukehommaEX.github.io/twoCoprimary/reference/power2BinaryExact.md)
+- [`power2BinaryExact()`](https://gosukehommaex.github.io/twoCoprimary/reference/power2BinaryExact.md)
   : Exact Power Calculation for Two Co-Primary Binary Endpoints
-- [`twoCoprimary2BinaryExact()`](https://gosukehommaEX.github.io/twoCoprimary/reference/twoCoprimary2BinaryExact.md)
+- [`twoCoprimary2BinaryExact()`](https://gosukehommaex.github.io/twoCoprimary/reference/twoCoprimary2BinaryExact.md)
   : Unified Interface for Two Co-Primary Binary Endpoints (Exact
   Methods)
-- [`rr1Binary()`](https://gosukehommaEX.github.io/twoCoprimary/reference/rr1Binary.md)
+- [`rr1Binary()`](https://gosukehommaex.github.io/twoCoprimary/reference/rr1Binary.md)
   : Rejection Region for Two-Arm Trials with a Single Binary Endpoint
-- [`dbibinom()`](https://gosukehommaEX.github.io/twoCoprimary/reference/dbibinom.md)
+- [`dbibinom()`](https://gosukehommaex.github.io/twoCoprimary/reference/dbibinom.md)
   : Probability Mass Function of Bivariate Binomial Distribution
 
 ## Mixed Continuous and Binary Endpoints
@@ -272,12 +290,12 @@ exact inference methods
 Functions for clinical trials with one continuous and one binary
 co-primary endpoint
 
-- [`ss2MixedContinuousBinary()`](https://gosukehommaEX.github.io/twoCoprimary/reference/ss2MixedContinuousBinary.md)
+- [`ss2MixedContinuousBinary()`](https://gosukehommaex.github.io/twoCoprimary/reference/ss2MixedContinuousBinary.md)
   : Sample Size Calculation for Two Co-Primary Endpoints: One Continuous
   and One Binary
-- [`power2MixedContinuousBinary()`](https://gosukehommaEX.github.io/twoCoprimary/reference/power2MixedContinuousBinary.md)
+- [`power2MixedContinuousBinary()`](https://gosukehommaex.github.io/twoCoprimary/reference/power2MixedContinuousBinary.md)
   : Power Calculation for Two Co-Primary Mixed Endpoints
-- [`twoCoprimary2MixedContinuousBinary()`](https://gosukehommaEX.github.io/twoCoprimary/reference/twoCoprimary2MixedContinuousBinary.md)
+- [`twoCoprimary2MixedContinuousBinary()`](https://gosukehommaex.github.io/twoCoprimary/reference/twoCoprimary2MixedContinuousBinary.md)
   : Unified Interface for Mixed Continuous and Binary Co-Primary
   Endpoints
 
@@ -286,16 +304,16 @@ co-primary endpoint
 Functions for clinical trials with one count (negative binomial) and one
 continuous co-primary endpoint
 
-- [`ss2MixedCountContinuous()`](https://gosukehommaEX.github.io/twoCoprimary/reference/ss2MixedCountContinuous.md)
+- [`ss2MixedCountContinuous()`](https://gosukehommaex.github.io/twoCoprimary/reference/ss2MixedCountContinuous.md)
   : Sample Size Calculation for Two Co-Primary Endpoints: One Count and
   One Continuous
-- [`power2MixedCountContinuous()`](https://gosukehommaEX.github.io/twoCoprimary/reference/power2MixedCountContinuous.md)
+- [`power2MixedCountContinuous()`](https://gosukehommaex.github.io/twoCoprimary/reference/power2MixedCountContinuous.md)
   : Power Calculation for Two Co-Primary Endpoints (Count and
   Continuous)
-- [`twoCoprimary2MixedCountContinuous()`](https://gosukehommaEX.github.io/twoCoprimary/reference/twoCoprimary2MixedCountContinuous.md)
+- [`twoCoprimary2MixedCountContinuous()`](https://gosukehommaex.github.io/twoCoprimary/reference/twoCoprimary2MixedCountContinuous.md)
   : Unified Interface for Mixed Count and Continuous Co-Primary
   Endpoints
-- [`ss1Count()`](https://gosukehommaEX.github.io/twoCoprimary/reference/ss1Count.md)
+- [`ss1Count()`](https://gosukehommaex.github.io/twoCoprimary/reference/ss1Count.md)
   : Sample Size Calculation for a Single Count Endpoint (Negative
   Binomial)
 
@@ -303,22 +321,31 @@ continuous co-primary endpoint
 
 Helper functions for correlation bounds and design comparisons
 
-- [`corrbound2Binary()`](https://gosukehommaEX.github.io/twoCoprimary/reference/corrbound2Binary.md)
+- [`corrbound2Binary()`](https://gosukehommaex.github.io/twoCoprimary/reference/corrbound2Binary.md)
   : Calculate Correlation Bounds Between Two Binary Outcomes
-- [`corrbound2MixedCountContinuous()`](https://gosukehommaEX.github.io/twoCoprimary/reference/corrbound2MixedCountContinuous.md)
+- [`corrbound2MixedCountContinuous()`](https://gosukehommaex.github.io/twoCoprimary/reference/corrbound2MixedCountContinuous.md)
   : Calculate Correlation Bounds Between Count and Continuous Outcomes
-- [`design_table()`](https://gosukehommaEX.github.io/twoCoprimary/reference/design_table.md)
+- [`design_table()`](https://gosukehommaex.github.io/twoCoprimary/reference/design_table.md)
   : Create Design Comparison Table for Two Co-Primary Endpoints
+
+## Package Overview
+
+Package level documentation
+
+- [`twoCoprimary`](https://gosukehommaex.github.io/twoCoprimary/reference/twoCoprimary-package.md)
+  [`twoCoprimary-package`](https://gosukehommaex.github.io/twoCoprimary/reference/twoCoprimary-package.md)
+  : twoCoprimary: Sample Size and Power Calculation for Two Co-Primary
+  Endpoints
 
 ## Visualization and Output
 
 Methods for displaying and visualizing results
 
-- [`print(`*`<twoCoprimary>`*`)`](https://gosukehommaEX.github.io/twoCoprimary/reference/print.twoCoprimary.md)
+- [`print(`*`<twoCoprimary>`*`)`](https://gosukehommaex.github.io/twoCoprimary/reference/print.twoCoprimary.md)
   : Print Method for twoCoprimary Objects
-- [`print(`*`<twoCoprimary_table>`*`)`](https://gosukehommaEX.github.io/twoCoprimary/reference/print.twoCoprimary_table.md)
+- [`print(`*`<twoCoprimary_table>`*`)`](https://gosukehommaex.github.io/twoCoprimary/reference/print.twoCoprimary_table.md)
   : Print Method for twoCoprimary_table Objects
-- [`plot(`*`<twoCoprimary>`*`)`](https://gosukehommaEX.github.io/twoCoprimary/reference/plot.twoCoprimary.md)
+- [`plot(`*`<twoCoprimary>`*`)`](https://gosukehommaex.github.io/twoCoprimary/reference/plot.twoCoprimary.md)
   : Plot Method for twoCoprimary Objects
 
 # Articles
@@ -326,14 +353,14 @@ Methods for displaying and visualizing results
 ### All vignettes
 
 - [Mixed Continuous and Binary Co-Primary
-  Endpoints](https://gosukehommaEX.github.io/twoCoprimary/articles/mixed-continuous-binary.md):
+  Endpoints](https://gosukehommaex.github.io/twoCoprimary/articles/mixed-continuous-binary.md):
 - [Mixed Count and Continuous Co-Primary
-  Endpoints](https://gosukehommaEX.github.io/twoCoprimary/articles/mixed-count-continuous.md):
+  Endpoints](https://gosukehommaex.github.io/twoCoprimary/articles/mixed-count-continuous.md):
 - [Overview of Two Co-Primary Endpoints
-  Analysis](https://gosukehommaEX.github.io/twoCoprimary/articles/overview.md):
+  Analysis](https://gosukehommaex.github.io/twoCoprimary/articles/overview.md):
 - [Two Binary Co-Primary Endpoints (Asymptotic
-  Methods)](https://gosukehommaEX.github.io/twoCoprimary/articles/two-binary-endpoints-approx.md):
+  Methods)](https://gosukehommaex.github.io/twoCoprimary/articles/two-binary-endpoints-approx.md):
 - [Two Binary Co-Primary Endpoints (Exact
-  Methods)](https://gosukehommaEX.github.io/twoCoprimary/articles/two-binary-endpoints-exact.md):
+  Methods)](https://gosukehommaex.github.io/twoCoprimary/articles/two-binary-endpoints-exact.md):
 - [Two Continuous Co-Primary
-  Endpoints](https://gosukehommaEX.github.io/twoCoprimary/articles/two-continuous-endpoints.md):
+  Endpoints](https://gosukehommaex.github.io/twoCoprimary/articles/two-continuous-endpoints.md):

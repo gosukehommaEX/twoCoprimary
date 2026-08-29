@@ -140,7 +140,7 @@ where \\\nu\_{jk,c} = (p\_{jk} + c_j)(1 - p\_{jk} - c_j)\\, \\c_1 =
 -1/(2n_1)\\, and \\c_2 = 1/(2n_2)\\.
 
 The correlation bounds are automatically checked using
-[`corrbound2Binary`](https://gosukehommaEX.github.io/twoCoprimary/reference/corrbound2Binary.md).
+[`corrbound2Binary`](https://gosukehommaex.github.io/twoCoprimary/reference/corrbound2Binary.md).
 
 ## References
 

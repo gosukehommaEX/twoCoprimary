@@ -7,7 +7,19 @@ as described in Homma and Yoshida (2025).
 ## Usage
 
 ``` r
-power2BinaryExact(n1, n2, p11, p12, p21, p22, rho1, rho2, alpha, Test)
+power2BinaryExact(
+  n1,
+  n2,
+  p11,
+  p12,
+  p21,
+  p22,
+  rho1,
+  rho2,
+  alpha,
+  Test,
+  n_grid = 100
+)
 ```
 
 ## Arguments
@@ -66,6 +78,16 @@ power2BinaryExact(n1, n2, p11, p12, p21, p22, rho1, rho2, alpha, Test)
 
   - `"Boschloo"`: Boschloo exact unconditional test
 
+- n_grid:
+
+  Number of grid points used to maximize the null tail probability over
+  the nuisance parameter in the two exact unconditional tests, that is
+  `"Z-pool"` and `"Boschloo"` (default is 100). The other three tests
+  read their p-values off a distribution and ignore this argument. A
+  finer grid locates the maximum more accurately at a proportionally
+  higher computational cost, and the default reproduces the results of
+  earlier versions of the package.
+
 ## Value
 
 A data frame with the following columns:
@@ -121,13 +143,13 @@ where \\\mathcal{A}\_k\\ is the rejection region for endpoint k, and
 follows the bivariate binomial distribution.
 
 The correlation bounds are automatically checked using
-[`corrbound2Binary`](https://gosukehommaEX.github.io/twoCoprimary/reference/corrbound2Binary.md).
+[`corrbound2Binary`](https://gosukehommaex.github.io/twoCoprimary/reference/corrbound2Binary.md).
 
 ## References
 
 Homma, G., & Yoshida, T. (2025). Exact power and sample size in clinical
 trials with two co-primary binary endpoints. *Statistical Methods in
-Medical Research*, 34(1), 1-19.
+Medical Research*, 34(11), 2183-2201.
 
 ## Examples
 

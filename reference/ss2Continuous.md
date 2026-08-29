@@ -146,7 +146,7 @@ endpoints. *Journal of Biopharmaceutical Statistics*, 21(4), 650-668.
 
 Homma, G., & Yoshida, T. (2025). Exact power and sample size in clinical
 trials with two co-primary binary endpoints. *Statistical Methods in
-Medical Research*, 34(1), 1-19.
+Medical Research*, 34(11), 2183-2201.
 
 ## Examples
 

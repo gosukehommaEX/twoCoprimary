@@ -8,6 +8,7 @@ asymptotic normal approximation methods. The methodology is based on
 Sozu et al. (2011).
 
 ``` r
+
 library(twoCoprimary)
 library(dplyr)
 library(tidyr)
@@ -23,7 +24,7 @@ statistically significant treatment effects on **all** endpoints
 simultaneously. Unlike multiple primary endpoints (where success on any
 one endpoint is sufficient), co-primary endpoints require:
 
-1.  **Rejecting all null hypotheses** at level $\alpha$
+1.  **Rejecting all null hypotheses** at level $`\alpha`$
 2.  **No multiplicity adjustment** needed for Type I error control
 3.  **Correlation consideration** can improve efficiency
 
@@ -42,36 +43,41 @@ Co-primary continuous endpoints are common in:
 ### Model and Assumptions
 
 Consider a two-arm parallel-group superiority trial comparing treatment
-(group 1) with control (group 2). Let $n_{1}$ and $n_{2}$ denote the
+(group 1) with control (group 2). Let $`n_{1}`$ and $`n_{2}`$ denote the
 sample sizes in the two groups (i.e., total sample size is
-$N = n_{1} + n_{2}$), and define the allocation ratio $r = n_{1}/n_{2}$.
+$`N=n_{1}+n_{2}`$), and define the allocation ratio $`r = n_{1}/n_{2}`$.
 
-For subject $i$ in group $j$ ($j = 1$: treatment, $j = 2$: control), we
-observe two continuous outcomes:
+For subject $`i`$ in group $`j`$ ($`j = 1`$: treatment, $`j = 2`$:
+control), we observe two continuous outcomes:
 
-**Endpoint $k$** ($k = 1,2$):
-$$X_{i,j,k} \sim \text{N}\left( \mu_{j,k},\sigma_{k}^{2} \right)$$
+**Endpoint $`k`$** ($`k = 1, 2`$):
+``` math
+X_{i,j,k} \sim \text{N}(\mu_{j,k}, \sigma_{k}^{2})
+```
 
 where:
 
-- $\mu_{j,k}$ is the population mean for outcome $k$ in group $j$
-- $\sigma_{k}^{2}$ is the common variance for outcome $k$ across both
-  groups
+- $`\mu_{j,k}`$ is the population mean for outcome $`k`$ in group $`j`$
+- $`\sigma_{k}^{2}`$ is the common variance for outcome $`k`$ across
+  both groups
 
 **Within-subject correlation**: The two outcomes are correlated within
 each subject:
-$$\text{Cor}\left( X_{i,j,1},X_{i,j,2} \right) = \rho_{j}$$
+``` math
+\text{Cor}(X_{i,j,1}, X_{i,j,2}) = \rho_{j}
+```
 
 We assume common correlation across groups:
-$\rho_{1} = \rho_{2} = \rho$.
+$`\rho_{1} = \rho_{2} = \rho`$.
 
 ### Effect Size Parameterization
 
-The treatment effect for endpoint $k$ is measured by:
+The treatment effect for endpoint $`k`$ is measured by:
 
-**Absolute difference**: $\delta_{k} = \mu_{1,k} - \mu_{2,k}$
+**Absolute difference**: $`\delta_{k} = \mu_{1,k} - \mu_{2,k}`$
 
-**Standardized effect size**: $\delta_{k}^{*} = \delta_{k}/\sigma_{k}$
+**Standardized effect size**:
+$`\delta_{k}^{\ast} = \delta_{k} / \sigma_{k}`$
 
 The standardized effect size is preferred as it is scale-free and
 facilitates comparison across studies.
@@ -80,77 +86,79 @@ facilitates comparison across studies.
 
 For two co-primary endpoints, we test:
 
-**Null hypothesis**: $\text{H}_{0} = \text{H}_{01} \cup \text{H}_{02}$
+**Null hypothesis**: $`\text{H}_{0} = \text{H}_{01} \cup \text{H}_{02}`$
 (at least one null hypothesis is true)
 
-where $\text{H}_{0k}:\delta_{k} = 0$ for $k = 1,2$.
+where $`\text{H}_{0k}: \delta_{k} = 0`$ for $`k = 1, 2`$.
 
 **Alternative hypothesis**:
-$\text{H}_{1} = \text{H}_{11} \cap \text{H}_{12}$ (both alternative
+$`\text{H}_{1} = \text{H}_{11} \cap \text{H}_{12}`$ (both alternative
 hypotheses are true)
 
-where $\text{H}_{1k}:\delta_{k} > 0$ for $k = 1,2$.
+where $`\text{H}_{1k}: \delta_{k} > 0`$ for $`k = 1, 2`$.
 
-**Decision rule**: Reject $\text{H}_{0}$ if and only if both
-$\text{H}_{01}$ and $\text{H}_{02}$ are rejected at significance level
-$\alpha$.
+**Decision rule**: Reject $`\text{H}_{0}`$ if and only if both
+$`\text{H}_{01}`$ and $`\text{H}_{02}`$ are rejected at significance
+level $`\alpha`$.
 
 ### Test Statistics
 
-For each endpoint $k$, the test statistic is:
+For each endpoint $`k`$, the test statistic is:
 
 **Known variance case**:
-$$Z_{k} = \frac{{\bar{X}}_{1k} - {\bar{X}}_{2k}}{\sigma_{k}\sqrt{\frac{1}{n_{1}} + \frac{1}{n_{2}}}}$$
+``` math
+Z_{k} = \frac{\bar{X}_{1k} - \bar{X}_{2k}}{\sigma_{k}\sqrt{\frac{1}{n_{1}} + \frac{1}{n_{2}}}}
+```
 
 **Unknown variance case**:
-$$T_{k} = \frac{{\bar{X}}_{1k} - {\bar{X}}_{2k}}{s_{k}\sqrt{\frac{1}{n_{1}} + \frac{1}{n_{2}}}}$$
+``` math
+T_{k} = \frac{\bar{X}_{1k} - \bar{X}_{2k}}{s_{k}\sqrt{\frac{1}{n_{1}} + \frac{1}{n_{2}}}}
+```
 
-where $s_{k}$ is the pooled sample standard deviation for endpoint $k$.
+where $`s_{k}`$ is the pooled sample standard deviation for endpoint
+$`k`$.
 
 ### Joint Distribution
 
-Under $\text{H}_{1}$, when variances are known,
-$\left( Z_{1},Z_{2} \right)$ asymptotically follows a bivariate normal
-distribution:
+Under $`\text{H}_{1}`$, when variances are known, $`(Z_{1}, Z_{2})`$
+asymptotically follows a bivariate normal distribution:
 
-$$\begin{pmatrix}
-Z_{1} \\
-Z_{2}
-\end{pmatrix} \sim \text{BN}\left( \begin{pmatrix}
-\omega_{1} \\
-\omega_{2}
-\end{pmatrix},\begin{pmatrix}
-1 & \gamma \\
-\gamma & 1
-\end{pmatrix} \right)$$
+``` math
+\begin{pmatrix} Z_{1} \\ Z_{2} \end{pmatrix} \sim \text{BN}\left(\begin{pmatrix} \omega_{1} \\ \omega_{2} \end{pmatrix}, \begin{pmatrix} 1 & \gamma \\ \gamma & 1 \end{pmatrix}\right)
+```
 
 where:
 
-- $\omega_{k} = \delta_{k}\sqrt{\frac{rn_{2}}{1 + r}}$ is the
-  non-centrality parameter for endpoint $k$
-- $\gamma = \rho$ is the correlation between test statistics
+- $`\omega_{k} = \delta_{k}\sqrt{\frac{r n_{2}}{1 + r}}`$ is the
+  non-centrality parameter for endpoint $`k`$
+- $`\gamma = \rho`$ is the correlation between test statistics
 
 ### Power Formula
 
 The overall power is:
 
-$$1 - \beta = \Pr\left( Z_{1} > z_{1 - \alpha}{\mspace{6mu}\text{and}\mspace{6mu}}Z_{2} > z_{1 - \alpha} \mid \text{H}_{1} \right)$$
+``` math
+1 - \beta = \Pr(Z_{1} > z_{1-\alpha} \text{ and } Z_{2} > z_{1-\alpha} \mid \text{H}_{1})
+```
 
 Using the bivariate normal CDF:
 
-$$1 - \beta = \Phi_{2}\left( - z_{1 - \alpha} + \omega_{1}, - z_{1 - \alpha} + \omega_{2} \mid \rho \right)$$
+``` math
+1 - \beta = \Phi_{2}(-z_{1-\alpha} + \omega_{1}, -z_{1-\alpha} + \omega_{2} \mid \rho)
+```
 
-where $\Phi_{2}( \cdot , \cdot \mid \rho)$ is the bivariate normal CDF
-with correlation $\rho$.
+where $`\Phi_{2}(\cdot, \cdot \mid \rho)`$ is the bivariate normal CDF
+with correlation $`\rho`$.
 
 ## Sample Size Calculation
 
 ### Basic Example
 
-Calculate sample size for a balanced design ($\kappa = 1$) with known
+Calculate sample size for a balanced design ($`\kappa = 1`$) with known
 variance:
 
 ``` r
+
 # Design parameters
 result <- ss2Continuous(
   delta1 = 0.5,      # Effect size for endpoint 1
@@ -185,6 +193,7 @@ print(result)
 Examine how correlation affects sample size:
 
 ``` r
+
 # Calculate sample sizes for different correlations
 correlations <- c(0, 0.3, 0.5, 0.8)
 sample_sizes <- sapply(correlations, function(rho) {
@@ -217,15 +226,17 @@ kable(correlation_table,
 |               0.8 |     148 |          10.8 |
 
 Sample Size vs Correlation (delta = 0.5, alpha = 0.025, power = 0.8)
+{.table}
 
-**Key finding**: At $\rho = 0.8$, approximately 11% reduction in sample
-size compared to $\rho = 0$.
+**Key finding**: At $`\rho = 0.8`$, approximately 11% reduction in
+sample size compared to $`\rho = 0`$.
 
 ### Visualization with plot()
 
 Visualize the relationship between correlation and sample size:
 
 ``` r
+
 # Use plot method to visualize sample size vs correlation
 plot(result, type = "sample_size_rho")
 ```
@@ -235,6 +246,7 @@ plot(result, type = "sample_size_rho")
 Visualize power contours for different effect sizes:
 
 ``` r
+
 # Create contour plot for effect sizes
 plot(result, type = "effect_contour")
 ```
@@ -244,11 +256,12 @@ plot(result, type = "effect_contour")
 ## Replicating Sozu et al. (2011) Table 1
 
 We replicate Table 1 from Sozu et al. (2011) using the
-[`design_table()`](https://gosukehommaEX.github.io/twoCoprimary/reference/design_table.md)
+[`design_table()`](https://gosukehommaex.github.io/twoCoprimary/reference/design_table.md)
 function. This table shows sample sizes per group for various
 combinations of standardized effect sizes.
 
 ``` r
+
 # Create parameter grid (delta1 <= delta2)
 param_grid <- expand.grid(
   delta1 = c(0.2, 0.25, 0.3, 0.35, 0.4),
@@ -273,38 +286,40 @@ result_table <- design_table(
 # Display table
 kable(result_table,
       caption = "Table 1: Sample Sizes Per Group (Sozu et al. 2011, alpha = 0.025, power = 0.8)",
-      digits = 2)
+      digits = c(2, 2, 0, 0, 0, 0, 0, 0),
+      col.names = c("δ₁", "δ₂", "σ₁", "σ₂",
+                    "ρ=0.0", "ρ=0.3", "ρ=0.5", "ρ=0.8"))
 ```
 
-| delta1 | delta2 | sd1 | sd2 | rho_0.0 | rho_0.3 | rho_0.5 | rho_0.8 |
-|-------:|-------:|----:|----:|--------:|--------:|--------:|--------:|
-|   0.20 |   0.20 |   1 |   1 |     516 |     503 |     490 |     458 |
-|   0.20 |   0.25 |   1 |   1 |     432 |     424 |     417 |     401 |
-|   0.20 |   0.30 |   1 |   1 |     402 |     399 |     397 |     393 |
-|   0.20 |   0.35 |   1 |   1 |     394 |     394 |     393 |     393 |
-|   0.20 |   0.40 |   1 |   1 |     393 |     393 |     393 |     393 |
-|   0.25 |   0.25 |   1 |   1 |     330 |     322 |     314 |     294 |
-|   0.25 |   0.30 |   1 |   1 |     284 |     278 |     272 |     260 |
-|   0.25 |   0.35 |   1 |   1 |     263 |     260 |     257 |     253 |
-|   0.25 |   0.40 |   1 |   1 |     254 |     253 |     253 |     252 |
-|   0.30 |   0.30 |   1 |   1 |     230 |     224 |     218 |     204 |
-|   0.30 |   0.35 |   1 |   1 |     201 |     197 |     192 |     183 |
-|   0.30 |   0.40 |   1 |   1 |     186 |     183 |     181 |     176 |
-|   0.35 |   0.35 |   1 |   1 |     169 |     165 |     160 |     150 |
-|   0.35 |   0.40 |   1 |   1 |     150 |     147 |     143 |     136 |
-|   0.40 |   0.40 |   1 |   1 |     129 |     126 |     123 |     115 |
+|   δ₁ |   δ₂ |  σ₁ |  σ₂ | ρ=0.0 | ρ=0.3 | ρ=0.5 | ρ=0.8 |
+|-----:|-----:|----:|----:|------:|------:|------:|------:|
+| 0.20 | 0.20 |   1 |   1 |   516 |   503 |   490 |   458 |
+| 0.20 | 0.25 |   1 |   1 |   432 |   424 |   417 |   401 |
+| 0.20 | 0.30 |   1 |   1 |   402 |   399 |   397 |   393 |
+| 0.20 | 0.35 |   1 |   1 |   394 |   394 |   393 |   393 |
+| 0.20 | 0.40 |   1 |   1 |   393 |   393 |   393 |   393 |
+| 0.25 | 0.25 |   1 |   1 |   330 |   322 |   314 |   294 |
+| 0.25 | 0.30 |   1 |   1 |   284 |   278 |   272 |   260 |
+| 0.25 | 0.35 |   1 |   1 |   263 |   260 |   257 |   253 |
+| 0.25 | 0.40 |   1 |   1 |   254 |   253 |   253 |   252 |
+| 0.30 | 0.30 |   1 |   1 |   230 |   224 |   218 |   204 |
+| 0.30 | 0.35 |   1 |   1 |   201 |   197 |   192 |   183 |
+| 0.30 | 0.40 |   1 |   1 |   186 |   183 |   181 |   176 |
+| 0.35 | 0.35 |   1 |   1 |   169 |   165 |   160 |   150 |
+| 0.35 | 0.40 |   1 |   1 |   150 |   147 |   143 |   136 |
+| 0.40 | 0.40 |   1 |   1 |   129 |   126 |   123 |   115 |
 
 Table 1: Sample Sizes Per Group (Sozu et al. 2011, alpha = 0.025, power
-= 0.8)
+= 0.8) {.table}
 
 **Interpretation**:
 
 - Each row represents a combination of standardized effect sizes
-  ($\delta_{1}^{*},\delta_{2}^{*}$)
+  ($`\delta_{1}^{\ast}, \delta_{2}^{\ast}`$)
 - Columns show sample size per group for different correlations
-  ($\rho = 0,0.3,0.5,0.8$)
+  ($`\rho = 0, 0.3, 0.5, 0.8`$)
 - Higher correlation leads to smaller required sample sizes
-- When $\delta_{1} = \delta_{2}$ (equal effect sizes), the benefit of
+- When $`\delta_{1} = \delta_{2}`$ (equal effect sizes), the benefit of
   correlation is more pronounced
 
 ## Power Calculation
@@ -314,6 +329,7 @@ Table 1: Sample Sizes Per Group (Sozu et al. 2011, alpha = 0.025, power
 Calculate power for a specific sample size:
 
 ``` r
+
 # Calculate power with n1 = n2 = 100
 power_result <- power2Continuous(
   n1 = 100, n2 = 100,
@@ -345,6 +361,7 @@ print(power_result)
 Verify that calculated sample size achieves target power:
 
 ``` r
+
 # Calculate sample size
 ss_result <- ss2Continuous(
   delta1 = 0.5, delta2 = 0.5,
@@ -378,6 +395,7 @@ The package provides a unified interface similar to
 [`power.prop.test()`](https://rdrr.io/r/stats/power.prop.test.html):
 
 ``` r
+
 # Sample size calculation mode
 twoCoprimary2Continuous(
   delta1 = 0.5, delta2 = 0.5,
@@ -424,9 +442,14 @@ twoCoprimary2Continuous(
 
 ## Unknown Variance Case
 
-When variances are unknown, use $t$-test with Monte Carlo simulation:
+When variances are unknown, use $`t`$-test with Monte Carlo simulation:
 
 ``` r
+
+# The unknown variance case integrates over Wishart distributed variance
+# estimates by Monte Carlo, so a seed is needed for a reproducible result
+set.seed(20260829)
+
 # Sample size calculation with unknown variance
 ss_unknown <- ss2Continuous(
   delta1 = 0.5, delta2 = 0.5,
@@ -454,14 +477,22 @@ print(ss_unknown)
 #>             nMC = 10000
 ```
 
-Note: The unknown variance case requires more computation time due to
-Monte Carlo simulation.
+Note: the unknown variance case integrates over the sampling
+distribution of the variance estimates by Monte Carlo, so it costs more
+than the known variance case and, without
+[`set.seed()`](https://rdrr.io/r/base/Random.html), returns a slightly
+different answer on each call. Increasing `nMC` reduces that variation.
+
+The power depends on the continuous endpoints only through the
+standardized effects $`\delta_{k} / \sigma_{k}`$, so multiplying every
+effect and every standard deviation by a common constant leaves the
+answer unchanged.
 
 ## Practical Considerations
 
 ### Correlation Estimation
 
-Methods to estimate correlation $\rho$:
+Methods to estimate correlation $`\rho`$:
 
 1.  **Pilot studies**: Small preliminary studies
 2.  **Historical data**: Previous trials in the same disease area
@@ -476,6 +507,7 @@ adequate power.
 Always perform sensitivity analysis:
 
 ``` r
+
 # Test robustness to correlation misspecification
 assumed_rho <- 0.5
 true_rhos <- c(0, 0.3, 0.5, 0.7, 0.9)
@@ -520,7 +552,7 @@ kable(sensitivity_results,
 |         0.5 |      0.7 |          79 |          0.821 |
 |         0.5 |      0.9 |          79 |          0.846 |
 
-Sensitivity Analysis: Impact of Correlation Misspecification
+Sensitivity Analysis: Impact of Correlation Misspecification {.table}
 
 ## References
 

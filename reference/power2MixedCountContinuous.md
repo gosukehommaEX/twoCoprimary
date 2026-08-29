@@ -154,7 +154,7 @@ normal distribution with correlation gamma (equation 11): \$\$\gamma =
 where \\\lambda_j = r_j \times t\\.
 
 The correlation bounds are automatically checked using
-[`corrbound2MixedCountContinuous`](https://gosukehommaEX.github.io/twoCoprimary/reference/corrbound2MixedCountContinuous.md).
+[`corrbound2MixedCountContinuous`](https://gosukehommaex.github.io/twoCoprimary/reference/corrbound2MixedCountContinuous.md).
 
 ## References
 

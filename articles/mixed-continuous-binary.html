@@ -12,8 +12,8 @@
 <link rel="icon" sizes="any" href="../favicon.ico">
 <link rel="manifest" href="../site.webmanifest">
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Mixed Continuous and Binary Co-Primary Endpoints">
 </head>
@@ -39,7 +39,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">twoCoprimary</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -107,7 +107,7 @@ In this vignette, we follow the notation from the original paper using
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>κ</mi><annotation encoding="application/x-tex">\kappa</annotation></semantics></math>
 to maintain consistency with the published formulas.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://gosukehommaex.github.io/twoCoprimary/" class="external-link">twoCoprimary</a></span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://gosukehommaex.github.io/twoCoprimary/">twoCoprimary</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyr.tidyverse.org" class="external-link">tidyr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://yihui.org/knitr/" class="external-link">knitr</a></span><span class="op">)</span></span></code></pre></div>
@@ -170,7 +170,7 @@ treatment,
 control), we observe two <strong>outcomes</strong>:</p>
 <p><strong>Outcome 1 (Continuous)</strong>
 (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>k</mi><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">k = 1</annotation></semantics></math>):
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>X</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mn>1</mn></mrow></msub><mo>∼</mo><mtext mathvariant="normal">N</mtext><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>μ</mi><mi>j</mi></msub><mo>,</mo><msup><mi>σ</mi><mn>2</mn></msup><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">X_{i,j,1} \sim \text{N}(\mu_{j}, \sigma^2)</annotation></semantics></math></p>
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>X</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mn>1</mn></mrow></msub><mo>∼</mo><mtext mathvariant="normal">N</mtext><mo stretchy="false" form="prefix">(</mo><msub><mi>μ</mi><mi>j</mi></msub><mo>,</mo><msup><mi>σ</mi><mn>2</mn></msup><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">X_{i,j,1} \sim \text{N}(\mu_{j}, \sigma^2)</annotation></semantics></math></p>
 <p>where
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>μ</mi><mi>j</mi></msub><annotation encoding="application/x-tex">\mu_{j}</annotation></semantics></math>
 is the population mean in group
@@ -213,9 +213,9 @@ is assumed to arise from dichotomizing a latent continuous variable
 <p>where
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>g</mi><mi>j</mi></msub><annotation encoding="application/x-tex">g_{j}</annotation></semantics></math>
 is a threshold (cut-off point) such that
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">P</mtext><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>X</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mn>2</mn></mrow></msub><mo>=</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><msub><mi>p</mi><mi>j</mi></msub><mo>=</mo><mtext mathvariant="normal">P</mtext><mrow><mo stretchy="true" form="prefix">(</mo><msubsup><mi>X</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mn>2</mn></mrow><mo>*</mo></msubsup><mo>≥</mo><msub><mi>g</mi><mi>j</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\text{P}(X_{i,j,2} = 1) = p_{j} = \text{P}(X_{i,j,2}^{*} \geq g_{j})</annotation></semantics></math>.</p>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">P</mtext><mo stretchy="false" form="prefix">(</mo><msub><mi>X</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mn>2</mn></mrow></msub><mo>=</mo><mn>1</mn><mo stretchy="false" form="postfix">)</mo><mo>=</mo><msub><mi>p</mi><mi>j</mi></msub><mo>=</mo><mtext mathvariant="normal">P</mtext><mo stretchy="false" form="prefix">(</mo><msubsup><mi>X</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mn>2</mn></mrow><mo>*</mo></msubsup><mo>≥</mo><msub><mi>g</mi><mi>j</mi></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\text{P}(X_{i,j,2} = 1) = p_{j} = \text{P}(X_{i,j,2}^{*} \geq g_{j})</annotation></semantics></math>.</p>
 <p><strong>Biserial correlation</strong>: Assuming that
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>X</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mn>1</mn></mrow></msub><mo>,</mo><msubsup><mi>X</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mn>2</mn></mrow><mo>*</mo></msubsup><mo stretchy="true" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(X_{i,j,1}, X_{i,j,2}^{*})</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><msub><mi>X</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mn>1</mn></mrow></msub><mo>,</mo><msubsup><mi>X</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mn>2</mn></mrow><mo>*</mo></msubsup><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(X_{i,j,1}, X_{i,j,2}^{*})</annotation></semantics></math>
 follow a bivariate normal distribution, the <strong>biserial
 correlation</strong>
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>ρ</mi><annotation encoding="application/x-tex">\rho</annotation></semantics></math>
@@ -261,7 +261,7 @@ are the sample means. When
 is unknown, use the pooled sample standard deviation.</p>
 <p><strong>Binary endpoint - Asymptotic Normal (AN) method</strong>
 (Equation 3 in Sozu et al., 2012):</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>Z</mi><mn>2</mn></msub><mo>=</mo><mfrac><mrow><msub><mover><mi>p</mi><mo accent="true">̂</mo></mover><mn>1</mn></msub><mo>−</mo><msub><mover><mi>p</mi><mo accent="true">̂</mo></mover><mn>2</mn></msub></mrow><msqrt><mrow><mrow><mo stretchy="true" form="prefix">(</mo><mfrac><mn>1</mn><msub><mi>n</mi><mn>1</mn></msub></mfrac><mo>+</mo><mfrac><mn>1</mn><msub><mi>n</mi><mn>2</mn></msub></mfrac><mo stretchy="true" form="postfix">)</mo></mrow><mover><mi>p</mi><mo accent="true">̂</mo></mover><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><mover><mi>p</mi><mo accent="true">̂</mo></mover><mo stretchy="true" form="postfix">)</mo></mrow></mrow></msqrt></mfrac></mrow><annotation encoding="application/x-tex">Z_{2} = \frac{\hat{p}_{1} - \hat{p}_{2}}{\sqrt{\left(\frac{1}{n_{1}} + \frac{1}{n_{2}}\right) \hat{p}(1 - \hat{p})}}</annotation></semantics></math></p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>Z</mi><mn>2</mn></msub><mo>=</mo><mfrac><mrow><msub><mover><mi>p</mi><mo accent="true">̂</mo></mover><mn>1</mn></msub><mo>−</mo><msub><mover><mi>p</mi><mo accent="true">̂</mo></mover><mn>2</mn></msub></mrow><msqrt><mrow><mrow><mo stretchy="true" form="prefix">(</mo><mfrac><mn>1</mn><msub><mi>n</mi><mn>1</mn></msub></mfrac><mo>+</mo><mfrac><mn>1</mn><msub><mi>n</mi><mn>2</mn></msub></mfrac><mo stretchy="true" form="postfix">)</mo></mrow><mover><mi>p</mi><mo accent="true">̂</mo></mover><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>−</mo><mover><mi>p</mi><mo accent="true">̂</mo></mover><mo stretchy="false" form="postfix">)</mo></mrow></msqrt></mfrac></mrow><annotation encoding="application/x-tex">Z_{2} = \frac{\hat{p}_{1} - \hat{p}_{2}}{\sqrt{\left(\frac{1}{n_{1}} + \frac{1}{n_{2}}\right) \hat{p}(1 - \hat{p})}}</annotation></semantics></math></p>
 <p>where:</p>
 <ul>
 <li>
@@ -289,9 +289,23 @@ correction (equation 7)</li>
 <strong>Fisher</strong>: Fisher’s exact test (simulation-based)</li>
 </ul>
 <p>See the paper for detailed formulas. The <code>twoCoprimary</code>
-package implements all five methods. Note that Fisher’s exact test does
-not have a closed-form sample size formula and requires simulation-based
-power calculation.</p>
+package implements all five methods.</p>
+<p>Fisher’s exact test is different in kind from the other four. Under
+the null hypothesis the number of responders in group 1 is
+hypergeometric given the total, which gives an exact conditional
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>p</mi><annotation encoding="application/x-tex">p</annotation></semantics></math>-value
+for the binary endpoint, but the joint distribution of that
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>p</mi><annotation encoding="application/x-tex">p</annotation></semantics></math>-value
+and the
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>t</mi><annotation encoding="application/x-tex">t</annotation></semantics></math>
+statistic of the continuous endpoint has no closed form. Sozu et
+al. (2012) therefore obtain the overall power by Monte Carlo integration
+over the latent variables. Two consequences follow for users. The result
+varies between calls unless a seed is set with <code><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed()</a></code>,
+and the sequential search compares a simulated power against the target,
+so the returned sample size can move by a subject or two between runs.
+Raising <code>nMC</code> reduces both effects at a proportional
+cost.</p>
 </div>
 <div class="section level3">
 <h3 id="joint-distribution-and-power-calculation">Joint Distribution and Power Calculation<a class="anchor" aria-label="anchor" href="#joint-distribution-and-power-calculation"></a>
@@ -299,14 +313,14 @@ power calculation.</p>
 <p>Under
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mtext mathvariant="normal">H</mtext><mn>1</mn></msub><annotation encoding="application/x-tex">\text{H}_{1}</annotation></semantics></math>,
 the test statistics
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>Z</mi><mn>1</mn></msub><mo>,</mo><msub><mi>Z</mi><mn>2</mn></msub><mo stretchy="true" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(Z_{1}, Z_{2})</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><msub><mi>Z</mi><mn>1</mn></msub><mo>,</mo><msub><mi>Z</mi><mn>2</mn></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(Z_{1}, Z_{2})</annotation></semantics></math>
 asymptotically follow a bivariate normal distribution. The overall power
 is given by (Equation 4 in Sozu et al., 2012):</p>
 <p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>−</mo><mi>β</mi><mo>=</mo><mtext mathvariant="normal">P</mtext><mrow><mo stretchy="true" form="prefix">[</mo><munderover><mo>⋂</mo><mrow><mi>k</mi><mo>=</mo><mn>1</mn></mrow><mn>2</mn></munderover><mo stretchy="false" form="prefix">{</mo><msub><mi>Z</mi><mi>k</mi></msub><mo>&gt;</mo><msub><mi>z</mi><mi>α</mi></msub><mo stretchy="false" form="postfix">}</mo><mo stretchy="true" form="postfix">]</mo></mrow><mo>≈</mo><mtext mathvariant="normal">P</mtext><mrow><mo stretchy="true" form="prefix">[</mo><munderover><mo>⋂</mo><mrow><mi>k</mi><mo>=</mo><mn>1</mn></mrow><mn>2</mn></munderover><mrow><mo stretchy="true" form="prefix">{</mo><msubsup><mi>Z</mi><mi>k</mi><mo>*</mo></msubsup><mo>&gt;</mo><msubsup><mi>c</mi><mi>k</mi><mo>*</mo></msubsup><mo stretchy="true" form="postfix">}</mo></mrow><mo stretchy="true" form="postfix">]</mo></mrow></mrow><annotation encoding="application/x-tex">1 - \beta = \text{P}\left[\bigcap_{k=1}^{2} \{Z_{k} &gt; z_{\alpha}\}\right] \approx \text{P}\left[\bigcap_{k=1}^{2} \left\{Z_{k}^{*} &gt; c_{k}^{*}\right\}\right]</annotation></semantics></math></p>
 <p>where
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>Z</mi><mi>k</mi><mo>*</mo></msubsup><mo>=</mo><mfrac><mrow><msub><mover><mi>p</mi><mo accent="true">̂</mo></mover><mn>1</mn></msub><mo>−</mo><msub><mover><mi>p</mi><mo accent="true">̂</mo></mover><mn>2</mn></msub><mo>−</mo><msub><mi>Δ</mi><mi>k</mi></msub></mrow><mrow><mi>s</mi><msub><mi>e</mi><mi>k</mi></msub></mrow></mfrac></mrow><annotation encoding="application/x-tex">Z_{k}^{*} = \frac{\hat{p}_{1} - \hat{p}_{2} - \Delta_{k}}{se_{k}}</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>Z</mi><mi>k</mi><mo>*</mo></msubsup><mo>=</mo><mfrac><mrow><msub><mover><mi>p</mi><mo accent="true">̂</mo></mover><mn>1</mn></msub><mo>−</mo><msub><mover><mi>p</mi><mo accent="true">̂</mo></mover><mn>2</mn></msub><mo>−</mo><msub><mi mathvariant="normal">Δ</mi><mi>k</mi></msub></mrow><mrow><mi>s</mi><msub><mi>e</mi><mi>k</mi></msub></mrow></mfrac></mrow><annotation encoding="application/x-tex">Z_{k}^{*} = \frac{\hat{p}_{1} - \hat{p}_{2} - \Delta_{k}}{se_{k}}</annotation></semantics></math>
 with
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>Δ</mi><mi>k</mi></msub><annotation encoding="application/x-tex">\Delta_{k}</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi mathvariant="normal">Δ</mi><mi>k</mi></msub><annotation encoding="application/x-tex">\Delta_{k}</annotation></semantics></math>
 being the treatment effect, and:</p>
 <p><strong>For continuous endpoint</strong>
 (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>k</mi><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">k = 1</annotation></semantics></math>):
@@ -317,12 +331,12 @@ is the effect size for the endpoint 1.</p>
 <p><strong>For binary endpoint</strong>
 (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>k</mi><mo>=</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">k = 2</annotation></semantics></math>,
 AN method) (Equation 5 in Sozu et al., 2012):
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>c</mi><mn>2</mn><mo>*</mo></msubsup><mo>=</mo><mfrac><mrow><msqrt><mfrac><mrow><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>p</mi><mn>1</mn></msub><mo>+</mo><mi>κ</mi><msub><mi>p</mi><mn>2</mn></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="false" form="prefix">{</mo><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mi>p</mi><mn>1</mn></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><mi>κ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mi>p</mi><mn>2</mn></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="false" form="postfix">}</mo></mrow><mrow><mn>1</mn><mo>+</mo><mi>κ</mi></mrow></mfrac></msqrt><msub><mi>z</mi><mi>α</mi></msub><mo>−</mo><msqrt><mrow><mi>κ</mi><msub><mi>n</mi><mn>1</mn></msub></mrow></msqrt><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>p</mi><mn>1</mn></msub><mo>−</mo><msub><mi>p</mi><mn>2</mn></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><msqrt><mrow><mi>κ</mi><msub><mi>p</mi><mn>1</mn></msub><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mi>p</mi><mn>1</mn></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><msub><mi>p</mi><mn>2</mn></msub><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mi>p</mi><mn>2</mn></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow></msqrt></mfrac></mrow><annotation encoding="application/x-tex">c_{2}^{*} = \frac{\sqrt{\frac{(p_{1}+\kappa p_{2})\{(1-p_{1})+\kappa(1-p_{2})\}}{1+\kappa}} z_{\alpha} - \sqrt{\kappa n_{1}}(p_{1}-p_{2})}{\sqrt{\kappa p_{1}(1-p_{1})+p_{2}(1-p_{2})}}</annotation></semantics></math></p>
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>c</mi><mn>2</mn><mo>*</mo></msubsup><mo>=</mo><mfrac><mrow><msqrt><mfrac><mrow><mo stretchy="false" form="prefix">(</mo><msub><mi>p</mi><mn>1</mn></msub><mo>+</mo><mi>κ</mi><msub><mi>p</mi><mn>2</mn></msub><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="prefix">{</mo><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mi>p</mi><mn>1</mn></msub><mo stretchy="false" form="postfix">)</mo><mo>+</mo><mi>κ</mi><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mi>p</mi><mn>2</mn></msub><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">}</mo></mrow><mrow><mn>1</mn><mo>+</mo><mi>κ</mi></mrow></mfrac></msqrt><msub><mi>z</mi><mi>α</mi></msub><mo>−</mo><msqrt><mrow><mi>κ</mi><msub><mi>n</mi><mn>1</mn></msub></mrow></msqrt><mo stretchy="false" form="prefix">(</mo><msub><mi>p</mi><mn>1</mn></msub><mo>−</mo><msub><mi>p</mi><mn>2</mn></msub><mo stretchy="false" form="postfix">)</mo></mrow><msqrt><mrow><mi>κ</mi><msub><mi>p</mi><mn>1</mn></msub><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mi>p</mi><mn>1</mn></msub><mo stretchy="false" form="postfix">)</mo><mo>+</mo><msub><mi>p</mi><mn>2</mn></msub><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mi>p</mi><mn>2</mn></msub><mo stretchy="false" form="postfix">)</mo></mrow></msqrt></mfrac></mrow><annotation encoding="application/x-tex">c_{2}^{*} = \frac{\sqrt{\frac{(p_{1}+\kappa p_{2})\{(1-p_{1})+\kappa(1-p_{2})\}}{1+\kappa}} z_{\alpha} - \sqrt{\kappa n_{1}}(p_{1}-p_{2})}{\sqrt{\kappa p_{1}(1-p_{1})+p_{2}(1-p_{2})}}</annotation></semantics></math></p>
 <p>The vector
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mrow><mo stretchy="true" form="prefix">(</mo><msubsup><mi>Z</mi><mn>1</mn><mo>*</mo></msubsup><mo>,</mo><msubsup><mi>Z</mi><mn>2</mn><mo>*</mo></msubsup><mo stretchy="true" form="postfix">)</mo></mrow><mtext mathvariant="normal">T</mtext></msup><annotation encoding="application/x-tex">(Z_{1}^{*}, Z_{2}^{*})^\text{T}</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><msubsup><mi>Z</mi><mn>1</mn><mo>*</mo></msubsup><mo>,</mo><msubsup><mi>Z</mi><mn>2</mn><mo>*</mo></msubsup><msup><mo stretchy="false" form="postfix">)</mo><mtext mathvariant="normal">T</mtext></msup></mrow><annotation encoding="application/x-tex">(Z_{1}^{*}, Z_{2}^{*})^\text{T}</annotation></semantics></math>
 is approximately distributed as a standardized bivariate normal
 distribution
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mtext mathvariant="normal">N</mtext><mn>2</mn></msub><mrow><mo stretchy="true" form="prefix">(</mo><mn>𝟎</mn><mo>,</mo><mi>γ</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\text{N}_{2}(\mathbf{0}, \gamma)</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mtext mathvariant="normal">N</mtext><mn>2</mn></msub><mo stretchy="false" form="prefix">(</mo><mn>𝟎</mn><mo>,</mo><mi>γ</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\text{N}_{2}(\mathbf{0}, \gamma)</annotation></semantics></math>,
 where
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>γ</mi><annotation encoding="application/x-tex">\gamma</annotation></semantics></math>
 is the correlation between the test statistics.</p>
@@ -338,9 +352,9 @@ depends on the biserial correlation
 between outcomes. The explicit formula involves the standard normal
 density function and success probabilities. See equation (1) in the
 Supporting Information of Sozu et al. (2012) for details:</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">Corr</mtext><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>X</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mn>1</mn></mrow></msub><mo>,</mo><msub><mi>X</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mn>2</mn></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mfrac><mrow><msub><mi>ρ</mi><mi>j</mi></msub><msub><mi>ξ</mi><mi>j</mi></msub></mrow><msqrt><mrow><msub><mi>p</mi><mi>j</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mi>p</mi><mi>j</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow></msqrt></mfrac></mrow><annotation encoding="application/x-tex">\text{Corr}(X_{i,j,1}, X_{i,j,2}) = \frac{\rho_{j} \xi_{j}}{\sqrt{p_{j}(1-p_{j})}}</annotation></semantics></math></p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">Corr</mtext><mo stretchy="false" form="prefix">(</mo><msub><mi>X</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mn>1</mn></mrow></msub><mo>,</mo><msub><mi>X</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mn>2</mn></mrow></msub><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mfrac><mrow><msub><mi>ρ</mi><mi>j</mi></msub><msub><mi>ξ</mi><mi>j</mi></msub></mrow><msqrt><mrow><msub><mi>p</mi><mi>j</mi></msub><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mi>p</mi><mi>j</mi></msub><mo stretchy="false" form="postfix">)</mo></mrow></msqrt></mfrac></mrow><annotation encoding="application/x-tex">\text{Corr}(X_{i,j,1}, X_{i,j,2}) = \frac{\rho_{j} \xi_{j}}{\sqrt{p_{j}(1-p_{j})}}</annotation></semantics></math></p>
 <p>where
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>ξ</mi><mi>j</mi></msub><mo>=</mo><mfrac><mn>1</mn><msqrt><mrow><mn>2</mn><mi>π</mi></mrow></msqrt></mfrac><mo>exp</mo><mrow><mo stretchy="true" form="prefix">{</mo><mo>−</mo><mfrac><msup><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>g</mi><mi>j</mi></msub><mo>−</mo><msubsup><mi>μ</mi><mi>j</mi><mo>*</mo></msubsup><mo stretchy="true" form="postfix">)</mo></mrow><mn>2</mn></msup><mrow><mn>2</mn><msubsup><mi>σ</mi><mi>j</mi><mrow><mn>2</mn><mo>*</mo></mrow></msubsup></mrow></mfrac><mo stretchy="true" form="postfix">}</mo></mrow></mrow><annotation encoding="application/x-tex">\xi_{j} = \frac{1}{\sqrt{2\pi}} \exp\left\{-\frac{(g_{j} - \mu_{j}^{\ast})^2}{2\sigma_{j}^{2\ast}}\right\}</annotation></semantics></math>.</p>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>ξ</mi><mi>j</mi></msub><mo>=</mo><mfrac><mn>1</mn><msqrt><mrow><mn>2</mn><mi>π</mi></mrow></msqrt></mfrac><mrow><mi mathvariant="normal">exp</mi><mo>⁡</mo></mrow><mrow><mo stretchy="true" form="prefix">{</mo><mi>−</mi><mfrac><mrow><mo stretchy="false" form="prefix">(</mo><msub><mi>g</mi><mi>j</mi></msub><mo>−</mo><msubsup><mi>μ</mi><mi>j</mi><mo>*</mo></msubsup><msup><mo stretchy="false" form="postfix">)</mo><mn>2</mn></msup></mrow><mrow><mn>2</mn><msubsup><mi>σ</mi><mi>j</mi><mrow><mn>2</mn><mo>*</mo></mrow></msubsup></mrow></mfrac><mo stretchy="true" form="postfix">}</mo></mrow></mrow><annotation encoding="application/x-tex">\xi_{j} = \frac{1}{\sqrt{2\pi}} \exp\left\{-\frac{(g_{j} - \mu_{j}^{\ast})^2}{2\sigma_{j}^{2\ast}}\right\}</annotation></semantics></math>.</p>
 </div>
 <div class="section level3">
 <h3 id="sample-size-determination">Sample Size Determination<a class="anchor" aria-label="anchor" href="#sample-size-determination"></a>
@@ -365,10 +379,19 @@ between test statistics using the biserial correlation</li>
 <li>Calculate joint power using the bivariate normal distribution</li>
 <li>Iterate until target power is achieved</li>
 </ol>
-<p><strong>Fisher’s exact test</strong>: For Fisher’s exact test, the
-power calculation is simulation-based due to the discrete nature of the
-test statistic. The sample size calculation uses sequential search
-starting from the AN method’s sample size as an initial value.</p>
+<p><strong>Fisher’s exact test</strong>: the binary outcome is generated
+as the dichotomization of the latent continuous variable at a group
+specific threshold
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>g</mi><mi>j</mi></msub><annotation encoding="application/x-tex">g_{j}</annotation></semantics></math>
+chosen so that
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">Pr</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><msubsup><mi>X</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mn>2</mn></mrow><mo>*</mo></msubsup><mo>≥</mo><msub><mi>g</mi><mi>j</mi></msub><mo stretchy="false" form="postfix">)</mo><mo>=</mo><msub><mi>p</mi><mi>j</mi></msub></mrow><annotation encoding="application/x-tex">\Pr(X_{i,j,2}^{\ast} \geq g_{j}) = p_{j}</annotation></semantics></math>,
+jointly with the observed continuous outcome. Each replicate yields a
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>t</mi><annotation encoding="application/x-tex">t</annotation></semantics></math>
+statistic and a hypergeometric
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>p</mi><annotation encoding="application/x-tex">p</annotation></semantics></math>-value,
+and the overall power is the proportion of replicates in which both
+reject. The sample size calculation uses the same sequential search,
+starting from the AN sample size.</p>
 </div>
 </div>
 <div class="section level2">
@@ -461,9 +484,9 @@ study scenario with different standard deviations and correlations.</p>
 </table>
 <p><strong>Interpretation</strong>: This table shows that as the
 standard deviation increases, the required sample size increases. The
-correlation has a modest effect on sample size reduction (approximately
-5-7% reduction at
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ρ</mi><mo>=</mo><mn>0.8</mn></mrow><annotation encoding="application/x-tex">\rho = 0.8</annotation></semantics></math>).</p>
+correlation has a modest effect, reducing the sample size by 4 to 7% at
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ρ</mi><mo>=</mo><mn>0.8</mn></mrow><annotation encoding="application/x-tex">\rho = 0.8</annotation></semantics></math>
+across the four standard deviations shown.</p>
 </div>
 <div class="section level2">
 <h2 id="replicating-sozu-et-al--2012-supporting-information-table-5">Replicating Sozu et al. (2012) Supporting Information Table 5<a class="anchor" aria-label="anchor" href="#replicating-sozu-et-al--2012-supporting-information-table-5"></a>
@@ -678,14 +701,81 @@ Continuity Correction (ASc) (σ = 1, α = 0.025, 1-β =
 Information Table 5 in Sozu et al. (2012) due to numerical differences
 in computing the bivariate normal cumulative distribution function
 between SAS and R implementations.</p>
+<div class="section level3">
+<h3 id="part-c-fishers-exact-test">Part C: Fisher’s exact test<a class="anchor" aria-label="anchor" href="#part-c-fishers-exact-test"></a>
+</h3>
+<p>Table 5 of the Supporting Information also reports Fisher’s exact
+test. The row with the largest standardized effect is reproduced here;
+the remaining rows behave the same way but need sample sizes up to 584
+per group, which makes a simulated search slow enough to be unsuitable
+for a vignette. The package’s test suite checks the achieved power at
+all 24 published Fisher sample sizes.</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">20260829</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">rho_values</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.3</span>, <span class="fl">0.5</span>, <span class="fl">0.8</span><span class="op">)</span></span>
+<span><span class="va">published_n</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">76</span>, <span class="fl">75</span>, <span class="fl">75</span>, <span class="fl">74</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">fisher_row</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">rho_values</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">i</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">ss</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ss2MixedContinuousBinary.html">ss2MixedContinuousBinary</a></span><span class="op">(</span></span>
+<span>    delta <span class="op">=</span> <span class="fl">0.521</span>, sd <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>    p1 <span class="op">=</span> <span class="fl">0.99</span>, p2 <span class="op">=</span> <span class="fl">0.85</span>,</span>
+<span>    rho <span class="op">=</span> <span class="va">rho_values</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, r <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>    alpha <span class="op">=</span> <span class="fl">0.025</span>, beta <span class="op">=</span> <span class="fl">0.2</span>,</span>
+<span>    Test <span class="op">=</span> <span class="st">"Fisher"</span>, nMC <span class="op">=</span> <span class="fl">10000</span></span>
+<span>  <span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>rho <span class="op">=</span> <span class="va">rho_values</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, n_per_group <span class="op">=</span> <span class="va">ss</span><span class="op">$</span><span class="va">n1</span>, published <span class="op">=</span> <span class="va">published_n</span><span class="op">[</span><span class="va">i</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="op">}</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, <span class="va">fisher_row</span><span class="op">)</span>,</span>
+<span>      caption <span class="op">=</span> <span class="st">"Table 5 (Part C): Sample Size per Group (n) with Fisher's Exact Test (delta1 = 0.521, p1 = 0.99, p2 = 0.85, sigma = 1, alpha = 0.025, 1-beta = 0.80)"</span>,</span>
+<span>      col.names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"rho"</span>, <span class="st">"n per group"</span>, <span class="st">"Sozu et al. (2012)"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<caption>Table 5 (Part C): Sample Size per Group (n) with Fisher’s Exact
+Test (delta1 = 0.521, p1 = 0.99, p2 = 0.85, sigma = 1, alpha = 0.025,
+1-beta = 0.80)</caption>
+<thead><tr class="header">
+<th align="right">rho</th>
+<th align="right">n per group</th>
+<th align="right">Sozu et al. (2012)</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="right">0.0</td>
+<td align="right">76</td>
+<td align="right">76</td>
+</tr>
+<tr class="even">
+<td align="right">0.3</td>
+<td align="right">77</td>
+<td align="right">75</td>
+</tr>
+<tr class="odd">
+<td align="right">0.5</td>
+<td align="right">75</td>
+<td align="right">75</td>
+</tr>
+<tr class="even">
+<td align="right">0.8</td>
+<td align="right">74</td>
+<td align="right">74</td>
+</tr>
+</tbody>
+</table>
+<p>Agreement within a subject or two is the most that a simulated power
+can give at this number of replications; raising <code>nMC</code>
+tightens it at a proportional cost.</p>
 <p><strong>Key findings</strong>:</p>
 <ul>
 <li>ANc and ASc give similar sample sizes</li>
+<li>Fisher’s exact test agrees closely with ASc, as Sozu et al. (2012)
+report</li>
 <li>Correlation effect is modest for these scenarios</li>
 <li>Higher success probabilities
 (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>p</mi><mn>1</mn></msub><annotation encoding="application/x-tex">p_{1}</annotation></semantics></math>)
 generally require larger sample sizes when the effect size is small</li>
 </ul>
+</div>
 </div>
 <div class="section level2">
 <h2 id="basic-usage-examples">Basic Usage Examples<a class="anchor" aria-label="anchor" href="#basic-usage-examples"></a>
@@ -695,7 +785,7 @@ generally require larger sample sizes when the effect size is small</li>
 </h3>
 <p>Calculate sample size for a balanced design with moderate effect
 sizes:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Balanced design: nT = nC (i.e., r = 1, which corresponds to kappa = 1)</span></span>
 <span><span class="va">result_balanced</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ss2MixedContinuousBinary.html">ss2MixedContinuousBinary</a></span><span class="op">(</span></span>
 <span>  delta <span class="op">=</span> <span class="fl">0.5</span>,           <span class="co"># Standardized effect for continuous endpoint</span></span>
@@ -738,7 +828,7 @@ in Sozu et al. (2012).</p>
 <h3 id="example-2-effect-of-correlation">Example 2: Effect of Correlation<a class="anchor" aria-label="anchor" href="#example-2-effect-of-correlation"></a>
 </h3>
 <p>Demonstrate how biserial correlation affects sample size:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Fixed effect sizes</span></span>
 <span><span class="va">delta</span> <span class="op">&lt;-</span> <span class="fl">0.5</span></span>
 <span><span class="va">p1</span> <span class="op">&lt;-</span> <span class="fl">0.7</span></span>
@@ -807,7 +897,7 @@ in Sozu et al. (2012).</p>
 </tr>
 </tbody>
 </table>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="co"># Plot</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">rho_values</span>, <span class="va">ss_by_rho</span>, </span>
@@ -819,16 +909,17 @@ in Sozu et al. (2012).</p>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/grid.html" class="external-link">grid</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p><img src="mixed-continuous-binary_files/figure-html/example2-1.png" class="r-plt" alt="" width="672"></p>
 <p><strong>Interpretation</strong>: Higher positive correlation reduces
-required sample size. At
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ρ</mi><mo>=</mo><mn>0.8</mn></mrow><annotation encoding="application/x-tex">\rho = 0.8</annotation></semantics></math>,
-sample size is reduced by approximately 5-8% compared to
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ρ</mi><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">\rho = 0</annotation></semantics></math>.</p>
+the required sample size. At
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ρ</mi><mo>=</mo><mn>0.8</mn></mrow><annotation encoding="application/x-tex">\rho = 0.8</annotation></semantics></math>
+the reduction is about 5% relative to
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ρ</mi><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">\rho = 0</annotation></semantics></math>
+in this scenario.</p>
 </div>
 <div class="section level3">
 <h3 id="example-3-comparison-of-test-methods">Example 3: Comparison of Test Methods<a class="anchor" aria-label="anchor" href="#example-3-comparison-of-test-methods"></a>
 </h3>
 <p>Compare different test methods for the binary endpoint:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Fixed design parameters</span></span>
 <span><span class="va">delta</span> <span class="op">&lt;-</span> <span class="fl">0.5</span></span>
 <span><span class="va">p1</span> <span class="op">&lt;-</span> <span class="fl">0.7</span></span>
@@ -896,12 +987,13 @@ sample size is reduced by approximately 5-8% compared to
 <p><strong>Key findings</strong>:</p>
 <ul>
 <li>
-<strong>AN</strong> (no continuity correction): Similar to AS</li>
-<li>
-<strong>ANc</strong> (with continuity correction): Slightly larger
-(~1-5% increase)</li>
-<li>
 <strong>AS</strong> (arcsine): Smallest sample size</li>
+<li>
+<strong>AN</strong> (no continuity correction): One subject larger
+than AS here</li>
+<li>
+<strong>ANc</strong> and <strong>ASc</strong> (with continuity
+correction): About 7% larger than AN</li>
 <li>
 <strong>ASc</strong> (arcsine with CC): Similar to ANc</li>
 </ul>
@@ -910,7 +1002,7 @@ sample size is reduced by approximately 5-8% compared to
 <h3 id="example-4-unbalanced-allocation">Example 4: Unbalanced Allocation<a class="anchor" aria-label="anchor" href="#example-4-unbalanced-allocation"></a>
 </h3>
 <p>Calculate sample size with 2:1 allocation ratio:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Balanced design (r = 1, equivalent to kappa = 1)</span></span>
 <span><span class="va">result_balanced</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ss2MixedContinuousBinary.html">ss2MixedContinuousBinary</a></span><span class="op">(</span></span>
 <span>  delta <span class="op">=</span> <span class="fl">0.5</span>,</span>
@@ -974,7 +1066,7 @@ sample size is reduced by approximately 5-8% compared to
 </tr>
 </tbody>
 </table>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"\nIncrease in total sample size:"</span>, </span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="op">(</span><span class="va">result_unbalanced</span><span class="op">$</span><span class="va">N</span> <span class="op">-</span> <span class="va">result_balanced</span><span class="op">$</span><span class="va">N</span><span class="op">)</span> <span class="op">/</span> <span class="va">result_balanced</span><span class="op">$</span><span class="va">N</span> <span class="op">*</span> <span class="fl">100</span>, <span class="fl">1</span><span class="op">)</span>, <span class="st">"%\n"</span><span class="op">)</span></span>
@@ -995,7 +1087,7 @@ in Sozu et al. (2012) notation.</p>
 <h2 id="power-verification">Power Verification<a class="anchor" aria-label="anchor" href="#power-verification"></a>
 </h2>
 <p>Verify that calculated sample sizes achieve target power:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Use result from Example 1</span></span>
 <span><span class="va">power_result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/power2MixedContinuousBinary.html">power2MixedContinuousBinary</a></span><span class="op">(</span></span>
 <span>  n1 <span class="op">=</span> <span class="va">result_balanced</span><span class="op">$</span><span class="va">n1</span>,</span>
@@ -1048,8 +1140,8 @@ stabilization</li>
 <strong>ASc</strong>: Combines arcsine transformation with
 continuity correction</li>
 <li>
-<strong>Fisher</strong>: Provides exact inference but
-computationally intensive</li>
+<strong>Fisher</strong>: Provides exact inference for the binary
+endpoint, at the cost of a simulated overall power</li>
 </ul>
 </li>
 <li><p><strong>Balanced allocation</strong>: Generally most efficient

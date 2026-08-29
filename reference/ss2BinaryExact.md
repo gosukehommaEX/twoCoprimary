@@ -7,7 +7,19 @@ Homma and Yoshida (2025).
 ## Usage
 
 ``` r
-ss2BinaryExact(p11, p12, p21, p22, rho1, rho2, r, alpha, beta, Test)
+ss2BinaryExact(
+  p11,
+  p12,
+  p21,
+  p22,
+  rho1,
+  rho2,
+  r,
+  alpha,
+  beta,
+  Test,
+  n_grid = 100
+)
 ```
 
 ## Arguments
@@ -66,6 +78,16 @@ ss2BinaryExact(p11, p12, p21, p22, rho1, rho2, r, alpha, beta, Test)
   - `"Z-pool"`: Z-pooled exact unconditional test
 
   - `"Boschloo"`: Boschloo exact unconditional test
+
+- n_grid:
+
+  Number of grid points used to maximize the null tail probability over
+  the nuisance parameter in the two exact unconditional tests, that is
+  `"Z-pool"` and `"Boschloo"` (default is 100). The other three tests
+  read their p-values off a distribution and ignore this argument. A
+  finer grid locates the maximum more accurately at a proportionally
+  higher computational cost, and the default reproduces the results of
+  earlier versions of the package.
 
 ## Value
 
@@ -135,7 +157,7 @@ the minimum sample size that achieves the target power.
 
 Homma, G., & Yoshida, T. (2025). Exact power and sample size in clinical
 trials with two co-primary binary endpoints. *Statistical Methods in
-Medical Research*, 34(1), 1-19.
+Medical Research*, 34(11), 2183-2201.
 
 ## Examples
 

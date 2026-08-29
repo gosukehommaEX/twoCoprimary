@@ -132,13 +132,20 @@ are: \$\$Z_k = \frac{\delta_k}{\sigma_k \sqrt{1/n_1 + 1/n_2}}\$\$ for k
 of the bivariate standard normal distribution.
 
 For unknown variance, Monte Carlo simulation is used with
-Wishart-distributed variance-covariance matrices to account for variance
-estimation uncertainty, following equation (6) in Sozu et al. (2011):
-\$\$\text{Power} = E_W\left\[\Phi_2(-c_1^\*\sqrt{w\_{11}},
--c_2^\*\sqrt{w\_{22}} \| \rho)\right\]\$\$ where \\c_k^\* =
-t\_{\alpha,\nu}\sqrt{\frac{1}{\nu}} - \frac{Z_k}{\sqrt{w\_{kk}}}\\ and
-\\W\\ follows a Wishart distribution with \\\nu = n_1 + n_2 - 2\\
-degrees of freedom.
+Wishart-distributed correlation matrices of the standardized endpoints
+to account for variance estimation uncertainty, following equation (6)
+in Sozu et al. (2011): \$\$\text{Power} =
+E_W\left\[\Phi_2(-c_1^\*\sqrt{w\_{11}}, -c_2^\*\sqrt{w\_{22}} \|
+\rho)\right\]\$\$ where \\c_k^\* = t\_{\alpha,\nu}\sqrt{\frac{1}{\nu}} -
+\frac{Z_k}{\sqrt{w\_{kk}}}\\ and \\W\\ follows a Wishart distribution
+with \\\nu = n_1 + n_2 - 2\\ degrees of freedom and the correlation
+matrix of the standardized endpoints as its scale matrix, so that
+\\\sqrt{w\_{kk} / \nu}\\ is the ratio of the estimated to the true
+standard deviation of endpoint k.
+
+The Monte Carlo step draws random numbers, so results for
+`known_var = FALSE` vary between calls unless a seed is set with
+`set.seed` beforehand.
 
 ## References
 
@@ -213,7 +220,7 @@ power2Continuous(
 #>             nMC = 10000
 #>          power1 = 0.940427
 #>          power2 = 0.940427
-#>  powerCoprimary = 0.890195
+#>  powerCoprimary = 0.8902
 #> 
 # }
 ```

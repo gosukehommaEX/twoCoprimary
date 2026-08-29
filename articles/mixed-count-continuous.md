@@ -9,6 +9,7 @@ continuous outcome (following normal distribution). The methodology is
 based on Homma and Yoshida (2024).
 
 ``` r
+
 library(twoCoprimary)
 library(dplyr)
 library(tidyr)
@@ -26,7 +27,7 @@ both:
 1.  **Count endpoint**: Number of exacerbations over follow-up period
     (overdispersed count data)
 2.  **Continuous endpoint**: Lung function measure such as
-    $\text{FEV}_{1}$ (forced expiratory volume in 1 second)
+    $`\text{FEV}_{1}`$ (forced expiratory volume in 1 second)
 
 ### Why Negative Binomial Distribution?
 
@@ -36,55 +37,62 @@ distribution assumes variance = mean, which is often violated.
 
 **Negative binomial (NB) distribution** accommodates overdispersion:
 
-$$X \sim \text{NB}(\lambda,\nu)$$
+``` math
+X \sim \text{NB}(\lambda, \nu)
+```
 
-- **Mean**: $\text{E}\lbrack X\rbrack = \lambda = r \times t$ (rate
-  $\times$ time)
-- **Variance**: $\text{Var}\lbrack X\rbrack = \lambda + \lambda^{2}/\nu$
-- **Dispersion parameter**: $\nu > 0$ controls overdispersion
-  - As $\left. \nu\rightarrow\infty \right.$:
-    $\left. \text{NB}\rightarrow\text{Poisson} \right.$ (no
+- **Mean**: $`\text{E}[X] = \lambda = r \times t`$ (rate $`\times`$
+  time)
+- **Variance**: $`\text{Var}[X] = \lambda + \lambda^{2}/\nu`$
+- **Dispersion parameter**: $`\nu > 0`$ controls overdispersion
+  - As $`\nu \to \infty`$: $`\text{NB} \to \text{Poisson}`$ (no
     overdispersion)
-  - Small $\nu$: High overdispersion (variance $\gg$ mean)
+  - Small $`\nu`$: High overdispersion (variance $`\gg`$ mean)
 
 **Variance-to-mean ratio (VMR)**:
-$$\text{VMR} = \frac{\text{Var}\lbrack X\rbrack}{\text{E}\lbrack X\rbrack} = 1 + \frac{\lambda}{\nu}$$
+``` math
+\text{VMR} = \frac{\text{Var}[X]}{\text{E}[X]} = 1 + \frac{\lambda}{\nu}
+```
 
-When $\text{VMR} > 1$, data are overdispersed and NB is more appropriate
-than Poisson.
+When $`\text{VMR} > 1`$, data are overdispersed and NB is more
+appropriate than Poisson.
 
 ## Statistical Framework
 
 ### Model and Assumptions
 
-Consider a two-arm superiority trial with sample sizes $n_{1}$
-(treatment) and $n_{2}$ (control), with allocation ratio
-$r = n_{1}/n_{2}$.
+Consider a two-arm superiority trial with sample sizes $`n_{1}`$
+(treatment) and $`n_{2}`$ (control), with allocation ratio
+$`r = n_{1}/n_{2}`$.
 
-For subject $i$ in group $j$ ($j = 1$: treatment, $j = 2$: control), we
-observe two **outcomes**:
+For subject $`i`$ in group $`j`$ ($`j = 1`$: treatment, $`j = 2`$:
+control), we observe two **outcomes**:
 
 **Outcome 1 (Count)**:
-$$X_{i,j,1} \sim \text{NB}\left( \lambda_{j},\nu \right)$$
+``` math
+X_{i,j,1} \sim \text{NB}(\lambda_{j}, \nu)
+```
 
-where $\lambda_{j}$ is the expected number of events in group $j$, and
-$\nu > 0$ is the common dispersion parameter.
+where $`\lambda_{j}`$ is the expected number of events in group $`j`$,
+and $`\nu > 0`$ is the common dispersion parameter.
 
 **Outcome 2 (Continuous)**:
-$$X_{i,j,2} \sim \text{N}\left( \mu_{j},\sigma^{2} \right)$$
+``` math
+X_{i,j,2} \sim \text{N}(\mu_{j}, \sigma^{2})
+```
 
-where $\mu_{j}$ is the population mean in group $j$, and $\sigma^{2}$ is
-the common variance across groups.
+where $`\mu_{j}`$ is the population mean in group $`j`$, and
+$`\sigma^{2}`$ is the common variance across groups.
 
 ### Correlation Structure
 
 The correlation between count and continuous outcomes within subjects is
-measured by $\rho_{j}$ in group $j$. This correlation must satisfy
+measured by $`\rho_{j}`$ in group $`j`$. This correlation must satisfy
 **feasibility constraints** based on the Fréchet-Hoeffding copula
 bounds, which depend on the marginal distributions.
 
 Use the
-[`corrbound2MixedCountContinuous()`](https://gosukehommaEX.github.io/twoCoprimary/reference/corrbound2MixedCountContinuous.md)
+[`corrbound2MixedCountContinuous()`](https://gosukehommaex.github.io/twoCoprimary/reference/corrbound2MixedCountContinuous.md)
 function to check valid correlation bounds for given parameters.
 
 ### Hypothesis Testing
@@ -95,102 +103,115 @@ We test superiority of treatment over control for both endpoints.
 in lung function).
 
 **For count endpoint** (1):
-$$\text{H}_{01}:r_{1} \geq r_{2}{\mspace{6mu}\text{vs.}\mspace{6mu}}\text{H}_{11}:r_{1} < r_{2}$$
+``` math
+\text{H}_{01}: r_{1} \geq r_{2} \text{ vs. } \text{H}_{11}: r_{1} < r_{2}
+```
 
-Equivalently, testing
-$\beta_{1} = \log\left( r_{1} \right) - \log\left( r_{2} \right) < 0$.
+Equivalently, testing $`\beta_{1} = \log(r_{1}) - \log(r_{2}) < 0`$.
 
 **For continuous endpoint** (2):
-$$\text{H}_{02}:\mu_{1} - \mu_{2} \geq 0{\mspace{6mu}\text{vs.}\mspace{6mu}}\text{H}_{12}:\mu_{1} - \mu_{2} < 0$$
+``` math
+\text{H}_{02}: \mu_{1} - \mu_{2} \geq 0 \text{ vs. } \text{H}_{12}: \mu_{1} - \mu_{2} < 0
+```
 
 **Co-primary endpoints** (intersection-union test):
-$$\text{H}_{0} = \text{H}_{01} \cup \text{H}_{02}{\mspace{6mu}\text{vs.}\mspace{6mu}}\text{H}_{1} = \text{H}_{11} \cap \text{H}_{12}$$
+``` math
+\text{H}_0 = \text{H}_{01} \cup \text{H}_{02} \text{ vs. } \text{H}_1 = \text{H}_{11} \cap \text{H}_{12}
+```
 
-Reject $\text{H}_{0}$ at level $\alpha$ if and only if **both**
-$\text{H}_{01}$ and $\text{H}_{02}$ are rejected at level $\alpha$.
+Reject $`\text{H}_{0}`$ at level $`\alpha`$ if and only if **both**
+$`\text{H}_{01}`$ and $`\text{H}_{02}`$ are rejected at level
+$`\alpha`$.
 
 ### Test Statistics
 
 **Count endpoint** (Equation 7 in Homma and Yoshida, 2024):
 
-$$Z_{1} = \frac{{\widehat{\beta}}_{1}}{\sqrt{\text{Var}\left( {\widehat{\beta}}_{1} \right)}}$$
+``` math
+Z_{1} = \frac{\hat{\beta}_{1}}{\sqrt{\text{Var}(\hat{\beta}_{1})}}
+```
 
 where:
 
-- ${\widehat{\beta}}_{1} = \log\left( {\bar{X}}_{1,1} \right) - \log\left( {\bar{X}}_{2,1} \right)$
-  is the log rate ratio
-- $\text{Var}\left( {\widehat{\beta}}_{1} \right) = \frac{1}{n_{2}}\left\lbrack \frac{1}{t}\left( \frac{1}{\lambda_{2}} + \frac{1}{r\lambda_{1}} \right) + \frac{1 + r}{\nu r} \right\rbrack = \frac{V_{a}}{n_{2}}$
+- $`\hat{\beta}_{1} = \log(\bar{X}_{1,1}) - \log(\bar{X}_{2,1})`$ is the
+  log rate ratio
+- $`\text{Var}(\hat{\beta}_{1}) = \frac{1}{n_{2}}\left[\frac{1}{t}\left(\frac{1}{\lambda_{2}} + \frac{1}{r\lambda_{1}}\right) + \frac{1+r}{\nu r}\right] = \frac{V_{a}}{n_{2}}`$
 
 **Continuous endpoint**:
 
-$$Z_{2} = \frac{{\bar{X}}_{1,2} - {\bar{X}}_{2,2}}{\sigma\sqrt{\frac{1 + r}{rn_{2}}}}$$
+``` math
+Z_{2} = \frac{\bar{X}_{1,2} - \bar{X}_{2,2}}{\sigma\sqrt{\frac{1+r}{r n_{2}}}}
+```
 
-When $\sigma$ is a common known standard deviation.
+When $`\sigma`$ is a common known standard deviation.
 
 ### Joint Distribution and Correlation
 
-Under $\text{H}_{1}$, the test statistics $\left( Z_{1},Z_{2} \right)$
+Under $`\text{H}_{1}`$, the test statistics $`(Z_{1}, Z_{2})`$
 asymptotically follow a bivariate normal distribution (Appendix B in
 Homma and Yoshida, 2024):
 
-$$\begin{pmatrix}
-Z_{1} \\
-Z_{2}
-\end{pmatrix} \sim \text{BN}\left( \begin{pmatrix}
-\omega_{1} \\
-\omega_{2}
-\end{pmatrix},\begin{pmatrix}
-1 & \gamma \\
-\gamma & 1
-\end{pmatrix} \right)$$
+``` math
+\begin{pmatrix} Z_1 \\ Z_2 \end{pmatrix} \sim \text{BN}\left(\begin{pmatrix} \omega_1 \\ \omega_2 \end{pmatrix}, \begin{pmatrix} 1 & \gamma \\ \gamma & 1 \end{pmatrix}\right)
+```
 
 where:
 
-- $\omega_{1} = \frac{\sqrt{n_{2}}\beta_{1}}{\sqrt{V_{a}}}$ with
-  $\beta_{1} = \log\left( r_{1} \right) - \log\left( r_{2} \right)$
-- $\omega_{2} = \frac{\delta}{\sigma\sqrt{\frac{1 + r}{rn_{2}}}}$ with
-  $\delta = \mu_{1} - \mu_{2}$
+- $`\omega_{1} = \frac{\sqrt{n_{2}}\beta_{1}}{\sqrt{V_{a}}}`$ with
+  $`\beta_{1} = \log(r_{1}) - \log(r_{2})`$
+- $`\omega_{2} = \frac{\delta}{\sigma\sqrt{\frac{1+r}{r n_{2}}}}`$ with
+  $`\delta = \mu_{1} - \mu_{2}`$
 
 **Correlation between test statistics** (Equation 11 in Homma and
 Yoshida, 2024):
 
-$$\gamma = \sum\limits_{j = 1}^{2}\frac{n_{2}\rho_{j}\sqrt{1 + \lambda_{j}/\nu}}{n_{j}\sqrt{\lambda_{j}V_{a}(1 + r)/r}}$$
+``` math
+\gamma = \sum_{j=1}^{2} \frac{n_{2}\rho_{j}\sqrt{1+\lambda_{j}/\nu}}{n_{j}\sqrt{\lambda_{j}V_{a}(1+r)/r}}
+```
 
-For **balanced design** ($r = 1$) with **common correlation**
-($\rho_{1} = \rho_{2} = \rho$):
+For **balanced design** ($`r = 1`$) with **common correlation**
+($`\rho_{1} = \rho_{2} = \rho`$):
 
-$$\gamma = \frac{\rho}{\sqrt{2}}\frac{\sqrt{1/\lambda_{2} + 1/\nu} + \sqrt{1/\lambda_{1} + 1/\nu}}{\sqrt{\left( 1/\lambda_{2} + 1/\lambda_{1} + 2/\nu \right)}}$$
+``` math
+\gamma = \frac{\rho}{\sqrt{2}}\frac{\sqrt{1/\lambda_{2} + 1/\nu} + \sqrt{1/\lambda_{1} + 1/\nu}}{\sqrt{(1/\lambda_{2} + 1/\lambda_{1} + 2/\nu)}}
+```
 
 ### Power Calculation
 
 The overall power is (Equation 10 in Homma and Yoshida, 2024):
 
-$$1 - \beta = \text{P}\left( Z_{1} < z_{\alpha} \cap Z_{2} < z_{\alpha} \mid \text{H}_{1} \right)$$
+``` math
+1 - \beta = \text{P}(Z_{1} < z_{\alpha} \cap Z_{2} < z_{\alpha} \mid \text{H}_{1})
+```
 
-Using the bivariate normal CDF $\Phi_{2}$:
+Using the bivariate normal CDF $`\Phi_{2}`$:
 
-$$1 - \beta = \Phi_{2}\left( z_{\alpha} - \frac{\sqrt{n_{2}}\left( \log r_{1} - \log r_{2} \right)}{\sqrt{V_{a}}},z_{\alpha} - \frac{\sqrt{n_{2}}\left( \mu_{1} - \mu_{2} \right)}{\sigma\sqrt{\frac{1 + r}{r}}}|\gamma \right)$$
+``` math
+1 - \beta = \Phi_{2}\left(z_{\alpha} - \frac{\sqrt{n_{2}}(\log r_{1} - \log r_{2})}{\sqrt{V_{a}}}, z_{\alpha} - \frac{\sqrt{n_{2}}(\mu_{1}-\mu_{2})}{\sigma\sqrt{\frac{1+r}{r}}} \Bigg| \gamma\right)
+```
 
 ### Sample Size Determination
 
 The sample size is determined by solving the power equation numerically.
-For a given allocation ratio $r$, target power $1 - \beta$, and
-significance level $\alpha$, we find the smallest $n_{2}$ such that the
-overall power equals or exceeds $1 - \beta$.
+For a given allocation ratio $`r`$, target power $`1 - \beta`$, and
+significance level $`\alpha`$, we find the smallest $`n_{2}`$ such that
+the overall power equals or exceeds $`1 - \beta`$.
 
 **Sequential search algorithm**:
 
 1.  Calculate initial sample size based on single-endpoint formulas
 2.  Compute power at current sample size
-3.  If power $\geq$ target: decrease $n_{2}$ until power $<$ target,
-    then add 1 back
-4.  If power $<$ target: increase $n_{2}$ until power $\geq$ target
+3.  If power $`\geq`$ target: decrease $`n_{2}`$ until power $`<`$
+    target, then add 1 back
+4.  If power $`<`$ target: increase $`n_{2}`$ until power $`\geq`$
+    target
 
 ## Correlation Bounds
 
 ### Example: Calculate Correlation Bounds
 
 ``` r
+
 # Scenario: lambda = 1.25, nu = 0.8, mu = 0, sigma = 250
 bounds1 <- corrbound2MixedCountContinuous(lambda = 1.25, nu = 0.8, mu = 0, sd = 250)
 cat("Correlation bounds for NB(1.25, 0.8) and N(0, 250²):\n")
@@ -219,27 +240,28 @@ cat("Upper bound:", round(bounds3[2], 3), "\n")
 #> Upper bound: 0.863
 ```
 
-**Important**: Always verify that the specified correlation $\rho$ is
+**Important**: Always verify that the specified correlation $`\rho`$ is
 within the feasible bounds for your parameters.
 
 ## Replicating Homma and Yoshida (2024) Table 1 (Case B)
 
 Table 1 from Homma and Yoshida (2024) shows sample sizes and operating
 characteristics for various scenarios. We replicate **Case B** with
-$\nu = 3$ and $\nu = 5$.
+$`\nu = 3`$ and $`\nu = 5`$.
 
 **Design parameters for Case B**:
 
-- Count rates: $r_{2} = 1$, $r_{1} = 2$, $t = 1$ → $\lambda_{2} = 1$,
-  $\lambda_{1} = 2$
-- Dispersion: $\nu = 3$ and $5$
-- Continuous means: $\mu_{2} = 0$, $\mu_{1} = - 50$ (negative indicates
-  less decline)
-- Standard deviation: $\sigma = 75$
-- $\alpha = 0.025$ (one-sided), $1 - \beta = 0.9$ (target power)
-- Balanced allocation: $r = 1$ ($n_{1} = n_{2}$)
+- Count rates: $`r_{2} = 1`$, $`r_{1} = 2`$, $`t = 1`$ →
+  $`\lambda_{2} = 1`$, $`\lambda_{1} = 2`$
+- Dispersion: $`\nu = 3`$ and $`5`$
+- Continuous means: $`\mu_{2} = 0`$, $`\mu_{1} = -50`$ (negative
+  indicates less decline)
+- Standard deviation: $`\sigma = 75`$
+- $`\alpha = 0.025`$ (one-sided), $`1 - \beta = 0.9`$ (target power)
+- Balanced allocation: $`r = 1`$ ($`n_{1} = n_{2}`$)
 
 ``` r
+
 # Define scenarios for Table 1 Case B
 scenarios_table1_B <- expand.grid(
   nu = c(3, 5),
@@ -302,9 +324,10 @@ kable(table1_B_nu3,
 | 0.8 |          54 |     108 |
 
 Table 1 Case B: Sample Sizes (ν = 3, Balanced Design, α = 0.025, 1-β =
-0.9)
+0.9) {.table}
 
 ``` r
+
 
 kable(table1_B_nu5, 
       caption = "Table 1 Case B: Sample Sizes (ν = 5, Balanced Design, α = 0.025, 1-β = 0.9)",
@@ -321,14 +344,14 @@ kable(table1_B_nu5,
 | 0.8 |          51 |     102 |
 
 Table 1 Case B: Sample Sizes (ν = 5, Balanced Design, α = 0.025, 1-β =
-0.9)
+0.9) {.table}
 
 **Observations**:
 
-- Higher dispersion parameter $\nu$ (less overdispersion) requires
+- Higher dispersion parameter $`\nu`$ (less overdispersion) requires
   **smaller** sample sizes
-- Correlation reduces sample size: approximately 2-4% at $\rho = 0.4$,
-  5-8% at $\rho = 0.8$
+- Correlation reduces sample size: about 2 to 3% at $`\rho = 0.4`$ and 7
+  to 9% at $`\rho = 0.8`$
 - The effect of correlation is moderate compared to other endpoint
   combinations
 
@@ -339,6 +362,7 @@ Table 1 Case B: Sample Sizes (ν = 5, Balanced Design, α = 0.025, 1-β =
 Calculate sample size for a balanced design with moderate effect sizes:
 
 ``` r
+
 # Balanced design: n1 = n2 (i.e., r = 1)
 result_balanced <- ss2MixedCountContinuous(
   r1 = 1.0,              # Count rate in treatment group
@@ -378,6 +402,7 @@ print(result_balanced)
 Demonstrate how correlation affects sample size:
 
 ``` r
+
 # Fixed effect sizes
 r1 <- 1.0
 r2 <- 1.25
@@ -421,9 +446,10 @@ kable(result_df,
 | 0.6 |         699 |    1398 |           3.9 |
 | 0.8 |         685 |    1370 |           5.8 |
 
-Effect of Correlation on Sample Size
+Effect of Correlation on Sample Size {.table}
 
 ``` r
+
 
 # Plot
 plot(rho_values, ss_by_rho, 
@@ -438,14 +464,15 @@ grid()
 ![](mixed-count-continuous_files/figure-html/example2-1.png)
 
 **Interpretation**: Higher positive correlation reduces required sample
-size. At $\rho = 0.8$, sample size is reduced by approximately 5-7%
-compared to $\rho = 0$.
+size. At $`\rho = 0.8`$, sample size is reduced by approximately 5-7%
+compared to $`\rho = 0`$.
 
 ### Example 3: Effect of Dispersion Parameter
 
 Compare sample sizes for different levels of overdispersion:
 
 ``` r
+
 # Fixed design parameters
 r1 <- 1.0
 r2 <- 1.25
@@ -490,9 +517,9 @@ kable(result_df_nu,
 | 2.0 | 1.56 |         522 |    1044 |
 | 5.0 | 1.23 |         463 |     926 |
 
-Effect of Dispersion Parameter on Sample Size
+Effect of Dispersion Parameter on Sample Size {.table}
 
-**Key finding**: Higher overdispersion (smaller $\nu$, larger VMR)
+**Key finding**: Higher overdispersion (smaller $`\nu`$, larger VMR)
 requires larger sample sizes.
 
 ### Example 4: Unbalanced Allocation
@@ -500,6 +527,7 @@ requires larger sample sizes.
 Calculate sample size with 2:1 allocation ratio:
 
 ``` r
+
 # Balanced design (r = 1)
 result_balanced <- ss2MixedCountContinuous(
   r1 = 1.0, r2 = 1.25, nu = 0.8, t = 1,
@@ -537,9 +565,10 @@ kable(comparison_allocation,
 | Balanced (1:1)   |  705 | 705 |    1410 |
 | Unbalanced (2:1) | 1044 | 522 |    1566 |
 
-Comparison: Balanced vs Unbalanced Allocation
+Comparison: Balanced vs Unbalanced Allocation {.table}
 
 ``` r
+
 
 cat("\nIncrease in total sample size:", 
     round((result_unbalanced$N - result_balanced$N) / result_balanced$N * 100, 1), "%\n")
@@ -552,6 +581,7 @@ cat("\nIncrease in total sample size:",
 Verify that calculated sample sizes achieve target power:
 
 ``` r
+
 # Use result from Example 1
 power_result <- power2MixedCountContinuous(
   n1 = result_balanced$n1,
@@ -583,20 +613,20 @@ cat("Achieved power (Co-primary):", round(as.numeric(power_result$powerCoprimary
 ### Design Considerations
 
 1.  **Estimating dispersion parameter**: Use pilot data or historical
-    studies to estimate $\nu$. Underestimating $\nu$ (overestimating
+    studies to estimate $`\nu`$. Underestimating $`\nu`$ (overestimating
     overdispersion) leads to conservative sample sizes.
 
 2.  **Estimating correlation**: Use pilot data; be conservative if
-    uncertain ($\rho = 0$ is conservative).
+    uncertain ($`\rho = 0`$ is conservative).
 
 3.  **Direction of benefit**: For COPD/asthma trials, ensure test
     directions are correct (lower is better for both endpoints).
 
-4.  **Balanced allocation**: Generally most efficient ($r = 1$) unless
+4.  **Balanced allocation**: Generally most efficient ($`r = 1`$) unless
     practical constraints require otherwise.
 
 5.  **Sensitivity analysis**: Calculate sample sizes for range of
-    plausible $\nu$, $\rho$, and effect sizes.
+    plausible $`\nu`$, $`\rho`$, and effect sizes.
 
 ### When to Use This Method
 

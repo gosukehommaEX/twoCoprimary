@@ -58,7 +58,7 @@ p_1)\\ and \\\mathcal{M} = \\m : m = \max(0, y_2-(N-y_1)), \ldots,
 
 Homma, G., & Yoshida, T. (2025). Exact power and sample size in clinical
 trials with two co-primary binary endpoints. *Statistical Methods in
-Medical Research*, 34(1), 1-19.
+Medical Research*, 34(11), 2183-2201.
 
 ## Examples
 

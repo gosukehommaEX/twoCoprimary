@@ -151,6 +151,13 @@ correlation between the latent continuous variable underlying the binary
 endpoint and the observed continuous endpoint. This is not the same as
 the point-biserial correlation observed in the data.
 
+The Monte Carlo step of `Test = "Fisher"` draws random numbers, so
+results vary between calls unless a seed is set with `set.seed`
+beforehand. The sequential search for the sample size compares a
+simulated power against the target, so the returned sample size can
+differ by a subject or two between runs; increasing `nMC` reduces that
+variation.
+
 ## References
 
 Sozu, T., Sugimoto, T., & Hamasaki, T. (2012). Sample size determination
@@ -213,9 +220,10 @@ power2MixedContinuousBinary(
 #>             rho = 0.5
 #>           alpha = 0.025
 #>            Test = Fisher
-#>       powerCont = 0.705414
-#>        powerBin = 0.440109
-#>  powerCoprimary = 0.364131
+#>             nMC = 5000
+#>       powerCont = 0.7004
+#>        powerBin = 0.4604
+#>  powerCoprimary = 0.3768
 #> 
 # }
 ```

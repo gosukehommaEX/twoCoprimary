@@ -7,6 +7,7 @@ with two co-primary binary endpoints using asymptotic normal
 approximation methods. The methodology is based on Sozu et al. (2010).
 
 ``` r
+
 library(twoCoprimary)
 library(dplyr)
 library(tidyr)
@@ -27,81 +28,91 @@ Binary co-primary endpoints are common in:
   physician’s global assessment of 0 or 1 (yes/no)
 
 - **Primary myelofibrosis trials**: Clinically relevant complete
-  haematological response (yes/no) + Lack of progression of clinical
+  hematological response (yes/no) + Lack of progression of clinical
   symptoms (yes/no)
 
 ### When to Use Asymptotic Methods
 
 Asymptotic (normal approximation) methods are appropriate when:
 
-- **Sample sizes are large** (typically $N > 200$)
+- **Sample sizes are large** (typically $`N > 200`$)
 
-- **Probabilities are not extreme** ($0.10 < p < 0.90$)
+- **Probabilities are not extreme** ($`0.10 < p < 0.90`$)
 
 - **Computational efficiency is important**
 
 For small to medium sample sizes or extreme probabilities, use **exact
 methods** based on Homma and Yoshida (2025), which can be computed using
 exact approaches without any approximations (see
-[`vignette("two-binary-endpoints-exact")`](https://gosukehommaEX.github.io/twoCoprimary/articles/two-binary-endpoints-exact.md)).
+[`vignette("two-binary-endpoints-exact")`](https://gosukehommaex.github.io/twoCoprimary/articles/two-binary-endpoints-exact.md)).
 
 ## Statistical Framework
 
 ### Model and Assumptions
 
 Consider a two-arm parallel-group superiority trial comparing treatment
-(group 1) with control (group 2). Let $n_{1}$ and $n_{2}$ denote the
-sample sizes in the two groups, with allocation ratio $r = n_{1}/n_{2}$
-(i.e., total sample size is $N = n_{1} + n_{2}$).
+(group 1) with control (group 2). Let $`n_{1}`$ and $`n_{2}`$ denote the
+sample sizes in the two groups, with allocation ratio
+$`r = n_{1}/n_{2}`$ (i.e., total sample size is $`N=n_{1}+n_{2}`$).
 
-For subject $i$ ($i = 1,\ldots,n_{j}$) in group $j$ ($j = 1$: treatment,
-$j = 2$: control), we observe two binary **outcomes**:
+For subject $`i`$ ($`i = 1, \ldots, n_j`$) in group $`j`$ ($`j = 1`$:
+treatment, $`j = 2`$: control), we observe two binary **outcomes**:
 
-$$X_{i,j,k} \in \{ 0,1\},\quad k = 1,2$$
+``` math
+X_{i,j,k} \in \{0, 1\}, \quad k = 1, 2
+```
 
-where $X_{i,j,k} = 1$ indicates success and $X_{i,j,k} = 0$ indicates
-failure for outcome $k$.
+where $`X_{i,j,k} = 1`$ indicates success and $`X_{i,j,k} = 0`$
+indicates failure for outcome $`k`$.
 
-**Marginal probabilities**: Let $p_{j,k}$ denote the success probability
-for outcome $k$ in group $j$:
+**Marginal probabilities**: Let $`p_{j,k}`$ denote the success
+probability for outcome $`k`$ in group $`j`$:
 
-$$p_{j,k} = \text{P}\left( X_{i,j,k} = 1 \right),\quad k = 1,2$$
+``` math
+p_{j,k} = \text{P}(X_{i,j,k} = 1), \quad k = 1, 2
+```
 
-For details on the joint distribution of
-$\left( X_{i,j,1},X_{i,j,2} \right)$, see Homma and Yoshida (2025)
-Section 2.1 or Sozu et al. (2010).
+For details on the joint distribution of $`(X_{i,j,1}, X_{i,j,2})`$, see
+Homma and Yoshida (2025) Section 2.1 or Sozu et al. (2010).
 
 ### Correlation Structure
 
-The correlation $\rho_{j}$ between the two binary outcomes in group $j$
-is defined as (Homma and Yoshida, 2025):
+The correlation $`\rho_{j}`$ between the two binary outcomes in group
+$`j`$ is defined as (Homma and Yoshida, 2025):
 
-$$\rho_{j} = \text{Cor}\left( X_{i,j,1},X_{i,j,2} \right) = \frac{\phi_{j} - p_{j,1}p_{j,2}}{\sqrt{p_{j,1}\left( 1 - p_{j,1} \right)p_{j,2}\left( 1 - p_{j,2} \right)}}$$
+``` math
+\rho_j = \text{Cor}(X_{i,j,1}, X_{i,j,2}) = \frac{\phi_j - p_{j,1}p_{j,2}}{\sqrt{p_{j,1}(1-p_{j,1})p_{j,2}(1-p_{j,2})}}
+```
 
-where $\phi_{j} = \text{P}\left( X_{i,j,1} = 1,X_{i,j,2} = 1 \right)$ is
-the joint probability that both outcomes are successful.
+where $`\phi_j = \text{P}(X_{i,j,1} = 1, X_{i,j,2} = 1)`$ is the joint
+probability that both outcomes are successful.
 
-**Practical interpretation**: $\rho_{j} > 0$ means subjects who succeed
-on outcome 1 are more likely to succeed on outcome 2.
+**Practical interpretation**: $`\rho_{j} > 0`$ means subjects who
+succeed on outcome 1 are more likely to succeed on outcome 2.
 
-**Valid correlation range**: Because $0 < p_{j,k} < 1$, the correlation
-$\rho_{j}$ is not free to range over $\lbrack - 1,1\rbrack$, but is
+**Valid correlation range**: Because $`0 < p_{j,k} < 1`$, the
+correlation $`\rho_{j}`$ is not free to range over $`[-1, 1]`$, but is
 bounded by (Homma and Yoshida, 2025, Equation 2):
 
-$$\rho_{j} \in \left\lbrack L\left( p_{j,1},p_{j,2} \right),U\left( p_{j,1},p_{j,2} \right) \right\rbrack \subseteq \lbrack - 1,1\rbrack$$
+``` math
+\rho_j \in [L(p_{j,1}, p_{j,2}), U(p_{j,1}, p_{j,2})] \subseteq [-1, 1]
+```
 
 where:
 
-$$L\left( p_{j,1},p_{j,2} \right) = \max\left\{ - \sqrt{\frac{p_{j,1}p_{j,2}}{\left( 1 - p_{j,1} \right)\left( 1 - p_{j,2} \right)}}, - \sqrt{\frac{\left( 1 - p_{j,1} \right)\left( 1 - p_{j,2} \right)}{p_{j,1}p_{j,2}}} \right\}$$
+``` math
+L(p_{j,1}, p_{j,2}) = \max\left\{-\sqrt{\frac{p_{j,1}p_{j,2}}{(1-p_{j,1})(1-p_{j,2})}}, -\sqrt{\frac{(1-p_{j,1})(1-p_{j,2})}{p_{j,1}p_{j,2}}}\right\}
+```
 
-$$U\left( p_{j,1},p_{j,2} \right) = \min\left\{ \sqrt{\frac{p_{j,1}\left( 1 - p_{j,2} \right)}{p_{j,2}\left( 1 - p_{j,1} \right)}},\sqrt{\frac{p_{j,2}\left( 1 - p_{j,1} \right)}{p_{j,1}\left( 1 - p_{j,2} \right)}} \right\}$$
+``` math
+U(p_{j,1}, p_{j,2}) = \min\left\{\sqrt{\frac{p_{j,1}(1-p_{j,2})}{p_{j,2}(1-p_{j,1})}}, \sqrt{\frac{p_{j,2}(1-p_{j,1})}{p_{j,1}(1-p_{j,2})}}\right\}
+```
 
-If $p_{j,1} = p_{j,2}$, then $U\left( p_{j,1},p_{j,2} \right) = 1$,
-whereas $L\left( p_{j,1},p_{j,2} \right) = - 1$ for
-$p_{j,1} + p_{j,2} = 1$.
+If $`p_{j,1} = p_{j,2}`$, then $`U(p_{j,1}, p_{j,2}) = 1`$, whereas
+$`L(p_{j,1}, p_{j,2}) = -1`$ for $`p_{j,1} + p_{j,2} = 1`$.
 
 These bounds can be computed using the
-[`corrbound2Binary()`](https://gosukehommaEX.github.io/twoCoprimary/reference/corrbound2Binary.md)
+[`corrbound2Binary()`](https://gosukehommaex.github.io/twoCoprimary/reference/corrbound2Binary.md)
 function in this package.
 
 ### Hypothesis Testing
@@ -109,21 +120,23 @@ function in this package.
 We test superiority of treatment over control for both endpoints. The
 **endpoints** for testing are the risk differences:
 
-**For endpoint** $k$:
-$$\text{H}_{0k}:p_{1,k} - p_{2,k} \leq 0{\mspace{6mu}\text{vs.}\mspace{6mu}}\text{H}_{1k}:p_{1,k} - p_{2,k} > 0$$
+**For endpoint** $`k`$:
+``` math
+\text{H}_{0k}: p_{1,k} - p_{2,k} \leq 0 \text{ vs. } \text{H}_{1k}: p_{1,k} - p_{2,k} > 0
+```
 
 **For co-primary endpoints** (intersection-union test):
 
-**Null hypothesis**: $\text{H}_{0} = \text{H}_{01} \cup \text{H}_{02}$
+**Null hypothesis**: $`\text{H}_{0} = \text{H}_{01} \cup \text{H}_{02}`$
 (at least one null is true)
 
 **Alternative hypothesis**:
-$\text{H}_{1} = \text{H}_{11} \cap \text{H}_{12}$ (both alternatives are
-true)
+$`\text{H}_{1} = \text{H}_{11} \cap \text{H}_{12}`$ (both alternatives
+are true)
 
-**Decision rule**: Reject $\text{H}_{0}$ at level $\alpha$ if and only
-if **both** $\text{H}_{01}$ and $\text{H}_{02}$ are rejected at level
-$\alpha$.
+**Decision rule**: Reject $`\text{H}_{0}`$ at level $`\alpha`$ if and
+only if **both** $`\text{H}_{01}`$ and $`\text{H}_{02}`$ are rejected at
+level $`\alpha`$.
 
 ### Test Statistics
 
@@ -136,30 +149,37 @@ al. (2010).
 For endpoint k, the test statistic without continuity correction is
 **(Equation 3 in Sozu et al., 2010)**:
 
-$$Z_{k} = \frac{{\widehat{p}}_{1,k} - {\widehat{p}}_{2,k}}{se_{k0}}$$
+``` math
+Z_k = \frac{\hat{p}_{1,k} - \hat{p}_{2,k}}{se_{k0}}
+```
 
 where:
-$$se_{k0} = \sqrt{\left( \frac{1}{n_{1}} + \frac{1}{n_{2}} \right){\bar{p}}_{k}\left( 1 - {\bar{p}}_{k} \right)}$$
+``` math
+se_{k0} = \sqrt{\left(\frac{1}{n_1} + \frac{1}{n_2}\right) \bar{p}_k(1 - \bar{p}_k)}
+```
 
 and
-${\bar{p}}_{k} = \frac{n_{1}{\widehat{p}}_{1,k} + n_{2}{\widehat{p}}_{2,k}}{n_{1} + n_{2}}$
+$`\bar{p}_k = \frac{n_1 \hat{p}_{1,k} + n_2 \hat{p}_{2,k}}{n_1 + n_2}`$
 is the **pooled proportion** under the null hypothesis.
 
-Under $\text{H}_{0k}$, $Z_{k}$ asymptotically follows $\text{N}(0,1)$.
+Under $`\text{H}_{0k}`$, $`Z_{k}`$ asymptotically follows
+$`\text{N}(0, 1)`$.
 
 **Power formula** (Equation 4 in Sozu et al., 2010):
 
-Under $\text{H}_{1k}$ with true probabilities $p_{1,k}$ and $p_{2,k}$,
-the power for a single endpoint is:
+Under $`\text{H}_{1k}`$ with true probabilities $`p_{1,k}`$ and
+$`p_{2,k}`$, the power for a single endpoint is:
 
-$$\text{Power}_{k} = \Phi\left( \frac{\delta_{k} - se_{k0}z_{1 - \alpha}}{se_{k}} \right)$$
+``` math
+\text{Power}_k = \Phi\left(\frac{\delta_k - se_{k0} z_{1-\alpha}}{se_k}\right)
+```
 
 where:
 
-- $\delta_{k} = p_{1,k} - p_{2,k}$ is the true risk difference
-- $se_{k} = \sqrt{\frac{v_{1,k}}{n_{1}} + \frac{v_{2,k}}{n_{2}}}$ with
-  $v_{j,k} = p_{j,k}\left( 1 - p_{j,k} \right)$
-- $z_{1 - \alpha}$ is the $(1 - \alpha)$ quantile of the standard normal
+- $`\delta_k = p_{1,k} - p_{2,k}`$ is the true risk difference
+- $`se_k = \sqrt{\frac{v_{1,k}}{n_1} + \frac{v_{2,k}}{n_2}}`$ with
+  $`v_{j,k} = p_{j,k}(1 - p_{j,k})`$
+- $`z_{1-\alpha}`$ is the $`(1-\alpha)`$ quantile of the standard normal
   distribution
 
 #### Method 2: Normal Approximation with Continuity Correction (ANc)
@@ -167,93 +187,113 @@ where:
 To improve finite-sample performance, Yates’s continuity correction is
 applied **(Equation 5 in Sozu et al., 2010)**:
 
-$$Z_{k} = \frac{{\widehat{p}}_{1,k} - {\widehat{p}}_{2,k} - c}{se_{k0}}$$
+``` math
+Z_k = \frac{\hat{p}_{1,k} - \hat{p}_{2,k} - c}{se_{k0}}
+```
 
 where:
-$$c = \frac{1}{2}\left( \frac{1}{n_{1}} + \frac{1}{n_{2}} \right)$$
+``` math
+c = \frac{1}{2}\left(\frac{1}{n_1} + \frac{1}{n_2}\right)
+```
 
 **Power formula**:
-$$\text{Power}_{k} = \Phi\left( \frac{\delta_{k} - se_{k0}z_{1 - \alpha} - c}{se_{k}} \right)$$
+``` math
+\text{Power}_k = \Phi\left(\frac{\delta_k - se_{k0} z_{1-\alpha} - c}{se_k}\right)
+```
 
 #### Method 3: Arcsine Transformation (AS)
 
 The arcsine-square-root transformation stabilizes variance **(Equation 6
 in Sozu et al., 2010)**:
 
-$$Z_{k} = \frac{\arcsin\left( \sqrt{{\widehat{p}}_{1,k}} \right) - \arcsin\left( \sqrt{{\widehat{p}}_{2,k}} \right)}{se}$$
+``` math
+Z_k = \frac{\arcsin(\sqrt{\hat{p}_{1,k}}) - \arcsin(\sqrt{\hat{p}_{2,k}})}{se}
+```
 
-where: $$se = \frac{1}{2}\sqrt{\frac{1}{n_{1}} + \frac{1}{n_{2}}}$$
+where:
+``` math
+se = \frac{1}{2}\sqrt{\frac{1}{n_1} + \frac{1}{n_2}}
+```
 
 **Power formula**:
 
 Let
-$\delta_{k}^{\text{AS}} = \arcsin\left( \sqrt{p_{1k}} \right) - \arcsin\left( \sqrt{p_{2k}} \right)$,
+$`\delta_k^\text{AS} = \arcsin(\sqrt{p_{1k}}) - \arcsin(\sqrt{p_{2k}})`$,
 then:
 
-$$\text{Power}_{k} = \Phi\left( \frac{\delta_{k}^{\text{AS}}}{se} - z_{1 - \alpha} \right)$$
+``` math
+\text{Power}_k = \Phi\left(\frac{\delta_k^\text{AS}}{se} - z_{1-\alpha}\right)
+```
 
 #### Method 4: Arcsine Transformation with Continuity Correction (ASc)
 
 Walters’ continuity correction for the arcsine method **(Equation 7 in
 Sozu et al., 2010)**:
 
-$$Z_{k} = \frac{\arcsin\left( \sqrt{{\widehat{p}}_{1,k} + c_{1}} \right) - \arcsin\left( \sqrt{{\widehat{p}}_{2,k} + c_{2}} \right)}{se}$$
+``` math
+Z_k = \frac{\arcsin(\sqrt{\hat{p}_{1,k} + c_1}) - \arcsin(\sqrt{\hat{p}_{2,k} + c_2})}{se}
+```
 
-where: $$c_{1} = - \frac{1}{2n_{1}},\quad c_{2} = \frac{1}{2n_{2}}$$
+where:
+``` math
+c_1 = -\frac{1}{2n_1}, \quad c_2 = \frac{1}{2n_2}
+```
 
-$$se = \frac{1}{2}\sqrt{\frac{1}{n_{1}} + \frac{1}{n_{2}}}$$
+``` math
+se = \frac{1}{2}\sqrt{\frac{1}{n_1} + \frac{1}{n_2}}
+```
 
 **Power formula**:
 
 Let:
 
-- $\delta_{k}^{ASc} = \arcsin\left( \sqrt{p_{1,k} + c_{1}} \right) - \arcsin\left( \sqrt{p_{2,k} + c_{2}} \right)$
-- $v_{j,k}^{c} = \left( p_{j,k} + c_{j} \right)\left( 1 - p_{j,k} - c_{j} \right)$
-- $se_{k} = \sqrt{\frac{v_{1,k}}{4n_{1}v_{1,k}^{c}} + \frac{v_{2,k}}{4n_{2}v_{2,k}^{c}}}$
+- $`\delta_k^{ASc} = \arcsin(\sqrt{p_{1,k} + c_1}) - \arcsin(\sqrt{p_{2,k} + c_2})`$
+- $`v_{j,k}^c = (p_{j,k} + c_j)(1 - p_{j,k} - c_j)`$
+- $`se_k = \sqrt{\frac{v_{1,k}}{4n_1 v_{1,k}^c} + \frac{v_{2,k}}{4n_2 v_{2,k}^c}}`$
 
 Then:
-$$\text{Power}_{k} = \Phi\left( \frac{\delta_{k}^{ASc} - se \cdot z_{1 - \alpha}}{se_{k}} \right)$$
+``` math
+\text{Power}_k = \Phi\left(\frac{\delta_k^{ASc} - se \cdot z_{1-\alpha}}{se_k}\right)
+```
 
 ### Joint Distribution and Correlation
 
-Under $\text{H}_{1}$, $\left( Z_{1},Z_{2} \right)$ asymptotically
-follows a bivariate normal distribution:
+Under $`\text{H}_{1}`$, $`(Z_{1}, Z_{2})`$ asymptotically follows a
+bivariate normal distribution:
 
-$$\begin{pmatrix}
-Z_{1} \\
-Z_{2}
-\end{pmatrix} \sim \text{BN}\left( \begin{pmatrix}
-\omega_{1} \\
-\omega_{2}
-\end{pmatrix},\begin{pmatrix}
-1 & \gamma \\
-\gamma & 1
-\end{pmatrix} \right)$$
+``` math
+\begin{pmatrix} Z_1 \\ Z_2 \end{pmatrix} \sim \text{BN}\left(\begin{pmatrix} \omega_1 \\ \omega_2 \end{pmatrix}, \begin{pmatrix} 1 & \gamma \\ \gamma & 1 \end{pmatrix}\right)
+```
 
-The correlation $\gamma$ between test statistics depends on $\rho_{1}$,
-$\rho_{2}$, and the marginal probabilities. For details on the
-derivation and approximation formulas, see Sozu et al. (2010) and Homma
-and Yoshida (2025). This approximation is implemented in the package
-functions.
+The correlation $`\gamma`$ between test statistics depends on
+$`\rho_{1}`$, $`\rho_{2}`$, and the marginal probabilities. For details
+on the derivation and approximation formulas, see Sozu et al. (2010) and
+Homma and Yoshida (2025). This approximation is implemented in the
+package functions.
 
 ### Power Calculation
 
 The overall power (probability of rejecting both null hypotheses) is:
 
-$$1 - \beta = \text{P}\left( Z_{1} > z_{1 - \alpha}{\mspace{6mu}\text{and}\mspace{6mu}}Z_{2} > z_{1 - \alpha} \mid \text{H}_{1} \right)$$
+``` math
+1 - \beta = \text{P}(Z_1 > z_{1-\alpha} \text{ and } Z_2 > z_{1-\alpha} \mid \text{H}_1)
+```
 
 Using the bivariate normal distribution:
 
-$$1 - \beta = \Phi_{2}\left( - z_{1 - \alpha} + \omega_{1}, - z_{1 - \alpha} + \omega_{2} \mid \gamma \right)$$
+``` math
+1 - \beta = \Phi_2(-z_{1-\alpha} + \omega_1, -z_{1-\alpha} + \omega_2 \mid \gamma)
+```
 
-where $\Phi_{2}(a,b \mid \gamma)$ is the CDF of the standard bivariate
-normal distribution with correlation $\gamma$.
+where $`\Phi_{2}(a, b \mid \gamma)`$ is the CDF of the standard
+bivariate normal distribution with correlation $`\gamma`$.
 
 ### Sample Size Calculation
 
-For target power $1 - \beta$ and balanced design ($n_{1} = n_{2} = n$),
-we solve the power formula shown above numerically for $n_{2}$. Then,
-the total sample size is obtained as $N = (1 + r)n_{2}$.
+For target power $`1 - \beta`$ and balanced design
+($`n_{1} = n_{2} = n`$), we solve the power formula shown above
+numerically for $`n_{2}`$. Then, the total sample size is obtained as
+$`N = (1+r)n_{2}`$.
 
 ## Replicating Sozu et al. (2010) Table III
 
@@ -264,12 +304,13 @@ test methods. Note that exact methods based on Fisher’s exact test
 small to medium sample sizes, but are not included in this table as they
 were not available in Sozu et al. (2010).
 
-The notation used in the function is: `p11` = $p_{1,1}$, `p12` =
-$p_{1,2}$, `p21` = $p_{2,1}$, `p22` = $p_{2,2}$, where the first
+The notation used in the function is: `p11` = $`p_{1,1}`$, `p12` =
+$`p_{1,2}`$, `p21` = $`p_{2,1}`$, `p22` = $`p_{2,2}`$, where the first
 subscript denotes the group (1 = treatment, 2 = control) and the second
 subscript denotes the endpoint (1 or 2).
 
 ``` r
+
 # Recreate Sozu et al. (2010) Table III
 library(dplyr)
 library(tidyr)
@@ -313,31 +354,31 @@ result_bin_ss <- do.call(
 
 kable(result_bin_ss,
       caption = "Table III: Sample Size per Group (n) for Two Co-Primary Binary Endpoints (α = 0.025, 1-β = 0.80)^a,b^",
-      digits = 0,
+      digits = c(2, 2, 2, 2, 1, 0, 0, 0, 0),
       col.names = c("p₁,₁", "p₁,₂", "p₂,₁", "p₂,₂", "ρ", "AN", "ANc", "AS", "ASc"))
 ```
 
-| p₁,₁ | p₁,₂ | p₂,₁ | p₂,₂ |   ρ |  AN | ANc |  AS | ASc |
-|-----:|-----:|-----:|-----:|----:|----:|----:|----:|----:|
-|    1 |    1 |    0 |    0 |   0 | 124 | 134 | 124 | 134 |
-|    1 |    1 |    0 |    0 |   0 | 122 | 132 | 122 | 132 |
-|    1 |    1 |    0 |    0 |   0 | 119 | 129 | 119 | 129 |
-|    1 |    1 |    0 |    0 |   0 | 116 | 126 | 116 | 126 |
-|    1 |    1 |    0 |    0 |   1 | 109 | 119 | 109 | 118 |
-|    1 |    1 |    1 |    0 |   0 | 121 | 131 | 119 | 130 |
-|    1 |    1 |    1 |    0 |   0 | 118 | 128 | 116 | 127 |
-|    1 |    1 |    1 |    0 |   0 | 115 | 125 | 113 | 124 |
-|    1 |    1 |    1 |    1 |   0 |  81 |  91 |  78 |  88 |
-|    1 |    1 |    1 |    1 |   0 |  79 |  89 |  76 |  86 |
-|    1 |    1 |    1 |    1 |   0 |  77 |  87 |  74 |  84 |
-|    1 |    1 |    1 |    1 |   1 |  72 |  82 |  69 |  79 |
-|    1 |    1 |    1 |    1 |   0 | 571 | 610 | 557 | 596 |
-|    1 |    1 |    1 |    1 |   0 | 556 | 596 | 543 | 582 |
-|    1 |    1 |    1 |    1 |   0 | 542 | 581 | 529 | 568 |
-|    1 |    1 |    1 |    1 |   1 | 507 | 546 | 495 | 534 |
+| p₁,₁ | p₁,₂ | p₂,₁ | p₂,₂ |    ρ |  AN | ANc |  AS | ASc |
+|-----:|-----:|-----:|-----:|-----:|----:|----:|----:|----:|
+| 0.70 | 0.70 |  0.5 |  0.5 | -0.3 | 124 | 134 | 124 | 134 |
+| 0.70 | 0.70 |  0.5 |  0.5 |  0.0 | 122 | 132 | 122 | 132 |
+| 0.70 | 0.70 |  0.5 |  0.5 |  0.3 | 119 | 129 | 119 | 129 |
+| 0.70 | 0.70 |  0.5 |  0.5 |  0.5 | 116 | 126 | 116 | 126 |
+| 0.70 | 0.70 |  0.5 |  0.5 |  0.8 | 109 | 119 | 109 | 118 |
+| 0.87 | 0.70 |  0.7 |  0.5 |  0.0 | 121 | 131 | 119 | 130 |
+| 0.87 | 0.70 |  0.7 |  0.5 |  0.3 | 118 | 128 | 116 | 127 |
+| 0.87 | 0.70 |  0.7 |  0.5 |  0.5 | 115 | 125 | 113 | 124 |
+| 0.90 | 0.90 |  0.7 |  0.7 |  0.0 |  81 |  91 |  78 |  88 |
+| 0.90 | 0.90 |  0.7 |  0.7 |  0.3 |  79 |  89 |  76 |  86 |
+| 0.90 | 0.90 |  0.7 |  0.7 |  0.5 |  77 |  87 |  74 |  84 |
+| 0.90 | 0.90 |  0.7 |  0.7 |  0.8 |  72 |  82 |  69 |  79 |
+| 0.95 | 0.95 |  0.9 |  0.9 |  0.0 | 571 | 610 | 557 | 596 |
+| 0.95 | 0.95 |  0.9 |  0.9 |  0.3 | 556 | 596 | 543 | 582 |
+| 0.95 | 0.95 |  0.9 |  0.9 |  0.5 | 542 | 581 | 529 | 568 |
+| 0.95 | 0.95 |  0.9 |  0.9 |  0.8 | 507 | 546 | 495 | 534 |
 
 Table III: Sample Size per Group (n) for Two Co-Primary Binary Endpoints
-(α = 0.025, 1-β = 0.80)^(a,b)
+(α = 0.025, 1-β = 0.80)^(a,b) {.table}
 
 ^(a) AN: Asymptotic normal test without continuity correction; ANc:
 Asymptotic normal test with continuity correction; AS: Arcsine
@@ -354,16 +395,17 @@ the values presented here.
 
 **Effect of correlation**:
 
-- **Positive correlation** ($\rho > 0$) reduces required sample size
-- **Negative correlation** ($\rho < 0$) increases required sample size
-- **Zero correlation** ($\rho = 0$) provides intermediate sample size
+- **Positive correlation** ($`\rho > 0`$) reduces required sample size
+- **Negative correlation** ($`\rho < 0`$) increases required sample size
+- **Zero correlation** ($`\rho = 0`$) provides intermediate sample size
 
 **Test method comparison**:
 
-- **AN**: Generally smallest sample size, most efficient
-- **ANc**: Slightly larger than AN due to continuity correction
-- **AS**: Similar to AN for moderate probabilities
-- **ASc**: Largest sample size, most conservative
+- **AS**: Smallest sample size of the four, or equal to AN
+- **AN**: Equal to AS for moderate probabilities, slightly larger when
+  the probabilities are close to one
+- **ASc**: Larger than AS by the continuity correction
+- **ANc**: Largest sample size of the four, and the most conservative
 
 ## Basic Usage Examples
 
@@ -372,6 +414,7 @@ the values presented here.
 Calculate sample size when both endpoints have equal effect sizes:
 
 ``` r
+
 # Both endpoints: 70% vs 50% (20% difference)
 # p_{1,1} = p_{1,2} = 0.7 (treatment group)
 # p_{2,1} = p_{2,2} = 0.5 (control group)
@@ -402,15 +445,16 @@ print(ss_equal)
 #>            Test = AN
 ```
 
-**Note**: In the function, `p11` corresponds to $p_{1,1}$ (success
-probability for endpoint 1 in treatment group), `p12` to $p_{1,2}$,
-`p21` to $p_{2,1}$, and `p22` to $p_{2,2}$.
+**Note**: In the function, `p11` corresponds to $`p_{1,1}`$ (success
+probability for endpoint 1 in treatment group), `p12` to $`p_{1,2}`$,
+`p21` to $`p_{2,1}`$, and `p22` to $`p_{2,2}`$.
 
 ### Example 2: Unequal Effect Sizes
 
 When effect sizes differ, the endpoint with smaller effect dominates:
 
 ``` r
+
 # Endpoint 1: 75% vs 65% (10% difference)
 # Endpoint 2: 80% vs 60% (20% difference)
 ss_unequal <- ss2BinaryApprox(
@@ -460,6 +504,7 @@ endpoint with smaller effect size.
 Demonstrate how correlation affects sample size:
 
 ``` r
+
 # Fixed effect sizes: p_{1,1} = p_{1,2} = 0.7, p_{2,1} = p_{2,2} = 0.5
 p11 <- 0.7
 p21 <- 0.5
@@ -502,8 +547,10 @@ kable(result_df,
 |  0.8 |         109 |     218 |
 
 Sample Size vs Correlation (p₁,₁ = p₁,₂ = 0.7, p₂,₁ = p₂,₂ = 0.5)
+{.table}
 
 ``` r
+
 
 # Plot
 plot(rho_values, ss_by_rho, 
@@ -517,14 +564,16 @@ grid()
 
 ![](two-binary-endpoints-approx_files/figure-html/correlation_effect-1.png)
 
-**Interpretation**: Higher positive correlation substantially reduces
-required sample size.
+**Interpretation**: Higher positive correlation reduces the required
+sample size. In this scenario the sample size per group falls from 124
+at $`\rho = -0.3`$ to 109 at $`\rho = 0.8`$, a reduction of about 12%.
 
 ### Example 4: Unbalanced Allocation
 
 Calculate sample size with unequal group allocation:
 
 ``` r
+
 # 2:1 allocation (treatment:control)
 ss_unbalanced <- ss2BinaryApprox(
   p11 = 0.7, p12 = 0.7,
@@ -559,6 +608,7 @@ cat("Total sample size:", ss_unbalanced$N, "\n")
 Verify that calculated sample sizes achieve target power:
 
 ``` r
+
 # Use result from Example 1
 power_result <- power2BinaryApprox(
   n1 = ss_equal$n1,
@@ -585,6 +635,7 @@ cat("Achieved power (Co-primary):", round(power_result$powerCoprimary, 4), "\n")
 Compare the four asymptotic test methods:
 
 ``` r
+
 # Fixed design parameters
 p11 <- 0.80
 p12 <- 0.70
@@ -615,18 +666,19 @@ comparison <- lapply(methods, function(method) {
 comparison_table <- bind_rows(comparison)
 
 kable(comparison_table,
-      caption = "Comparison of Test Methods (p₁,₁ = p₁,₂ = 0.7, p₂,₁ = p₂,₂ = 0.5, ρ = 0.5)")
+      caption = "Comparison of Test Methods (p₁,₁ = 0.80, p₁,₂ = 0.70, p₂,₁ = 0.55, p₂,₂ = 0.45, ρ = 0.7)",
+      col.names = c("Test Method", "n per group", "N total"))
 ```
 
-| Method | n_per_group | N_total |
-|:-------|------------:|--------:|
-| AN     |          69 |     138 |
-| ANc    |          77 |     154 |
-| AS     |          69 |     138 |
-| ASc    |          76 |     152 |
+| Test Method | n per group | N total |
+|:------------|------------:|--------:|
+| AN          |          69 |     138 |
+| ANc         |          77 |     154 |
+| AS          |          69 |     138 |
+| ASc         |          76 |     152 |
 
-Comparison of Test Methods (p₁,₁ = p₁,₂ = 0.7, p₂,₁ = p₂,₂ = 0.5, ρ =
-0.5)
+Comparison of Test Methods (p₁,₁ = 0.80, p₁,₂ = 0.70, p₂,₁ = 0.55, p₂,₂
+= 0.45, ρ = 0.7) {.table}
 
 ## Practical Recommendations
 
@@ -652,8 +704,8 @@ Comparison of Test Methods (p₁,₁ = p₁,₂ = 0.7, p₂,₁ = p₂,₂ = 0.5
 Use exact methods (`ss2BinaryExact`) based on Homma and Yoshida (2025)
 when:
 
-- Small to medium sample sizes ($N < 200$)
-- Extreme probabilities ($p < 0.1$ or $p > 0.9$)
+- Small to medium sample sizes ($`N < 200`$)
+- Extreme probabilities ($`p < 0.1`$ or $`p > 0.9`$)
 - Strict Type I error control required
 - Regulatory preference for exact tests
 
@@ -664,15 +716,15 @@ sizes and better Type I error control in these situations.
 
 These asymptotic methods are appropriate when:
 
-- $N > 200$
-- $0.1 < p < 0.9$
+- $`N > 200`$
+- $`0.1 < p < 0.9`$
 - Computational efficiency is important
 
 ## References
 
 Homma, G., & Yoshida, T. (2025). Exact power and sample size in clinical
 trials with two co-primary binary endpoints. *Statistical Methods in
-Medical Research*, 34(1), 1-19.
+Medical Research*, 34(11), 2183-2201.
 
 Sozu, T., Sugimoto, T., & Hamasaki, T. (2010). Sample size determination
 in clinical trials with multiple co-primary binary endpoints.

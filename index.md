@@ -28,22 +28,37 @@ The package supports five combinations of co-primary endpoints:
 - **Mixed count and continuous** - Negative binomial for overdispersed
   counts (Homma & Yoshida, 2024)
 
-All methods provide: - ✅ Sample size calculation given target power -
-✅ Power calculation given sample size - ✅ Proper Type I error control
-without multiplicity adjustment - ✅ Accounting for correlation between
-endpoints - ✅ Support for unbalanced allocation ratios
+All methods provide:
+
+- ✅ Sample size calculation given target power
+- ✅ Power calculation given sample size
+- ✅ Proper Type I error control without multiplicity adjustment
+- ✅ Accounting for correlation between endpoints
+- ✅ Support for unbalanced allocation ratios
+
+The exact methods for binary endpoints use a compiled kernel for the
+bivariate binomial distribution and evaluate the co-primary power as a
+matrix product, so a complete sample size search at a total sample size
+of several hundred takes about a second. The rejection regions of the
+Z-pooled and Boschloo exact unconditional tests agree with those of the
+[Exact](https://CRAN.R-project.org/package=Exact) package.
+
+See [NEWS](https://gosukehommaEX.github.io/twoCoprimary/news/index.html)
+for what changed in version 1.1.0.
 
 ## Installation
 
 Install from CRAN:
 
 ``` r
+
 install.packages("twoCoprimary")
 ```
 
 Or install the development version from GitHub:
 
 ``` r
+
 # install.packages("pak")
 pak::pak("gosukehommaEX/twoCoprimary")
 ```
@@ -56,6 +71,7 @@ Calculate sample size for a trial with two continuous co-primary
 endpoints:
 
 ``` r
+
 library(twoCoprimary)
 
 # Sample size calculation
@@ -91,6 +107,7 @@ print(result)
 For small to medium sample sizes, use exact methods:
 
 ``` r
+
 # Sample size with exact inference
 result_exact <- ss2BinaryExact(
   p11 = 0.50, p12 = 0.30,    # Response rates for group 1
@@ -122,6 +139,7 @@ print(result_exact)
 For COPD/asthma trials with exacerbation count and lung function:
 
 ``` r
+
 # Sample size calculation
 result <- ss2MixedCountContinuous(
     r1 = 1.0,              # Count rate in treatment group
@@ -174,20 +192,20 @@ Comprehensive vignettes are available:
 
 ## References
 
-1.  Homma, G., & Yoshida, T. (2024). Sample size calculation for
-    clinical trials with co‐primary outcomes: Negative binomial and
-    continuous outcomes. *Pharmaceutical Statistics*, 23(3), 368-392.
+1.  Homma, G., & Yoshida, T. (2024). Sample size calculation in clinical
+    trials with two co-primary endpoints including overdispersed count
+    and continuous outcomes. *Pharmaceutical Statistics*, 23(1), 46-59.
     <https://doi.org/10.1002/pst.2337>
 
 2.  Homma, G., & Yoshida, T. (2025). Exact power and sample size in
     clinical trials with two co-primary binary endpoints. *Statistical
-    Methods in Medical Research*, 34(1).
+    Methods in Medical Research*, 34(11), 2183-2201.
     <https://doi.org/10.1177/09622802251368697>
 
-3.  Sozu, T., Sugimoto, T., Hamasaki, T., & Evans, S. R. (2010). Sample
-    size determination in superiority clinical trials with multiple
-    co-primary correlated endpoints. *Statistics in Medicine*, 29(21),
-    2219-2227. <https://doi.org/10.1002/sim.3972>
+3.  Sozu, T., Sugimoto, T., & Hamasaki, T. (2010). Sample size
+    determination in clinical trials with multiple co-primary binary
+    endpoints. *Statistics in Medicine*, 29(21), 2169-2179.
+    <https://doi.org/10.1002/sim.3972>
 
 4.  Sozu, T., Sugimoto, T., & Hamasaki, T. (2011). Sample size
     determination in superiority clinical trials with multiple
@@ -195,15 +213,15 @@ Comprehensive vignettes are available:
     Statistics*, 21(4), 650-668.
     <https://doi.org/10.1080/10543406.2011.551329>
 
-5.  Sozu, T., Sugimoto, T., Hamasaki, T., & Evans, S. R. (2012). Sample
-    size determination in clinical trials with multiple co-primary
-    binary endpoints including mixed binary and continuous endpoints.
-    *Biometrical Journal*, 54(5), 716-729.
-    <https://doi.org/10.1002/bimj.201100221>
+5.  Sozu, T., Sugimoto, T., & Hamasaki, T. (2012). Sample size
+    determination in clinical trials with multiple co-primary endpoints
+    including mixed continuous and binary variables. *Biometrical
+    Journal*, 54(5), 716-729. <https://doi.org/10.1002/bimj.201100221>
 
 ## Citation
 
 ``` r
+
 citation("twoCoprimary")
 ```
 

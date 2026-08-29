@@ -12,15 +12,15 @@
 <link rel="icon" sizes="any" href="favicon.ico">
 <link rel="manifest" href="site.webmanifest">
 <script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="twoCoprimary: Sample Size and Power Calculation for Two Co-Primary Endpoints">
 <meta name="description" content="Comprehensive tools for designing clinical trials with two co-primary endpoints, supporting continuous, binary, and mixed endpoint types with proper correlation handling.
 ">
 <meta property="og:description" content="Comprehensive tools for designing clinical trials with two co-primary endpoints, supporting continuous, binary, and mixed endpoint types with proper correlation handling.
 ">
-<meta property="og:image" content="https://gosukehommaEX.github.io/twoCoprimary/logo.png">
+<meta property="og:image" content="https://gosukehommaex.github.io/twoCoprimary/logo.png">
 </head>
 <body>
 <p>
@@ -45,7 +45,7 @@
 
     <a class="navbar-brand me-2" href="index.html">twoCoprimary</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -92,7 +92,7 @@
 <h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
 </h2>
 <p><code>twoCoprimary</code> provides comprehensive tools for sample size and power calculation in clinical trials with two co-primary endpoints. In co-primary endpoint trials, treatment success requires demonstrating statistically significant effects on <strong>all</strong> primary endpoints simultaneously. This package implements state-of-the-art methodologies that properly account for correlation between endpoints, leading to more efficient trial designs.</p>
-<p>📖 <strong><a href="https://gosukehommaEX.github.io/twoCoprimary/">Documentation Website</a></strong></p>
+<p>📖 <strong><a href="https://gosukehommaEX.github.io/twoCoprimary/" class="external-link">Documentation Website</a></strong></p>
 </div>
 <div class="section level2">
 <h2 id="key-features">Key Features<a class="anchor" aria-label="anchor" href="#key-features"></a>
@@ -110,7 +110,16 @@
 <li>
 <strong>Mixed count and continuous</strong> - Negative binomial for overdispersed counts (Homma &amp; Yoshida, 2024)</li>
 </ul>
-<p>All methods provide: - ✅ Sample size calculation given target power - ✅ Power calculation given sample size - ✅ Proper Type I error control without multiplicity adjustment - ✅ Accounting for correlation between endpoints - ✅ Support for unbalanced allocation ratios</p>
+<p>All methods provide:</p>
+<ul>
+<li>✅ Sample size calculation given target power</li>
+<li>✅ Power calculation given sample size</li>
+<li>✅ Proper Type I error control without multiplicity adjustment</li>
+<li>✅ Accounting for correlation between endpoints</li>
+<li>✅ Support for unbalanced allocation ratios</li>
+</ul>
+<p>The exact methods for binary endpoints use a compiled kernel for the bivariate binomial distribution and evaluate the co-primary power as a matrix product, so a complete sample size search at a total sample size of several hundred takes about a second. The rejection regions of the Z-pooled and Boschloo exact unconditional tests agree with those of the <a href="https://CRAN.R-project.org/package=Exact" class="external-link">Exact</a> package.</p>
+<p>See <a href="https://gosukehommaEX.github.io/twoCoprimary/news/index.html" class="external-link">NEWS</a> for what changed in version 1.1.0.</p>
 </div>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
@@ -131,7 +140,7 @@
 </h3>
 <p>Calculate sample size for a trial with two continuous co-primary endpoints:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://gosukehommaex.github.io/twoCoprimary/" class="external-link">twoCoprimary</a></span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://gosukehommaex.github.io/twoCoprimary/">twoCoprimary</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Sample size calculation</span></span>
 <span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/ss2Continuous.html">ss2Continuous</a></span><span class="op">(</span></span>
@@ -233,23 +242,23 @@
 </h2>
 <p>Comprehensive vignettes are available:</p>
 <ul>
-<li><a href="https://gosukehommaEX.github.io/twoCoprimary/articles/overview.html">Overview of co-primary endpoints</a></li>
-<li><a href="https://gosukehommaEX.github.io/twoCoprimary/articles/two-continuous-endpoints.html">Two continuous endpoints</a></li>
-<li><a href="https://gosukehommaEX.github.io/twoCoprimary/articles/two-binary-endpoints-approx.html">Two binary endpoints (asymptotic)</a></li>
-<li><a href="https://gosukehommaEX.github.io/twoCoprimary/articles/two-binary-endpoints-exact.html">Two binary endpoints (exact)</a></li>
-<li><a href="https://gosukehommaEX.github.io/twoCoprimary/articles/mixed-continuous-binary.html">Mixed continuous and binary</a></li>
-<li><a href="https://gosukehommaEX.github.io/twoCoprimary/articles/mixed-count-continuous.html">Mixed count and continuous</a></li>
+<li><a href="https://gosukehommaEX.github.io/twoCoprimary/articles/overview.html" class="external-link">Overview of co-primary endpoints</a></li>
+<li><a href="https://gosukehommaEX.github.io/twoCoprimary/articles/two-continuous-endpoints.html" class="external-link">Two continuous endpoints</a></li>
+<li><a href="https://gosukehommaEX.github.io/twoCoprimary/articles/two-binary-endpoints-approx.html" class="external-link">Two binary endpoints (asymptotic)</a></li>
+<li><a href="https://gosukehommaEX.github.io/twoCoprimary/articles/two-binary-endpoints-exact.html" class="external-link">Two binary endpoints (exact)</a></li>
+<li><a href="https://gosukehommaEX.github.io/twoCoprimary/articles/mixed-continuous-binary.html" class="external-link">Mixed continuous and binary</a></li>
+<li><a href="https://gosukehommaEX.github.io/twoCoprimary/articles/mixed-count-continuous.html" class="external-link">Mixed count and continuous</a></li>
 </ul>
 </div>
 <div class="section level2">
 <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
 <ol style="list-style-type: decimal">
-<li><p>Homma, G., &amp; Yoshida, T. (2024). Sample size calculation for clinical trials with co‐primary outcomes: Negative binomial and continuous outcomes. <em>Pharmaceutical Statistics</em>, 23(3), 368-392. <a href="https://doi.org/10.1002/pst.2337" class="external-link uri">https://doi.org/10.1002/pst.2337</a></p></li>
-<li><p>Homma, G., &amp; Yoshida, T. (2025). Exact power and sample size in clinical trials with two co-primary binary endpoints. <em>Statistical Methods in Medical Research</em>, 34(1). <a href="https://doi.org/10.1177/09622802251368697" class="external-link uri">https://doi.org/10.1177/09622802251368697</a></p></li>
-<li><p>Sozu, T., Sugimoto, T., Hamasaki, T., &amp; Evans, S. R. (2010). Sample size determination in superiority clinical trials with multiple co-primary correlated endpoints. <em>Statistics in Medicine</em>, 29(21), 2219-2227. <a href="https://doi.org/10.1002/sim.3972" class="external-link uri">https://doi.org/10.1002/sim.3972</a></p></li>
+<li><p>Homma, G., &amp; Yoshida, T. (2024). Sample size calculation in clinical trials with two co-primary endpoints including overdispersed count and continuous outcomes. <em>Pharmaceutical Statistics</em>, 23(1), 46-59. <a href="https://doi.org/10.1002/pst.2337" class="external-link uri">https://doi.org/10.1002/pst.2337</a></p></li>
+<li><p>Homma, G., &amp; Yoshida, T. (2025). Exact power and sample size in clinical trials with two co-primary binary endpoints. <em>Statistical Methods in Medical Research</em>, 34(11), 2183-2201. <a href="https://doi.org/10.1177/09622802251368697" class="external-link uri">https://doi.org/10.1177/09622802251368697</a></p></li>
+<li><p>Sozu, T., Sugimoto, T., &amp; Hamasaki, T. (2010). Sample size determination in clinical trials with multiple co-primary binary endpoints. <em>Statistics in Medicine</em>, 29(21), 2169-2179. <a href="https://doi.org/10.1002/sim.3972" class="external-link uri">https://doi.org/10.1002/sim.3972</a></p></li>
 <li><p>Sozu, T., Sugimoto, T., &amp; Hamasaki, T. (2011). Sample size determination in superiority clinical trials with multiple co-primary correlated endpoints. <em>Journal of Biopharmaceutical Statistics</em>, 21(4), 650-668. <a href="https://doi.org/10.1080/10543406.2011.551329" class="external-link uri">https://doi.org/10.1080/10543406.2011.551329</a></p></li>
-<li><p>Sozu, T., Sugimoto, T., Hamasaki, T., &amp; Evans, S. R. (2012). Sample size determination in clinical trials with multiple co-primary binary endpoints including mixed binary and continuous endpoints. <em>Biometrical Journal</em>, 54(5), 716-729. <a href="https://doi.org/10.1002/bimj.201100221" class="external-link uri">https://doi.org/10.1002/bimj.201100221</a></p></li>
+<li><p>Sozu, T., Sugimoto, T., &amp; Hamasaki, T. (2012). Sample size determination in clinical trials with multiple co-primary endpoints including mixed continuous and binary variables. <em>Biometrical Journal</em>, 54(5), 716-729. <a href="https://doi.org/10.1002/bimj.201100221" class="external-link uri">https://doi.org/10.1002/bimj.201100221</a></p></li>
 </ol>
 </div>
 <div class="section level2">
@@ -264,7 +273,7 @@
 <ul>
 <li>For bug reports and feature requests, please use the <a href="https://github.com/gosukehommaEX/twoCoprimary/issues" class="external-link">GitHub issue tracker</a>
 </li>
-<li>For questions about usage, see the <a href="https://gosukehommaEX.github.io/twoCoprimary/">documentation website</a>
+<li>For questions about usage, see the <a href="https://gosukehommaEX.github.io/twoCoprimary/" class="external-link">documentation website</a>
 </li>
 </ul>
 </div>

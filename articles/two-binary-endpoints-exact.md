@@ -8,6 +8,7 @@ methodology is based on Homma and Yoshida (2025), which provides exact
 inference methods using the bivariate binomial distribution.
 
 ``` r
+
 library(twoCoprimary)
 library(dplyr)
 library(tidyr)
@@ -20,8 +21,8 @@ library(knitr)
 
 Exact methods are recommended when:
 
-- **Small to medium sample sizes** ($N < 200$)
-- **Extreme probabilities** ($p < 0.10$ or $p > 0.90$)
+- **Small to medium sample sizes** ($`N < 200`$)
+- **Extreme probabilities** ($`p < 0.10`$ or $`p > 0.90`$)
 - **Strict Type I error control** is required
 - **Regulatory requirements** for exact inference
 
@@ -31,10 +32,10 @@ these situations.
 ### Advantages of Exact Methods
 
 1.  **Accurate Type I error control**: Exact tests guarantee
-    $\alpha \leq$ nominal level
+    $`\alpha \leq`$ nominal level
 2.  **Better small-sample performance**: No reliance on asymptotic
     approximations
-3.  **Valid for extreme probabilities**: No restrictions on $p$ values
+3.  **Valid for extreme probabilities**: No restrictions on $`p`$ values
 4.  **Regulatory acceptance**: Often preferred by regulatory agencies
 
 ### Disadvantages
@@ -49,101 +50,125 @@ these situations.
 ### Model and Assumptions
 
 Consider a two-arm parallel-group superiority trial comparing treatment
-(group 1) with control (group 2). Let $n_{1}$ and $n_{2}$ denote the
+(group 1) with control (group 2). Let $`n_{1}`$ and $`n_{2}`$ denote the
 sample sizes in groups 1 and 2, respectively.
 
-For patient $i$ in group $j$ ($j = 1$: treatment, $j = 2$: control), we
-observe two binary outcomes:
+For patient $`i`$ in group $`j`$ ($`j = 1`$: treatment, $`j = 2`$:
+control), we observe two binary outcomes:
 
-**Endpoint $k$** ($k = 1,2$): $$X_{i,j,k} \in \{ 0,1\}$$
+**Endpoint $`k`$** ($`k = 1, 2`$):
+``` math
+X_{i,j,k} \in \{0, 1\}
+```
 
-where $X_{i,j,k} = 1$ if patient $i$ in group $j$ is a responder for
-endpoint $k$, and 0 otherwise.
+where $`X_{i,j,k} = 1`$ if patient $`i`$ in group $`j`$ is a responder
+for endpoint $`k`$, and 0 otherwise.
 
 **True response probabilities**:
-$$p_{j,k} = \text{P}\left( X_{i,j,k} = 1 \right)$$
+``` math
+p_{j,k} = \text{P}(X_{i,j,k} = 1)
+```
 
-where $0 < p_{j,k} < 1$ for each $j$ and $k$.
+where $`0 < p_{j,k} < 1`$ for each $`j`$ and $`k`$.
 
 ### Joint Distribution of Binary Outcomes
 
-The paired binary outcomes $\left( X_{i,j,1},X_{i,j,2} \right)$ for
-patient $i$ in group $j$ follow a multinomial distribution with four
-possible outcomes:
+The paired binary outcomes $`(X_{i,j,1}, X_{i,j,2})`$ for patient $`i`$
+in group $`j`$ follow a multinomial distribution with four possible
+outcomes:
 
 **Per-trial probabilities**:
 
-- $p_{j}^{(1,1)} = \phi_{j}$: Both endpoints successful
-- $p_{j}^{(1,0)} = p_{j,1} - \phi_{j}$: Only endpoint 1 successful
-- $p_{j}^{(0,1)} = p_{j,2} - \phi_{j}$: Only endpoint 2 successful
-- $p_{j}^{(0,0)} = 1 - p_{j,1} - p_{j,2} + \phi_{j}$: Both endpoints
+- $`p_{j}^{(1,1)} = \phi_{j}`$: Both endpoints successful
+- $`p_{j}^{(1,0)} = p_{j,1} - \phi_{j}`$: Only endpoint 1 successful
+- $`p_{j}^{(0,1)} = p_{j,2} - \phi_{j}`$: Only endpoint 2 successful
+- $`p_{j}^{(0,0)} = 1 - p_{j,1} - p_{j,2} + \phi_{j}`$: Both endpoints
   unsuccessful
 
-where $\phi_{j} = \text{P}\left( X_{i,j,1} = 1,X_{i,j,2} = 1 \right)$.
+where $`\phi_{j} = \text{P}(X_{i,j,1} = 1, X_{i,j,2} = 1)`$.
 
-Let $Z_{j}^{(\ell,m)}$ denote the random variable representing the
-number of times
-$\{\left( X_{i,j,1},X_{i,j,2} \right):i = 1,\ldots,n_{j}\}$ takes the
-value $\left( \ell,m \right)$ for $\ell,m \in \{ 0,1\}$. Then:
+Let $`Z_{j}^{(\ell,m)}`$ denote the random variable representing the
+number of times $`\{(X_{i,j,1}, X_{i,j,2}) : i = 1, \ldots, n_{j}\}`$
+takes the value $`(\ell, m)`$ for $`\ell, m \in \{0, 1\}`$. Then:
 
-$$\left( Z_{j}^{(0,0)},Z_{j}^{(1,0)},Z_{j}^{(0,1)},Z_{j}^{(1,1)} \right) \sim \text{Multinomial}\left( n_{j};p_{j}^{(0,0)},p_{j}^{(1,0)},p_{j}^{(0,1)},p_{j}^{(1,1)} \right)$$
+``` math
+(Z_{j}^{(0,0)}, Z_{j}^{(1,0)}, Z_{j}^{(0,1)}, Z_{j}^{(1,1)}) \sim \text{Multinomial}(n_{j}; p_{j}^{(0,0)}, p_{j}^{(1,0)}, p_{j}^{(0,1)}, p_{j}^{(1,1)})
+```
 
 ### Number of Responders
 
-Let $Y_{j,k} = \sum_{i = 1}^{n_{j}}X_{i,j,k}$ represent the number of
-responders in group $j$ for endpoint $k$. Then:
+Let $`Y_{j,k} = \sum_{i=1}^{n_{j}} X_{i,j,k}`$ represent the number of
+responders in group $`j`$ for endpoint $`k`$. Then:
 
-- $Y_{j,1} = Z_{j}^{(1,1)} + Z_{j}^{(1,0)}$
-- $Y_{j,2} = Z_{j}^{(1,1)} + Z_{j}^{(0,1)}$
+- $`Y_{j,1} = Z_{j}^{(1,1)} + Z_{j}^{(1,0)}`$
+- $`Y_{j,2} = Z_{j}^{(1,1)} + Z_{j}^{(0,1)}`$
 
 ### Bivariate Binomial Distribution
 
 Following Homma and Yoshida (2025), the joint distribution of
-$\left( Y_{j,1},Y_{j,2} \right)$ can be expressed as a **bivariate
-binomial distribution**:
+$`(Y_{j,1}, Y_{j,2})`$ can be expressed as a **bivariate binomial
+distribution**:
 
-$$\left( Y_{j,1},Y_{j,2} \right) \sim \text{BiBin}\left( n_{j},p_{j,1},p_{j,2},\gamma_{j} \right)$$
+``` math
+(Y_{j,1}, Y_{j,2}) \sim \text{BiBin}(n_{j}, p_{j,1}, p_{j,2}, \gamma_{j})
+```
 
-where $\gamma_{j}$ is a dependence parameter related to the correlation
-$\rho_{j}$ between $X_{i,j,1}$ and $X_{i,j,2}$.
+where $`\gamma_{j}`$ is a dependence parameter related to the
+correlation $`\rho_{j}`$ between $`X_{i,j,1}`$ and $`X_{i,j,2}`$.
 
 **Probability mass function** (Equation 3 in Homma and Yoshida, 2025):
 
-$$\text{P}\left( Y_{j,1} = y_{j,1},Y_{j,2} = y_{j,2} \mid n_{j},p_{j,1},p_{j,2},\gamma_{j} \right) = f\left( y_{j,1} \mid n_{j},p_{j,1} \right) \times g\left( y_{j,2} \mid y_{j,1},n_{j},p_{j,1},p_{j,2},\gamma_{j} \right)$$
+``` math
+\text{P}(Y_{j,1} = y_{j,1}, Y_{j,2} = y_{j,2} \mid n_{j}, p_{j,1}, p_{j,2}, \gamma_{j}) = f(y_{j,1} \mid n_{j}, p_{j,1}) \times g(y_{j,2} \mid y_{j,1}, n_{j}, p_{j,1}, p_{j,2}, \gamma_{j})
+```
 For more details, please see Homma and Yoshida (2025).
 
 ### Correlation Structure
 
-The **correlation** $\rho_{j}$ between $X_{i,j,1}$ and $X_{i,j,2}$ is:
+The **correlation** $`\rho_{j}`$ between $`X_{i,j,1}`$ and $`X_{i,j,2}`$
+is:
 
-$$\rho_{j} = \text{Cor}\left( X_{i,j,1},X_{i,j,2} \right) = \frac{\phi_{j} - p_{j,1}p_{j,2}}{\sqrt{p_{j,1}\left( 1 - p_{j,1} \right)p_{j,2}\left( 1 - p_{j,2} \right)}}$$
+``` math
+\rho_{j} = \text{Cor}(X_{i,j,1}, X_{i,j,2}) = \frac{\phi_{j} - p_{j,1} p_{j,2}}{\sqrt{p_{j,1}(1 - p_{j,1}) p_{j,2}(1 - p_{j,2})}}
+```
 
-The dependence parameter $\gamma_{j}$ is related to $\rho_{j}$ through
-(Equation 4 in Homma and Yoshida, 2025):
+The dependence parameter $`\gamma_{j}`$ is related to $`\rho_{j}`$
+through (Equation 4 in Homma and Yoshida, 2025):
 
-$$\gamma_{j} = \gamma\left( \rho_{j},p_{j,1},p_{j,2} \right) = \rho_{j}\sqrt{\frac{p_{j,2}\left( 1 - p_{j,2} \right)}{p_{j,1}\left( 1 - p_{j,1} \right)}}\left( 1 - \rho_{j}\sqrt{\frac{p_{j,2}\left( 1 - p_{j,2} \right)}{p_{j,1}\left( 1 - p_{j,1} \right)}} \right)^{- 1}$$
+``` math
+\gamma_{j} = \gamma(\rho_{j}, p_{j,1}, p_{j,2}) = \rho_{j} \sqrt{\frac{p_{j,2}(1 - p_{j,2})}{p_{j,1}(1 - p_{j,1})}} \left(1 - \rho_{j} \sqrt{\frac{p_{j,2}(1 - p_{j,2})}{p_{j,1}(1 - p_{j,1})}}\right)^{-1}
+```
 
-**Important property**: The correlation between $Y_{j,1}$ and $Y_{j,2}$
-equals $\rho_{j}$, the same as the correlation between $X_{i,j,1}$ and
-$X_{i,j,2}$.
+**Important property**: The correlation between $`Y_{j,1}`$ and
+$`Y_{j,2}`$ equals $`\rho_{j}`$, the same as the correlation between
+$`X_{i,j,1}`$ and $`X_{i,j,2}`$.
 
 **Marginal distributions**:
-$$Y_{j,k} \sim \text{Bin}\left( n_{j},p_{j,k} \right)$$
+``` math
+Y_{j,k} \sim \text{Bin}(n_{j}, p_{j,k})
+```
 
-**Correlation bounds**: Due to $0 < p_{j,k} < 1$, the correlation
-$\rho_{j}$ is bounded:
+**Correlation bounds**: Due to $`0 < p_{j,k} < 1`$, the correlation
+$`\rho_{j}`$ is bounded:
 
-$$\rho_{j} \in \left\lbrack L\left( p_{j,1},p_{j,2} \right),U\left( p_{j,1},p_{j,2} \right) \right\rbrack \subseteq \lbrack - 1,1\rbrack$$
+``` math
+\rho_{j} \in [L(p_{j,1}, p_{j,2}), U(p_{j,1}, p_{j,2})] \subseteq [-1, 1]
+```
 
 where:
 
-$$L\left( p_{j,1},p_{j,2} \right) = \max\left\{ - \sqrt{\frac{p_{j,1}p_{j,2}}{\left( 1 - p_{j,1} \right)\left( 1 - p_{j,2} \right)}}, - \sqrt{\frac{\left( 1 - p_{j,1} \right)\left( 1 - p_{j,2} \right)}{p_{j,1}p_{j,2}}} \right\}$$
+``` math
+L(p_{j,1}, p_{j,2}) = \max\left\{-\sqrt{\frac{p_{j,1} p_{j,2}}{(1 - p_{j,1})(1 - p_{j,2})}}, -\sqrt{\frac{(1 - p_{j,1})(1 - p_{j,2})}{p_{j,1} p_{j,2}}}\right\}
+```
 
-$$U\left( p_{j,1},p_{j,2} \right) = \min\left\{ \sqrt{\frac{p_{j,1}\left( 1 - p_{j,2} \right)}{p_{j,2}\left( 1 - p_{j,1} \right)}},\sqrt{\frac{p_{j,2}\left( 1 - p_{j,1} \right)}{p_{j,1}\left( 1 - p_{j,2} \right)}} \right\}$$
+``` math
+U(p_{j,1}, p_{j,2}) = \min\left\{\sqrt{\frac{p_{j,1}(1 - p_{j,2})}{p_{j,2}(1 - p_{j,1})}}, \sqrt{\frac{p_{j,2}(1 - p_{j,1})}{p_{j,1}(1 - p_{j,2})}}\right\}
+```
 
-**Special cases**: - If $p_{j,1} = p_{j,2}$, then
-$U\left( p_{j,1},p_{j,2} \right) = 1$ - If $p_{j,1} + p_{j,2} = 1$, then
-$L\left( p_{j,1},p_{j,2} \right) = - 1$
+**Special cases**:
+
+- If $`p_{j,1} = p_{j,2}`$, then $`U(p_{j,1}, p_{j,2}) = 1`$
+- If $`p_{j,1} + p_{j,2} = 1`$, then $`L(p_{j,1}, p_{j,2}) = -1`$
 
 ## Hypothesis Testing
 
@@ -153,10 +178,14 @@ Since higher values of both endpoints indicate treatment benefit, we
 test:
 
 **For endpoint 1**:
-$$\text{H}_{0}^{(1)}:p_{1,1} \leq p_{2,1}{\mspace{6mu}\text{vs.}\mspace{6mu}}\text{H}_{1}^{(1)}:p_{1,1} > p_{2,1}$$
+``` math
+\text{H}_{0}^{(1)}: p_{1,1} \leq p_{2,1} \text{ vs. } \text{H}_{1}^{(1)}: p_{1,1} > p_{2,1}
+```
 
 **For endpoint 2**:
-$$\text{H}_{0}^{(2)}:p_{1,2} \leq p_{2,2}{\mspace{6mu}\text{vs.}\mspace{6mu}}\text{H}_{1}^{(2)}:p_{1,2} > p_{2,2}$$
+``` math
+\text{H}_{0}^{(2)}: p_{1,2} \leq p_{2,2} \text{ vs. } \text{H}_{1}^{(2)}: p_{1,2} > p_{2,2}
+```
 
 ### Co-Primary Endpoints (Intersection-Union Test)
 
@@ -164,16 +193,16 @@ The trial succeeds only if superiority is demonstrated for **both**
 endpoints simultaneously:
 
 **Null hypothesis**:
-$\text{H}_{0} = \text{H}_{0}^{(1)} \cup \text{H}_{0}^{(2)}$ (at least
+$`\text{H}_{0} = \text{H}_{0}^{(1)} \cup \text{H}_{0}^{(2)}`$ (at least
 one null is true)
 
 **Alternative hypothesis**:
-$\text{H}_{1} = \text{H}_{1}^{(1)} \cap \text{H}_{1}^{(2)}$ (both
+$`\text{H}_{1} = \text{H}_{1}^{(1)} \cap \text{H}_{1}^{(2)}`$ (both
 alternatives are true)
 
-**Decision rule**: Reject $\text{H}_{0}$ at level $\alpha$ if and only
-if **both** $\text{H}_{0}^{(1)}$ and $\text{H}_{0}^{(2)}$ are rejected
-at level $\alpha$ without multiplicity adjustment.
+**Decision rule**: Reject $`\text{H}_{0}`$ at level $`\alpha`$ if and
+only if **both** $`\text{H}_{0}^{(1)}`$ and $`\text{H}_{0}^{(2)}`$ are
+rejected at level $`\alpha`$ without multiplicity adjustment.
 
 ## Statistical Tests
 
@@ -181,90 +210,152 @@ Homma and Yoshida (2025) consider five exact test methods:
 
 ### Method 1: One-sided Pearson Chi-squared Test (Chisq)
 
-For endpoint $k$, the test statistic is:
+For endpoint $`k`$, the test statistic is:
 
-$$Z\left( y_{1,k},y_{2,k} \right) = \frac{{\widehat{p}}_{1,k} - {\widehat{p}}_{2,k}}{\sqrt{{\widehat{p}}_{k}\left( 1 - {\widehat{p}}_{k} \right)\left( \frac{1}{n_{1}} + \frac{1}{n_{2}} \right)}}$$
+``` math
+Z(y_{1,k}, y_{2,k}) = \frac{\hat{p}_{1,k} - \hat{p}_{2,k}}{\sqrt{\hat{p}_{k}(1 - \hat{p}_{k})\left(\frac{1}{n_{1}} + \frac{1}{n_{2}}\right)}}
+```
 
 where:
 
-- ${\widehat{p}}_{j,k} = y_{j,k}/n_{j}$ is the sample proportion
-- ${\widehat{p}}_{k} = \frac{n_{1}{\widehat{p}}_{1,k} + n_{2}{\widehat{p}}_{2,k}}{n_{1} + n_{2}}$
+- $`\hat{p}_{j,k} = y_{j,k} / n_{j}`$ is the sample proportion
+- $`\hat{p}_{k} = \frac{n_{1} \hat{p}_{1,k} + n_{2} \hat{p}_{2,k}}{n_{1} + n_{2}}`$
   is the pooled proportion
 
-Reject $\text{H}_{0}^{(k)}$ if
-$Z\left( y_{1,k},y_{2,k} \right) > z_{1 - \alpha}$, where
-$z_{1 - \alpha}$ is the $(1 - \alpha)$-quantile of the standard normal
-distribution.
+Reject $`\text{H}_{0}^{(k)}`$ if $`Z(y_{1,k}, y_{2,k}) > z_{1-\alpha}`$,
+where $`z_{1-\alpha}`$ is the $`(1-\alpha)`$-quantile of the standard
+normal distribution.
 
 ### Method 2: Fisher’s Exact Test (Fisher)
 
 **Conditional test**: Conditions on the total number of successes
-$y_{1,k} + y_{2,k}$.
+$`y_{1,k} + y_{2,k}`$.
 
-Under $\text{H}_{0}^{(k)}$, $Y_{1,k}$ follows a hypergeometric
-distribution given $Y_{1,k} + Y_{2,k} = y_{k}$.
+Under $`\text{H}_{0}^{(k)}`$, $`Y_{1,k}`$ follows a hypergeometric
+distribution given $`Y_{1,k} + Y_{2,k} = y_{k}`$.
 
 **One-sided p-value**:
 
-$$p_{k}^{\text{Fisher}} = \sum\limits_{y = y_{1,k}}^{\min{(n_{1},y_{k})}}\frac{\left( \frac{n_{1}}{y} \right)\left( \frac{n_{2}}{y_{k} - y} \right)}{\left( \frac{n_{1} + n_{2}}{y_{k}} \right)}$$
+``` math
+p_{k}^{\text{Fisher}} = \sum_{y=y_{1,k}}^{\min(n_{1}, y_{k})} \frac{\binom{n_{1}}{y} \binom{n_{2}}{y_{k} - y}}{\binom{n_{1} + n_{2}}{y_{k}}}
+```
 
-Reject $\text{H}_{0}^{(k)}$ if $p_{k}^{\text{Fisher}} < \alpha$.
+Reject $`\text{H}_{0}^{(k)}`$ if $`p_{k}^{\text{Fisher}} < \alpha`$.
 
 ### Method 3: Fisher’s Mid-P Test (Fisher-midP)
 
 Reduces conservatism by adding half the probability of the observed
 outcome:
 
-$$p_{k}^{\text{mid-p}} = p_{k}^{\text{Fisher}} - \frac{1}{2} \times \frac{\left( \frac{n_{1}}{y_{1,k}} \right)\left( \frac{n_{2}}{y_{k} - y_{1,k}} \right)}{\left( \frac{n_{1} + n_{2}}{y_{k}} \right)}$$
+``` math
+p_{k}^{\text{mid-p}} = p_{k}^{\text{Fisher}} - \frac{1}{2} \times \frac{\binom{n_{1}}{y_{1,k}} \binom{n_{2}}{y_{k} - y_{1,k}}}{\binom{n_{1} + n_{2}}{y_{k}}}
+```
 Note: The `twoCoprimary` package can implement the Fisher’s Mid-P Test,
 but Homma and Yoshida (2025) has not investigated this test.
 
 ### Method 4: Z-pooled Exact Unconditional Test (Z-pool)
 
-**Unconditional test**: Maximizes the p-value over all possible values
-of the nuisance parameter (common success probability $p_{k}$ under
-$\text{H}_{0}$).
+**Unconditional test**: the $`p`$-value is the null probability of the
+outcomes at least as extreme as the observed one, maximized over the
+nuisance parameter $`p_{k}`$, the common success probability under
+$`\text{H}_{0}`$.
 
-Uses the $Z$-test statistic and finds the maximum $p$-value across all
-possible values of $p_{k}$.
+The ordering statistic is the pooled $`Z`$ statistic. Writing
+$`T(y_{1}, y_{2})`$ for that statistic and $`t`$ for its observed value,
+
+``` math
+p_{k} = \max_{0 \leq \theta \leq 1} \; \Pr\left( T(Y_{1}, Y_{2}) \geq t \mid \theta \right),
+```
+
+where $`Y_{1}`$ and $`Y_{2}`$ are independent binomial variables with
+common probability $`\theta`$.
 
 ### Method 5: Boschloo’s Exact Unconditional Test (Boschloo)
 
-Similar to Z-pooled, but based on Fisher’s exact $p$-values. Maximizes
-Fisher’s exact $p$-value over the nuisance parameter space.
+Same construction with Fisher’s exact $`p`$-value as the ordering
+statistic, so the tail event is the set of outcomes whose Fisher
+$`p`$-value is no larger than the observed one.
 
-**Most powerful** of the exact unconditional tests, but computationally
-intensive.
+**Most powerful** of the exact unconditional tests, but the most
+demanding to compute.
+
+### Tied outcomes
+
+The tail event is defined by the inequality $`T \geq t`$, so every
+outcome sharing the observed value of the ordering statistic belongs to
+it. Outcomes with the same value of $`T`$ therefore receive the same
+$`p`$-value. Accumulating the null probabilities along an ordering of
+the outcomes without grouping the ties would give the earlier members of
+a tie group a smaller $`p`$-value than the later ones, and which member
+comes first would depend on an arbitrary sort order. Ties are common: at
+$`n_{1} = n_{2} = 40`$ roughly half of the outcomes with a positive
+$`Z`$ statistic share their value with another outcome.
+
+### The nuisance parameter grid
+
+The maximization over $`\theta`$ is carried out on a finite grid of
+equally spaced values on $`[0, 1]`$, not analytically. The number of
+grid points is the `n_grid` argument of
+[`rr1Binary()`](https://gosukehommaex.github.io/twoCoprimary/reference/rr1Binary.md),
+[`power2BinaryExact()`](https://gosukehommaex.github.io/twoCoprimary/reference/power2BinaryExact.md),
+[`ss2BinaryExact()`](https://gosukehommaex.github.io/twoCoprimary/reference/ss2BinaryExact.md)
+and
+[`twoCoprimary2BinaryExact()`](https://gosukehommaex.github.io/twoCoprimary/reference/twoCoprimary2BinaryExact.md),
+and its default is 100.
+
+A coarse grid can only understate the maximum, so it can only make the
+$`p`$-value smaller and the rejection region larger. In practice the
+default is ample: for $`n_{1} = n_{2} = 20`$ and $`40`$ at
+$`\alpha = 0.025`$, the rejection regions of both unconditional tests
+are identical for every grid size from 25 to 4000 points. Cost grows
+roughly in proportion to `n_grid`, so a finer grid is inexpensive to try
+when a design sits close to a decision boundary.
+
+``` r
+
+# The default reproduces a much finer grid
+identical(
+  rr1Binary(n1 = 30, n2 = 30, alpha = 0.025, Test = "Boschloo"),
+  rr1Binary(n1 = 30, n2 = 30, alpha = 0.025, Test = "Boschloo", n_grid = 1000)
+)
+#> [1] TRUE
+```
 
 ## Exact Power Calculation
 
 ### Power Formula
 
-The exact power for test method $A$ is (Equation 9 in Homma and Yoshida,
-2025):
+The exact power for test method $`A`$ is (Equation 9 in Homma and
+Yoshida, 2025):
 
-$$\text{power}_{A}({\mathbf{θ}}) = \text{P}\left\lbrack \bigcap\limits_{k = 1}^{2}\{ p_{A}\left( y_{1,k},y_{2,k} \right) < \alpha\} \mid \text{H}_{1} \right\rbrack$$
+``` math
+\text{power}_{A}(\boldsymbol{\theta}) = \text{P}\left[\bigcap_{k=1}^{2} \{p_{A}(y_{1,k}, y_{2,k}) < \alpha\} \mid \text{H}_{1}\right]
+```
 
-$$= \sum\limits_{{(a_{1,1},a_{2,1})} \in \mathcal{A}_{1}}\sum\limits_{{(a_{1,2},a_{2,2})} \in \mathcal{A}_{2}}f\left( a_{1,1} \mid n_{1},p_{1,1} \right) \times f\left( a_{2,1} \mid n_{2},p_{2,1} \right) \times g\left( a_{1,2} \mid a_{1,1},n_{1},p_{1,1},p_{1,2},\gamma_{1} \right) \times g\left( a_{2,2} \mid a_{2,1},n_{2},p_{2,1},p_{2,2},\gamma_{2} \right)$$
+``` math
+= \sum_{(a_{1,1}, a_{2,1}) \in \mathcal{A}_{1}} \sum_{(a_{1,2}, a_{2,2}) \in \mathcal{A}_{2}} f(a_{1,1} \mid n_{1}, p_{1,1}) \times f(a_{2,1} \mid n_{2}, p_{2,1}) \times g(a_{1,2} \mid a_{1,1}, n_{1}, p_{1,1}, p_{1,2}, \gamma_{1}) \times g(a_{2,2} \mid a_{2,1}, n_{2}, p_{2,1}, p_{2,2}, \gamma_{2})
+```
 
 where:
 
-- ${\mathbf{θ}} = \left( p_{1,1},p_{2,1},p_{1,2},p_{2,2},n_{1},n_{2},\gamma_{1},\gamma_{2} \right)$
+- $`\boldsymbol{\theta} = (p_{1,1}, p_{2,1}, p_{1,2}, p_{2,2}, n_{1}, n_{2}, \gamma_{1}, \gamma_{2})`$
   is the parameter vector
-- $\mathcal{A}_{k}$ is the rejection region for endpoint $k$
-- $\mathcal{A}_{k} = \{\left( y_{1,k},y_{2,k} \right):p_{A}\left( y_{1,k},y_{2,k} \right) < \alpha\}$
+- $`\mathcal{A}_{k}`$ is the rejection region for endpoint $`k`$
+- $`\mathcal{A}_{k} = \{(y_{1,k}, y_{2,k}) : p_{A}(y_{1,k}, y_{2,k}) < \alpha\}`$
 
 ### Sample Size Calculation
 
-The required sample size $n_{2}$ to achieve target power $1 - \beta$ is
-(Equation 10 in Homma and Yoshida, 2025):
+The required sample size $`n_{2}`$ to achieve target power $`1 - \beta`$
+is (Equation 10 in Homma and Yoshida, 2025):
 
-$$n_{2} = \arg\min\limits_{n_{2} \in {\mathbb{Z}}}\{\text{power}_{A}({\mathbf{θ}}) \geq 1 - \beta\}$$
+``` math
+n_{2} = \arg\min_{n_{2} \in \mathbb{Z}} \{\text{power}_{A}(\boldsymbol{\theta}) \geq 1 - \beta\}
+```
 
 This cannot be expressed as a closed-form formula due to:
 
 1.  Discreteness of binary outcomes
-2.  Non-monotonic “sawtooth” power curve
+2.  Non-monotonic “saw-tooth” power curve
 
 **Algorithm**: Sequential search starting from asymptotic normal
 approximation (AN method) as initial value.
@@ -273,14 +364,15 @@ approximation (AN method) as initial value.
 
 Table 4 from Homma and Yoshida (2025) shows sample sizes for various
 correlations using the Chisq, Fisher, Z-pool, and Boschloo. Note that
-the following sample code compute only scenario for $\alpha = 0.025$.
+the following sample code compute only scenario for $`\alpha=0.025`$.
 
-The notation used in the function is: `p11` = $p_{1,1}$, `p12` =
-$p_{1,2}$, `p21` = $p_{2,1}$, `p22` = $p_{2,2}$, where the first
+The notation used in the function is: `p11` = $`p_{1,1}`$, `p12` =
+$`p_{1,2}`$, `p21` = $`p_{2,1}`$, `p22` = $`p_{2,2}`$, where the first
 subscript denotes the group (1 = treatment, 2 = control) and the second
 subscript denotes the endpoint (1 or 2).
 
 ``` r
+
 # Recreate Homma and Yoshida (2025) Table 4
 library(dplyr)
 library(tidyr)
@@ -341,7 +433,7 @@ kable(result_bin_exact_ss,
 |   2 | 0.8 |   147 |    159 |    168 |      150 |
 
 Table 4: Total Sample Size (N) for Two Co-Primary Binary Endpoints (α =
-0.025, 1-β = 0.90)^(a,b)
+0.025, 1-β = 0.90)^(a,b) {.table}
 
 ^(a) Chisq denotes the one-sided Pearson chi-squared test. Fisher stands
 for Fisher’s exact test. Z-pool represents the Z-pooled exact
@@ -349,13 +441,14 @@ unconditional test. Boschloo signifies Boschloo’s exact unconditional
 test.
 
 ^(b) The required sample sizes were obtained by assuming that
-$p_{1,1} = p_{1,2} = 0.54$ and $p_{2,1} = p_{2,2} = 0.25$.
+$`p_{1,1} = p_{1,2} = 0.54`$ and $`p_{2,1} = p_{2,2} = 0.25`$.
 
 ## Practical Examples
 
 ### Example 1: Basic Exact Power Calculation
 
 ``` r
+
 # Calculate exact power using Fisher's exact test
 result_fisher <- power2BinaryExact(
   n1 = 50,
@@ -392,6 +485,7 @@ print(result_fisher)
 ### Example 2: Sample Size Calculation
 
 ``` r
+
 # Calculate required sample size using Boschloo's test
 result_ss <- ss2BinaryExact(
   p11 = 0.70, p12 = 0.65,
@@ -422,6 +516,7 @@ print(result_ss)
 ### Example 3: Comparison of Test Methods
 
 ``` r
+
 # Compare different exact test methods
 test_methods <- c("Chisq", "Fisher", "Fisher-midP", "Z-pool", "Boschloo")
 
@@ -457,13 +552,14 @@ kable(comparison_table,
 | Z-pool      |          43 |      86 |
 | Boschloo    |          43 |      86 |
 
-Sample Size Comparison Across Test Methods
+Sample Size Comparison Across Test Methods {.table}
 
 ## Impact of Correlation
 
 ### Example 4: Correlation Effect
 
 ``` r
+
 # Calculate sample size for different correlation values
 rho_values <- c(0, 0.3, 0.5, 0.8)
 
@@ -498,7 +594,7 @@ kable(rho_table,
 | 0.5 |          59 |     118 |
 | 0.8 |          56 |     112 |
 
-Impact of Correlation on Sample Size (Fisher’s Test)
+Impact of Correlation on Sample Size (Fisher’s Test) {.table}
 
 **Key finding**: Higher positive correlation reduces required sample
 size.
@@ -508,6 +604,7 @@ size.
 ### Example 5: Exact vs AN Method
 
 ``` r
+
 # Exact method (Chisq)
 exact_result <- ss2BinaryExact(
     p11 = 0.60, p12 = 0.40,
@@ -539,15 +636,16 @@ comparison_exact_asymp <- data.frame(
 
 kable(comparison_exact_asymp,
       caption = "Comparison: Exact vs Asymptotic Methods",
-      col.names = c("Method", "n per group", "N total", "Difference"))
+      col.names = c("Method", "n per group", "N total",
+                    "Difference in N total"))
 ```
 
-| Method          | n per group | N total | Difference |
-|:----------------|------------:|--------:|-----------:|
-| Exact (Chisq)   |          59 |     118 |          0 |
-| Asymptotic (AN) |          60 |     120 |          2 |
+| Method          | n per group | N total | Difference in N total |
+|:----------------|------------:|--------:|----------------------:|
+| Exact (Chisq)   |          59 |     118 |                     0 |
+| Asymptotic (AN) |          60 |     120 |                     2 |
 
-Comparison: Exact vs Asymptotic Methods
+Comparison: Exact vs Asymptotic Methods {.table}
 
 ## Practical Recommendations
 
@@ -564,7 +662,7 @@ Comparison: Exact vs Asymptotic Methods
 3.  **Chi-squared test**:
     - Less conservative than Fisher
     - May be anti-conservative for small samples
-    - Use with caution for $N < 200$
+    - Use with caution for $`N < 200`$
 4.  **Z-pooled and Fisher-midP**:
     - Intermediate between Fisher and chi-squared
     - Reduce conservatism while maintaining validity
@@ -573,24 +671,25 @@ Comparison: Exact vs Asymptotic Methods
 
 **Sample size guidelines**:
 
-1.  **$N < 100$**: Always use exact methods
+1.  **$`N < 100`$**: Always use exact methods
 
-2.  **$100 \leq N < 200$**: Exact methods preferred, especially if:
+2.  **$`100 \leq N < 200`$**: Exact methods preferred, especially if:
 
-    - Extreme probabilities ($p < 0.1$ or $p > 0.9$)
+    - Extreme probabilities ($`p < 0.1`$ or $`p > 0.9`$)
     - Strict Type I error control required
 
-3.  **$N \geq 200$ and $0.1 < p < 0.9$**: Asymptotic methods acceptable
+3.  **$`N \geq 200`$ and $`0.1 < p < 0.9`$**: Asymptotic methods
+    acceptable
 
 ### Correlation Estimation
 
 - Use pilot data or historical information
-- Be conservative if uncertain (use $\rho = 0$)
+- Be conservative if uncertain (use $`\rho = 0`$)
 - Consider sensitivity analysis across plausible range
 
 ### Allocation Ratio
 
-- Balanced design ($r = 1$) generally most efficient
+- Balanced design ($`r = 1`$) generally most efficient
 - Unbalanced designs may be justified by:
   - Limited control group availability
   - Ethical considerations
@@ -598,19 +697,32 @@ Comparison: Exact vs Asymptotic Methods
 
 ## Computational Considerations
 
-Modern computers handle all methods efficiently for typical clinical
-trial sample sizes ($N < 300$).
+Two quantities dominate the cost of an exact sample size search. The
+rejection region has to be built once for each candidate sample size,
+and the bivariate binomial probability mass function has to be evaluated
+over the whole outcome grid.
 
 ### Software Implementation
 
-The `twoCoprimary` package implements all methods efficiently using:
+The `twoCoprimary` package uses:
 
-- Bivariate binomial distribution (`dbibinom`)
-- Rejection region calculation (`rr1Binary`)
-- Vectorized computations for speed
+- the bivariate binomial distribution (`dbibinom`), whose conditional
+  probability is evaluated in compiled code, with the powers and
+  binomial coefficients that the sum needs tabulated once so that the
+  cost grows like $`N^{2}`$ rather than $`N^{3}`$;
+- the rejection region (`rr1Binary`), built by vectorized operations
+  over the outcome grid;
+- a matrix product for the co-primary power. Summing over the outcomes
+  of the second group first turns the double sum over the rejection
+  region into two matrix products of order $`n + 1`$. Evaluating that
+  double sum directly would cost $`O(n^{4})`$ in both time and memory,
+  which is prohibitive beyond moderate sample sizes.
+
+A complete sample size search with Boschloo’s test at $`N`$ around 370
+takes on the order of a second on a current desktop machine.
 
 ## References
 
 Homma, G., & Yoshida, T. (2025). Exact power and sample size in clinical
 trials with two co-primary binary endpoints. *Statistical Methods in
-Medical Research*, 34(1), 1-19.
+Medical Research*, 34(11), 2183-2201.

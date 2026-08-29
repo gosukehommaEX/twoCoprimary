@@ -126,7 +126,7 @@ This function uses a sequential search algorithm (Homma and Yoshida
 The asymptotic normal (AN) and arcsine (AS) methods use normal
 approximation with or without continuity correction. For small sample
 sizes or extreme probabilities, consider using exact methods via
-[`ss2BinaryExact`](https://gosukehommaEX.github.io/twoCoprimary/reference/ss2BinaryExact.md).
+[`ss2BinaryExact`](https://gosukehommaex.github.io/twoCoprimary/reference/ss2BinaryExact.md).
 
 ## References
 
@@ -136,7 +136,7 @@ in clinical trials with multiple co-primary binary endpoints.
 
 Homma, G., & Yoshida, T. (2025). Exact power and sample size in clinical
 trials with two co-primary binary endpoints. *Statistical Methods in
-Medical Research*, 34(1), 1-19.
+Medical Research*, 34(11), 2183-2201.
 
 ## Examples
 

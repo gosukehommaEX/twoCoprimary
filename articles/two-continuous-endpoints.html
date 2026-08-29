@@ -12,8 +12,8 @@
 <link rel="icon" sizes="any" href="../favicon.ico">
 <link rel="manifest" href="../site.webmanifest">
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Two Continuous Co-Primary Endpoints">
 </head>
@@ -39,7 +39,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">twoCoprimary</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -97,7 +97,7 @@ for clinical trials with two co-primary continuous endpoints using
 asymptotic normal approximation methods. The methodology is based on
 Sozu et al. (2011).</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://gosukehommaex.github.io/twoCoprimary/" class="external-link">twoCoprimary</a></span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://gosukehommaex.github.io/twoCoprimary/">twoCoprimary</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyr.tidyverse.org" class="external-link">tidyr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://yihui.org/knitr/" class="external-link">knitr</a></span><span class="op">)</span></span></code></pre></div>
@@ -167,7 +167,7 @@ control), we observe two continuous outcomes:</p>
 <p><strong>Endpoint
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math></strong>
 (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>k</mi><mo>=</mo><mn>1</mn><mo>,</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">k = 1, 2</annotation></semantics></math>):
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>X</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mi>k</mi></mrow></msub><mo>∼</mo><mtext mathvariant="normal">N</mtext><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>μ</mi><mrow><mi>j</mi><mo>,</mo><mi>k</mi></mrow></msub><mo>,</mo><msubsup><mi>σ</mi><mi>k</mi><mn>2</mn></msubsup><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">X_{i,j,k} \sim \text{N}(\mu_{j,k}, \sigma_{k}^{2})</annotation></semantics></math></p>
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>X</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mi>k</mi></mrow></msub><mo>∼</mo><mtext mathvariant="normal">N</mtext><mo stretchy="false" form="prefix">(</mo><msub><mi>μ</mi><mrow><mi>j</mi><mo>,</mo><mi>k</mi></mrow></msub><mo>,</mo><msubsup><mi>σ</mi><mi>k</mi><mn>2</mn></msubsup><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">X_{i,j,k} \sim \text{N}(\mu_{j,k}, \sigma_{k}^{2})</annotation></semantics></math></p>
 <p>where:</p>
 <ul>
 <li>
@@ -185,7 +185,7 @@ across both groups</li>
 </ul>
 <p><strong>Within-subject correlation</strong>: The two outcomes are
 correlated within each subject:
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">Cor</mtext><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>X</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mn>1</mn></mrow></msub><mo>,</mo><msub><mi>X</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mn>2</mn></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><msub><mi>ρ</mi><mi>j</mi></msub></mrow><annotation encoding="application/x-tex">\text{Cor}(X_{i,j,1}, X_{i,j,2}) = \rho_{j}</annotation></semantics></math></p>
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">Cor</mtext><mo stretchy="false" form="prefix">(</mo><msub><mi>X</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mn>1</mn></mrow></msub><mo>,</mo><msub><mi>X</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mn>2</mn></mrow></msub><mo stretchy="false" form="postfix">)</mo><mo>=</mo><msub><mi>ρ</mi><mi>j</mi></msub></mrow><annotation encoding="application/x-tex">\text{Cor}(X_{i,j,1}, X_{i,j,2}) = \rho_{j}</annotation></semantics></math></p>
 <p>We assume common correlation across groups:
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>ρ</mi><mn>1</mn></msub><mo>=</mo><msub><mi>ρ</mi><mn>2</mn></msub><mo>=</mo><mi>ρ</mi></mrow><annotation encoding="application/x-tex">\rho_{1} = \rho_{2} = \rho</annotation></semantics></math>.</p>
 </div>
@@ -250,7 +250,7 @@ is the pooled sample standard deviation for endpoint
 <p>Under
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mtext mathvariant="normal">H</mtext><mn>1</mn></msub><annotation encoding="application/x-tex">\text{H}_{1}</annotation></semantics></math>,
 when variances are known,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>Z</mi><mn>1</mn></msub><mo>,</mo><msub><mi>Z</mi><mn>2</mn></msub><mo stretchy="true" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(Z_{1}, Z_{2})</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><msub><mi>Z</mi><mn>1</mn></msub><mo>,</mo><msub><mi>Z</mi><mn>2</mn></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(Z_{1}, Z_{2})</annotation></semantics></math>
 asymptotically follows a bivariate normal distribution:</p>
 <p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mo stretchy="true" form="prefix">(</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><msub><mi>Z</mi><mn>1</mn></msub></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><msub><mi>Z</mi><mn>2</mn></msub></mtd></mtr></mtable><mo stretchy="true" form="postfix">)</mo></mrow><mo>∼</mo><mtext mathvariant="normal">BN</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mrow><mo stretchy="true" form="prefix">(</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><msub><mi>ω</mi><mn>1</mn></msub></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><msub><mi>ω</mi><mn>2</mn></msub></mtd></mtr></mtable><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo><mrow><mo stretchy="true" form="prefix">(</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><mn>1</mn></mtd><mtd columnalign="center" style="text-align: center"><mi>γ</mi></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mi>γ</mi></mtd><mtd columnalign="center" style="text-align: center"><mn>1</mn></mtd></mtr></mtable><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\begin{pmatrix} Z_{1} \\ Z_{2} \end{pmatrix} \sim \text{BN}\left(\begin{pmatrix} \omega_{1} \\ \omega_{2} \end{pmatrix}, \begin{pmatrix} 1 &amp; \gamma \\ \gamma &amp; 1 \end{pmatrix}\right)</annotation></semantics></math></p>
 <p>where:</p>
@@ -269,11 +269,11 @@ is the correlation between test statistics</li>
 <h3 id="power-formula">Power Formula<a class="anchor" aria-label="anchor" href="#power-formula"></a>
 </h3>
 <p>The overall power is:</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>−</mo><mi>β</mi><mo>=</mo><mo>Pr</mo><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>Z</mi><mn>1</mn></msub><mo>&gt;</mo><msub><mi>z</mi><mrow><mn>1</mn><mo>−</mo><mi>α</mi></mrow></msub><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> and </mtext><mspace width="0.333em"></mspace></mrow><msub><mi>Z</mi><mn>2</mn></msub><mo>&gt;</mo><msub><mi>z</mi><mrow><mn>1</mn><mo>−</mo><mi>α</mi></mrow></msub><mo>∣</mo><msub><mtext mathvariant="normal">H</mtext><mn>1</mn></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">1 - \beta = \Pr(Z_{1} &gt; z_{1-\alpha} \text{ and } Z_{2} &gt; z_{1-\alpha} \mid \text{H}_{1})</annotation></semantics></math></p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>−</mo><mi>β</mi><mo>=</mo><mrow><mi mathvariant="normal">Pr</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><msub><mi>Z</mi><mn>1</mn></msub><mo>&gt;</mo><msub><mi>z</mi><mrow><mn>1</mn><mo>−</mo><mi>α</mi></mrow></msub><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> and </mtext><mspace width="0.333em"></mspace></mrow><msub><mi>Z</mi><mn>2</mn></msub><mo>&gt;</mo><msub><mi>z</mi><mrow><mn>1</mn><mo>−</mo><mi>α</mi></mrow></msub><mo>∣</mo><msub><mtext mathvariant="normal">H</mtext><mn>1</mn></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">1 - \beta = \Pr(Z_{1} &gt; z_{1-\alpha} \text{ and } Z_{2} &gt; z_{1-\alpha} \mid \text{H}_{1})</annotation></semantics></math></p>
 <p>Using the bivariate normal CDF:</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>−</mo><mi>β</mi><mo>=</mo><msub><mi>Φ</mi><mn>2</mn></msub><mrow><mo stretchy="true" form="prefix">(</mo><mo>−</mo><msub><mi>z</mi><mrow><mn>1</mn><mo>−</mo><mi>α</mi></mrow></msub><mo>+</mo><msub><mi>ω</mi><mn>1</mn></msub><mo>,</mo><mo>−</mo><msub><mi>z</mi><mrow><mn>1</mn><mo>−</mo><mi>α</mi></mrow></msub><mo>+</mo><msub><mi>ω</mi><mn>2</mn></msub><mo>∣</mo><mi>ρ</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">1 - \beta = \Phi_{2}(-z_{1-\alpha} + \omega_{1}, -z_{1-\alpha} + \omega_{2} \mid \rho)</annotation></semantics></math></p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>−</mo><mi>β</mi><mo>=</mo><msub><mi mathvariant="normal">Φ</mi><mn>2</mn></msub><mo stretchy="false" form="prefix">(</mo><mi>−</mi><msub><mi>z</mi><mrow><mn>1</mn><mo>−</mo><mi>α</mi></mrow></msub><mo>+</mo><msub><mi>ω</mi><mn>1</mn></msub><mo>,</mo><mi>−</mi><msub><mi>z</mi><mrow><mn>1</mn><mo>−</mo><mi>α</mi></mrow></msub><mo>+</mo><msub><mi>ω</mi><mn>2</mn></msub><mo>∣</mo><mi>ρ</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">1 - \beta = \Phi_{2}(-z_{1-\alpha} + \omega_{1}, -z_{1-\alpha} + \omega_{2} \mid \rho)</annotation></semantics></math></p>
 <p>where
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>Φ</mi><mn>2</mn></msub><mrow><mo stretchy="true" form="prefix">(</mo><mo>⋅</mo><mo>,</mo><mo>⋅</mo><mo>∣</mo><mi>ρ</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\Phi_{2}(\cdot, \cdot \mid \rho)</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi mathvariant="normal">Φ</mi><mn>2</mn></msub><mo stretchy="false" form="prefix">(</mo><mi>⋅</mi><mo>,</mo><mi>⋅</mi><mo>∣</mo><mi>ρ</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\Phi_{2}(\cdot, \cdot \mid \rho)</annotation></semantics></math>
 is the bivariate normal CDF with correlation
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>ρ</mi><annotation encoding="application/x-tex">\rho</annotation></semantics></math>.</p>
 </div>
@@ -425,19 +425,21 @@ group for various combinations of standardized effect sizes.</p>
 <span><span class="co"># Display table</span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">result_table</span>,</span>
 <span>      caption <span class="op">=</span> <span class="st">"Table 1: Sample Sizes Per Group (Sozu et al. 2011, alpha = 0.025, power = 0.8)"</span>,</span>
-<span>      digits <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
+<span>      digits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">2</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span><span class="op">)</span>,</span>
+<span>      col.names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"δ₁"</span>, <span class="st">"δ₂"</span>, <span class="st">"σ₁"</span>, <span class="st">"σ₂"</span>,</span>
+<span>                    <span class="st">"ρ=0.0"</span>, <span class="st">"ρ=0.3"</span>, <span class="st">"ρ=0.5"</span>, <span class="st">"ρ=0.8"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <caption>Table 1: Sample Sizes Per Group (Sozu et al. 2011, alpha =
 0.025, power = 0.8)</caption>
 <thead><tr class="header">
-<th align="right">delta1</th>
-<th align="right">delta2</th>
-<th align="right">sd1</th>
-<th align="right">sd2</th>
-<th align="right">rho_0.0</th>
-<th align="right">rho_0.3</th>
-<th align="right">rho_0.5</th>
-<th align="right">rho_0.8</th>
+<th align="right">δ₁</th>
+<th align="right">δ₂</th>
+<th align="right">σ₁</th>
+<th align="right">σ₂</th>
+<th align="right">ρ=0.0</th>
+<th align="right">ρ=0.3</th>
+<th align="right">ρ=0.5</th>
+<th align="right">ρ=0.8</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
@@ -725,7 +727,11 @@ group for various combinations of standardized effect sizes.</p>
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>t</mi><annotation encoding="application/x-tex">t</annotation></semantics></math>-test
 with Monte Carlo simulation:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Sample size calculation with unknown variance</span></span>
+<code class="sourceCode R"><span><span class="co"># The unknown variance case integrates over Wishart distributed variance</span></span>
+<span><span class="co"># estimates by Monte Carlo, so a seed is needed for a reproducible result</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">20260829</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Sample size calculation with unknown variance</span></span>
 <span><span class="va">ss_unknown</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ss2Continuous.html">ss2Continuous</a></span><span class="op">(</span></span>
 <span>  delta1 <span class="op">=</span> <span class="fl">0.5</span>, delta2 <span class="op">=</span> <span class="fl">0.5</span>,</span>
 <span>  sd1 <span class="op">=</span> <span class="fl">1</span>, sd2 <span class="op">=</span> <span class="fl">1</span>,</span>
@@ -750,8 +756,16 @@ with Monte Carlo simulation:</p>
 <span><span class="co">#&gt;            beta = 0.2</span></span>
 <span><span class="co">#&gt;       known_var = FALSE</span></span>
 <span><span class="co">#&gt;             nMC = 10000</span></span></code></pre></div>
-<p>Note: The unknown variance case requires more computation time due to
-Monte Carlo simulation.</p>
+<p>Note: the unknown variance case integrates over the sampling
+distribution of the variance estimates by Monte Carlo, so it costs more
+than the known variance case and, without <code><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed()</a></code>,
+returns a slightly different answer on each call. Increasing
+<code>nMC</code> reduces that variation.</p>
+<p>The power depends on the continuous endpoints only through the
+standardized effects
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>δ</mi><mi>k</mi></msub><mi>/</mi><msub><mi>σ</mi><mi>k</mi></msub></mrow><annotation encoding="application/x-tex">\delta_{k} / \sigma_{k}</annotation></semantics></math>,
+so multiplying every effect and every standard deviation by a common
+constant leaves the answer unchanged.</p>
 </div>
 <div class="section level2">
 <h2 id="practical-considerations">Practical Considerations<a class="anchor" aria-label="anchor" href="#practical-considerations"></a>
