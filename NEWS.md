@@ -86,6 +86,10 @@
   the smallest one reaching the target. The exact unconditional tests are also
   checked against the `Exact` package where it is installed.
 
+* A spelling check was added (`tests/spelling.R` with `inst/WORDLIST`), so the
+  British and American spelling inconsistencies corrected in this version cannot
+  reappear unnoticed.
+
 # twoCoprimary 1.0.0
 
 ## Initial Release

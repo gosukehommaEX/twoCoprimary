@@ -134,6 +134,7 @@ $$L(p_{j,1}, p_{j,2}) = \max\left\{-\sqrt{\frac{p_{j,1} p_{j,2}}{(1 - p_{j,1})(1
 $$U(p_{j,1}, p_{j,2}) = \min\left\{\sqrt{\frac{p_{j,1}(1 - p_{j,2})}{p_{j,2}(1 - p_{j,1})}}, \sqrt{\frac{p_{j,2}(1 - p_{j,1})}{p_{j,1}(1 - p_{j,2})}}\right\}$$
 
 **Special cases**:
+
 - If $p_{j,1} = p_{j,2}$, then $U(p_{j,1}, p_{j,2}) = 1$
 - If $p_{j,1} + p_{j,2} = 1$, then $L(p_{j,1}, p_{j,2}) = -1$
 
@@ -254,7 +255,7 @@ $$n_{2} = \arg\min_{n_{2} \in \mathbb{Z}} \{\text{power}_{A}(\boldsymbol{\theta}
 This cannot be expressed as a closed-form formula due to:
 
 1. Discreteness of binary outcomes
-2. Non-monotonic "sawtooth" power curve
+2. Non-monotonic "saw-tooth" power curve
 
 **Algorithm**: Sequential search starting from asymptotic normal approximation (AN method) as initial value.
 
@@ -313,7 +314,7 @@ kable(result_bin_exact_ss,
       col.names = c("r", "ρ", "Chisq", "Fisher", "Z-pool", "Boschloo"))
 ```
 
-^a^ Chisq denotes the one-sided Pearson chi-squared test. Fisher stands for Fisher’s exact test. Z-pool represents the Z-pooled exact unconditional test. Boschloo signifies Boschloo’s exact unconditional test.
+^a^ Chisq denotes the one-sided Pearson chi-squared test. Fisher stands for Fisher's exact test. Z-pool represents the Z-pooled exact unconditional test. Boschloo signifies Boschloo's exact unconditional test.
 
 ^b^ The required sample sizes were obtained by assuming that $p_{1,1} = p_{1,2} = 0.54$ and $p_{2,1} = p_{2,2} = 0.25$.
 

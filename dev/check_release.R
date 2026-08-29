@@ -98,7 +98,19 @@ flatten_rd <- function(x) {
   gsub("\\s+", " ", paste(out, collapse = ""))
 }
 
-db <- tools::Rd_db("twoCoprimary")
+# Rd_db reads the installed help database, which is stale until the package has
+# been reinstalled after a documentation change. Fail with an instruction rather
+# than the raw "installed help is corrupt" error.
+db <- tryCatch(tools::Rd_db("twoCoprimary"), error = function(e) {
+  message("Cannot read the installed help database: ", conditionMessage(e))
+  message("Run devtools::document(), reinstall the package, restart the R ",
+          "session, and run this script again.")
+  NULL
+})
+if (is.null(db)) {
+  close(log_con)
+  stop("stale help database; document, reinstall, restart R and re-run")
+}
 txt <- paste(vapply(db, flatten_rd, character(1)), collapse = " ")
 
 for (e in expected) {

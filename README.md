@@ -26,6 +26,7 @@ The package supports five combinations of co-primary endpoints:
 - **Mixed count and continuous** - Negative binomial for overdispersed counts (Homma & Yoshida, 2024)
 
 All methods provide:
+
 - ✅ Sample size calculation given target power
 - ✅ Power calculation given sample size
 - ✅ Proper Type I error control without multiplicity adjustment
