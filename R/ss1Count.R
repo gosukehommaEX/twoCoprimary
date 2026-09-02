@@ -4,7 +4,9 @@
 #' single overdispersed count endpoint following a negative binomial distribution,
 #' as described in Homma and Yoshida (2024).
 #'
-#' @param r1 Mean rate (events per unit time) for the treatment group
+#' @param r1 Mean rate (events per unit time) for the treatment group, which
+#'   must be less than \code{r2}, since a lower event rate is the treatment
+#'   benefit of interest
 #' @param r2 Mean rate (events per unit time) for the control group
 #' @param nu Common dispersion parameter for the negative binomial distribution (nu > 0)
 #' @param t Common follow-up time period
@@ -81,6 +83,11 @@ ss1Count <- function(r1, r2, nu, t, r, alpha, beta) {
   if (beta <= 0 || beta >= 1) {
     stop("beta must be in (0, 1)")
   }
+  if (r1 >= r2) {
+    stop("r1 must be less than r2: treatment benefit on the count endpoint ",
+         "is a lower event rate, so the power decreases with sample size when ",
+         "r1 >= r2 and no sample size attains the target")
+  }
 
   # Calculate z-scores for alpha and beta
   za <- qnorm(alpha)
@@ -95,7 +102,9 @@ ss1Count <- function(r1, r2, nu, t, r, alpha, beta) {
 
   # Calculate required sample size for control group
   # From equation (14) with single endpoint
-  n2 <- ceiling(((za * sqrt(V0) + zb * sqrt(Va)) ^ 2) / (beta1 ^ 2))
+  # One subject is the floor: the closed form returns zero when the target
+  # power does not exceed the size of the test.
+  n2 <- max(1, ceiling(((za * sqrt(V0) + zb * sqrt(Va)) ^ 2) / (beta1 ^ 2)))
 
   # Calculate sample size for treatment group
   n1 <- ceiling(r * n2)

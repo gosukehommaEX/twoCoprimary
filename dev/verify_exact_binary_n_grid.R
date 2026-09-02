@@ -18,7 +18,7 @@
 # argument needs its help files regenerated.
 #
 # Run from the package root:
-#   source("dev/check_n_grid.R")
+#   source("dev/verify_exact_binary_n_grid.R")
 #
 # Writes dev/out/n_grid_default.csv, dev/out/n_grid_pvalue.csv,
 # dev/out/n_grid_samplesize.csv, dev/out/n_grid_timing.csv and

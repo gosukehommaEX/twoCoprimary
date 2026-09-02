@@ -43,9 +43,10 @@ twoCoprimary2BinaryExact(
 
 \item{alpha}{One-sided significance level (typically 0.025 or 0.05)}
 
-\item{Test}{Test method: "Fisher" (Fisher's exact test), "Chisq"
-(Chi-squared test), "Z-pooled" (Z-pooled exact unconditional test),
-or "Boschloo" (Boschloo's exact unconditional test)}
+\item{Test}{Test method: "Chisq" (one-sided Pearson chi-squared test),
+"Fisher" (Fisher's exact test), "Fisher-midP" (Fisher's mid-p test),
+"Z-pool" (Z-pooled exact unconditional test), or "Boschloo" (Boschloo's
+exact unconditional test)}
 
 \item{n_grid}{Number of grid points used to maximize the null tail probability
 over the nuisance parameter in the two exact unconditional tests, that is

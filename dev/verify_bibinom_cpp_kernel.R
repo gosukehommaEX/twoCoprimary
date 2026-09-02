@@ -1,6 +1,6 @@
 # Verification of the compiled dbibinom() kernel.
 #
-# The profiling in dev/bench_exact_power.R showed that once the co-primary power
+# The profiling in dev/measure_exact_binary_speed.R showed that once the co-primary power
 # was rewritten as a matrix product, essentially all of the remaining time in
 # ss2BinaryExact() went into building the two bivariate binomial probability
 # mass matrices, not into rr1Binary(). The sum over the set M is now formed in
@@ -19,7 +19,7 @@
 # running this.
 #
 # Run from the package root:
-#   source("dev/check_rcpp_dbibinom.R")
+#   source("dev/verify_bibinom_cpp_kernel.R")
 #
 # Writes dev/out/rcpp_agreement.csv, dev/out/rcpp_identities.csv,
 # dev/out/rcpp_samplesize.csv, dev/out/rcpp_timing.csv and dev/out/rcpp.log

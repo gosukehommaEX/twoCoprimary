@@ -21,7 +21,7 @@
 #         designs that are cheap enough to search.
 #
 # Run from the package root:
-#   source("dev/check_mixed_fisher_fix.R")
+#   source("dev/verify_mixed_fisher_option.R")
 #
 # Writes dev/out/mixed_fisher_fix_S5.csv, dev/out/mixed_fisher_fix_search.csv
 # and dev/out/mixed_fisher_fix.log

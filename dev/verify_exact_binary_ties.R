@@ -14,7 +14,7 @@
 # Requires the package to be reinstalled and the R session restarted first.
 #
 # Run from the package root:
-#   source("dev/verify_tie_fix.R")
+#   source("dev/verify_exact_binary_ties.R")
 #
 # Writes dev/out/verify_tie_fix_rr.csv, dev/out/verify_tie_fix_ss.csv and
 # dev/out/verify_tie_fix.log
@@ -120,7 +120,7 @@ if (!requireNamespace("Exact", quietly = TRUE)) {
 # ---------------------------------------------------------------------------
 # Part B: the sample sizes the manuscript reports
 # ---------------------------------------------------------------------------
-# Expected values, recorded from check_tie_impact.R before the fix was applied.
+# Expected values, recorded from verify_tie_impact_on_manuscript.R before the fix was applied.
 
 expected <- data.frame(
   source = c(rep("validation", 16), rep("usage", 2)),

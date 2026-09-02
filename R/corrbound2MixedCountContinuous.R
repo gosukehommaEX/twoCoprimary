@@ -69,29 +69,35 @@ corrbound2MixedCountContinuous <- function(lambda, nu, mu, sd) {
   # Remove probabilities equal to 1 (beyond effective support)
   Fx <- Fx[Fx < 1]
 
+  # The two integrals below are taken in the standardized continuous variable
+  # z = (y - mu) / sd. Substituting it multiplies each integrand by sd, which
+  # cancels the sd in the denominator of the correlation, so the bounds do not
+  # depend on mu or sd at all, as a correlation between a fixed count
+  # distribution and any normal distribution cannot. Integrating in y instead
+  # concentrates the integrand near y = mu, and the quadrature over the whole
+  # real line then returns zero for a mean far from the origin relative to the
+  # standard deviation: at mu = -50 and sd = 0.5 both bounds collapsed to zero
+  # and every correlation was refused.
+
   # Calculate lower bound using Frechet-Hoeffding lower bound
   # H^-(u,v) = max(u + v - 1, 0)
-  LL_cov <- sum(sapply(seq_along(Fx), function(i) {
-    integrate(function(y) {
-      pmax(Fx[i] + pnorm(y, mu, sd) - 1, 0) - Fx[i] * pnorm(y, mu, sd)
+  LL_rho <- sum(vapply(seq_along(Fx), function(i) {
+    integrate(function(z) {
+      pmax(Fx[i] + pnorm(z) - 1, 0) - Fx[i] * pnorm(z)
     }, lower = -Inf, upper = Inf,
     rel.tol = .Machine$double.eps^0.5,
     stop.on.error = FALSE)$value
-  }))
-
-  LL_rho <- LL_cov / (sd_count * sd)
+  }, numeric(1))) / sd_count
 
   # Calculate upper bound using Frechet-Hoeffding upper bound
   # H^+(u,v) = min(u, v)
-  UL_cov <- sum(sapply(seq_along(Fx), function(i) {
-    integrate(function(y) {
-      pmin(Fx[i], pnorm(y, mu, sd)) - Fx[i] * pnorm(y, mu, sd)
+  UL_rho <- sum(vapply(seq_along(Fx), function(i) {
+    integrate(function(z) {
+      pmin(Fx[i], pnorm(z)) - Fx[i] * pnorm(z)
     }, lower = -Inf, upper = Inf,
     rel.tol = .Machine$double.eps^0.5,
     stop.on.error = FALSE)$value
-  }))
-
-  UL_rho <- UL_cov / (sd_count * sd)
+  }, numeric(1))) / sd_count
 
   # Return bounds
   boundary <- c(LL_rho, UL_rho)

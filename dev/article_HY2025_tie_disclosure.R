@@ -22,7 +22,7 @@
 # interrupting during Part 2 still leaves Part 1 on disk.
 #
 # Run from the package root:
-#   source("dev/check_hy2025.R")
+#   source("dev/article_HY2025_tie_disclosure.R")
 #
 # Writes dev/out/hy2025_table4.csv, dev/out/hy2025_figures.csv and
 # dev/out/hy2025.log

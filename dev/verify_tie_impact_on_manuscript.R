@@ -1,10 +1,11 @@
 # Does the tie fix move the sample sizes reported in the manuscript, and which
 # tie convention agrees with independent software?
 #
-# check_tie_handling.R established that the rejection region changes in 51 of
-# the 424 designs in the band the manuscript reaches, including n = 58 and
-# n = 59 per group, which is close to where the validation designs land. A
-# changed rejection region does not by itself move a sample size: the search
+# An earlier diagnostic, kept in the git history, established that the
+# rejection region changes in 51 of the 424 designs in the band the manuscript
+# reaches, including n = 58 and n = 59 per group, which is close to where the
+# validation designs land. A changed rejection region does not by itself move a
+# sample size: the search
 # stops at the first n whose power reaches the target, and a one cell change
 # shifts the power by the probability of that cell under the alternative. This
 # script settles the question by running the search itself under both
@@ -16,7 +17,7 @@
 # standard Z-pooled and Boschloo test.
 #
 # Run from the package root:
-#   source("dev/check_tie_impact.R")
+#   source("dev/verify_tie_impact_on_manuscript.R")
 #
 # Writes dev/out/tie_impact_samplesize.csv, dev/out/tie_impact_external.csv and
 # dev/out/tie_impact.log

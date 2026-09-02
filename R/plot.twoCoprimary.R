@@ -12,14 +12,21 @@
 #'       power calculation results)}
 #'     \item{"sample_size_rho"}{Sample size as a function of correlation
 #'       (default for sample size calculation results)}
-#'     \item{"effect_contour"}{Contour plot showing combinations of effect
-#'       sizes achieving target power}
+#'     \item{"effect_contour"}{Contour plot showing combinations of
+#'       standardized effect sizes achieving target power. The two axes, and
+#'       the two columns of the returned data, are \eqn{\delta_k / \sigma_k}}
 #'   }
 #' @param n_points Number of points to compute for the curve. Default is 50.
+#'   Each point runs a full calculation, so a smaller value is advisable for
+#'   objects produced with an exact binary test or with Monte Carlo
+#'   integration.
 #' @param n_range Sample size range for power_curve plot. If NULL, automatically
 #'   determined from the object.
-#' @param rho_range Correlation range for sample_size_rho plot. Default is
-#'   seq(0, 0.9, length.out = n_points).
+#' @param rho_range Correlation range for sample_size_rho plot. If NULL, the
+#'   range is seq(0, 0.9, length.out = n_points) for continuous and mixed
+#'   continuous-binary endpoints, and is derived from the Frechet-Hoeffding
+#'   bounds of the supplied marginal parameters for binary and mixed
+#'   count-continuous endpoints.
 #' @param col Line color. Default is "steelblue".
 #' @param lwd Line width. Default is 2.
 #' @param main Plot title. If NULL, automatically generated.
@@ -125,9 +132,16 @@ detect_endpoint_type <- function(x) {
   } else if (all(c("r1", "r2", "nu", "mu1", "mu2") %in% names(x))) {
     return("mixed_count_cont")
   } else {
-    stop("Cannot determine endpoint type from object")
+    stop("plot() supports results from the two co-primary endpoint functions ",
+         "(ss2*, power2*, twoCoprimary2*). Results from the single endpoint ",
+         "helpers ss1Continuous(), ss1Count() and ss1BinaryApprox() do not ",
+         "carry the parameters a co-primary plot needs.")
   }
 }
+
+# Exact binary test names, used to route plotting helpers to the exact rather
+# than the approximate implementation
+EXACT_BINARY_TESTS <- c("Chisq", "Fisher", "Fisher-midP", "Z-pool", "Boschloo")
 
 
 # ============================================================================
@@ -141,15 +155,13 @@ plot_power_curve <- function(x, endpoint_type, n_points, n_range,
   # Determine sample size range
   if (is.null(n_range)) {
     if ("n2" %in% names(x)) {
-      # Power calculation: vary around current n2
+      # Both object shapes carry n2, so both use a window around it. The lower
+      # end is held at two rather than at a fixed floor of ten, which would
+      # invert the window for a design of fewer than twenty per group.
       current_n2 <- x$n2
-      n_range <- c(max(10, floor(current_n2 * 0.5)),
-                   ceiling(current_n2 * 1.5))
-    } else if ("N" %in% names(x)) {
-      # Sample size calculation: vary around calculated N
-      current_N <- x$N
-      n_range <- c(max(10, floor(current_N * 0.3)),
-                   ceiling(current_N * 0.6))  # n2 is roughly N/2 for balanced
+      lo <- max(2, floor(current_n2 * 0.5))
+      hi <- max(lo + 1, ceiling(current_n2 * 1.5))
+      n_range <- c(lo, hi)
     } else {
       n_range <- c(50, 200)
     }
@@ -213,8 +225,10 @@ plot_power_curve <- function(x, endpoint_type, n_points, n_range,
       abline(h = x$powerCoprimary, col = "darkgreen", lty = 2)
     }
 
-    # Vertical line at current n2
-    if ("n2" %in% names(x)) {
+    # Vertical line at current n2. A power object carries powerCoprimary and
+    # a sample size object does not, so the branches are selected on that
+    # column rather than on n2, which both shapes have.
+    if ("powerCoprimary" %in% names(x)) {
       abline(v = x$n2, col = "darkgreen", lty = 2)
       points(x$n2, x$powerCoprimary, pch = 19, col = "darkgreen", cex = 1.5)
       # Calculate total N
@@ -235,14 +249,14 @@ plot_power_curve <- function(x, endpoint_type, n_points, n_range,
       }
       text(x$n2, x$powerCoprimary, label_text,
            pos = 4, col = "darkgreen", cex = 0.8)
-    } else if ("N" %in% names(x)) {
+    } else if ("n2" %in% names(x)) {
       current_n2 <- x$n2
       # Find corresponding power
       idx <- which.min(abs(n2_seq - current_n2))
       abline(v = current_n2, col = "red", lty = 2)
       points(current_n2, power_seq[idx], pch = 19, col = "red", cex = 1.5)
       # Calculate total N
-      total_N <- x$N
+      total_N <- if ("N" %in% names(x)) x$N else x$n1 + x$n2
       # Create label with allocation ratio and total N
       if (abs(r - 1) < 0.01) {
         # Balanced design
@@ -276,12 +290,16 @@ plot_sample_size_rho <- function(x, endpoint_type, n_points, rho_range,
                                  col, lwd, main, xlab, ylab,
                                  show_reference, ...) {
 
-  # Get allocation ratio
-  if ("r" %in% names(x)) {
-    r <- x$r
+  # A power object carries neither r, beta nor N, so derive each from the
+  # columns it does have: the realized allocation, the achieved power as the
+  # target, and the total of the two group sizes.
+  r <- if ("r" %in% names(x)) x$r else x$n1 / x$n2
+  beta <- if ("beta" %in% names(x)) {
+    x$beta
   } else {
-    r <- 1
+    1 - x$powerCoprimary
   }
+  total_N <- if ("N" %in% names(x)) x$N else x$n1 + x$n2
 
   # (4) Determine correlation range based on endpoint type
   if (is.null(rho_range)) {
@@ -317,7 +335,8 @@ plot_sample_size_rho <- function(x, endpoint_type, n_points, rho_range,
   n2_seq <- numeric(length(rho_range))
 
   for (i in seq_along(rho_range)) {
-    ss_result <- calculate_sample_size_for_plot(x, endpoint_type, rho_range[i])
+    ss_result <- calculate_sample_size_for_plot(x, endpoint_type, rho_range[i],
+                                               r = r, beta = beta)
     n2_seq[i] <- ss_result$n2
   }
 
@@ -349,7 +368,6 @@ plot_sample_size_rho <- function(x, endpoint_type, n_points, rho_range,
     abline(h = x$n2, col = "darkgreen", lty = 2)
     points(x$rho, x$n2, pch = 19, col = "darkgreen", cex = 1.5)
     # Calculate total N and create label
-    total_N <- x$N
     if (abs(r - 1) < 0.01) {
       # Balanced design
       label_text <- bquote(rho == .(sprintf("%.2f", x$rho)) * ',' ~ n == .(x$n2) * ',' ~
@@ -372,7 +390,6 @@ plot_sample_size_rho <- function(x, endpoint_type, n_points, rho_range,
     abline(h = x$n2, col = "darkgreen", lty = 2)
     points(avg_rho, x$n2, pch = 19, col = "darkgreen", cex = 1.5)
     # Calculate total N and create label
-    total_N <- x$N
     if (abs(r - 1) < 0.01) {
       # Balanced design
       label_text <- bquote(rho == .(sprintf("%.2f", avg_rho)) * ',' ~ n == .(x$n2) * ',' ~
@@ -407,7 +424,10 @@ plot_effect_contour <- function(x, endpoint_type, n_points,
     stop("effect_contour plot is currently only available for continuous endpoints")
   }
 
-  # Define grid for effect sizes
+  # Grid of standardized effect sizes, which is what the axis labels below
+  # state. The power is evaluated at the corresponding mean differences, so the
+  # contour is the same picture whatever the two standard deviations are. When
+  # both are one the two scales coincide.
   delta1_range <- seq(0.2, 1.0, length.out = n_points)
   delta2_range <- seq(0.2, 1.0, length.out = n_points)
 
@@ -417,10 +437,10 @@ plot_effect_contour <- function(x, endpoint_type, n_points,
   # Calculate power for each combination
   grid$power <- numeric(nrow(grid))
 
-  for (i in 1:nrow(grid)) {
+  for (i in seq_len(nrow(grid))) {
     temp_x <- x
-    temp_x$delta1 <- grid$delta1[i]
-    temp_x$delta2 <- grid$delta2[i]
+    temp_x$delta1 <- grid$delta1[i] * x$sd1
+    temp_x$delta2 <- grid$delta2[i] * x$sd2
     power_result <- calculate_power_for_plot(temp_x, endpoint_type,
                                              x$n1, x$n2)
     grid$power[i] <- power_result$powerCoprimary
@@ -447,9 +467,9 @@ plot_effect_contour <- function(x, endpoint_type, n_points,
           main = main, xlab = xlab, ylab = ylab,
           col = "steelblue", lwd = 1.5, ...)
 
-  # Add current point if available
+  # Add current point if available, on the standardized scale of the axes
   if ("delta1" %in% names(x) && "delta2" %in% names(x)) {
-    points(x$delta1, x$delta2, pch = 19, col = "red", cex = 1.5)
+    points(x$delta1 / x$sd1, x$delta2 / x$sd2, pch = 19, col = "red", cex = 1.5)
   }
 
   # Return data
@@ -473,14 +493,28 @@ calculate_power_for_plot <- function(x, endpoint_type, n1, n2) {
       nMC = ifelse("nMC" %in% names(x) && !is.na(x$nMC), x$nMC, 1000)
     )
   } else if (endpoint_type == "binary") {
-    power2BinaryApprox(
-      n1 = n1, n2 = n2,
-      p11 = x$p11, p12 = x$p12,
-      p21 = x$p21, p22 = x$p22,
-      rho1 = x$rho1, rho2 = x$rho2,
-      alpha = x$alpha,
-      Test = x$Test
-    )
+    # The Test column decides which family the object came from; routing an
+    # exact test name into the approximate function would fail.
+    if (as.character(x$Test) %in% EXACT_BINARY_TESTS) {
+      power2BinaryExact(
+        n1 = n1, n2 = n2,
+        p11 = x$p11, p12 = x$p12,
+        p21 = x$p21, p22 = x$p22,
+        rho1 = x$rho1, rho2 = x$rho2,
+        alpha = x$alpha,
+        Test = as.character(x$Test),
+        n_grid = if ("n_grid" %in% names(x)) x$n_grid else 100
+      )
+    } else {
+      power2BinaryApprox(
+        n1 = n1, n2 = n2,
+        p11 = x$p11, p12 = x$p12,
+        p21 = x$p21, p22 = x$p22,
+        rho1 = x$rho1, rho2 = x$rho2,
+        alpha = x$alpha,
+        Test = as.character(x$Test)
+      )
+    }
   } else if (endpoint_type == "mixed_cont_binary") {
     power2MixedContinuousBinary(
       n1 = n1, n2 = n2,
@@ -507,32 +541,50 @@ calculate_power_for_plot <- function(x, endpoint_type, n1, n2) {
 # Helper function: Calculate sample size for plotting
 # ============================================================================
 
-calculate_sample_size_for_plot <- function(x, endpoint_type, rho_value) {
+calculate_sample_size_for_plot <- function(x, endpoint_type, rho_value,
+                                           r = NULL, beta = NULL) {
+
+  # r and beta are supplied by the caller because a power object has neither
+  if (is.null(r)) r <- if ("r" %in% names(x)) x$r else x$n1 / x$n2
+  if (is.null(beta)) {
+    beta <- if ("beta" %in% names(x)) x$beta else 1 - x$powerCoprimary
+  }
 
   if (endpoint_type == "continuous") {
     ss2Continuous(
       delta1 = x$delta1, delta2 = x$delta2,
       sd1 = x$sd1, sd2 = x$sd2,
-      rho = rho_value, r = x$r,
-      alpha = x$alpha, beta = x$beta,
+      rho = rho_value, r = r,
+      alpha = x$alpha, beta = beta,
       known_var = ifelse("known_var" %in% names(x), x$known_var, TRUE),
       nMC = ifelse("nMC" %in% names(x) && !is.na(x$nMC), x$nMC, 1000)
     )
   } else if (endpoint_type == "binary") {
-    ss2BinaryApprox(
-      p11 = x$p11, p12 = x$p12,
-      p21 = x$p21, p22 = x$p22,
-      rho1 = rho_value, rho2 = rho_value,
-      r = x$r, alpha = x$alpha, beta = x$beta,
-      Test = x$Test
-    )
+    if (as.character(x$Test) %in% EXACT_BINARY_TESTS) {
+      ss2BinaryExact(
+        p11 = x$p11, p12 = x$p12,
+        p21 = x$p21, p22 = x$p22,
+        rho1 = rho_value, rho2 = rho_value,
+        r = r, alpha = x$alpha, beta = beta,
+        Test = as.character(x$Test),
+        n_grid = if ("n_grid" %in% names(x)) x$n_grid else 100
+      )
+    } else {
+      ss2BinaryApprox(
+        p11 = x$p11, p12 = x$p12,
+        p21 = x$p21, p22 = x$p22,
+        rho1 = rho_value, rho2 = rho_value,
+        r = r, alpha = x$alpha, beta = beta,
+        Test = as.character(x$Test)
+      )
+    }
   } else if (endpoint_type == "mixed_cont_binary") {
     ss2MixedContinuousBinary(
       delta = x$delta, sd = x$sd,
       p1 = x$p1, p2 = x$p2,
-      rho = rho_value, r = x$r,
-      alpha = x$alpha, beta = x$beta,
-      Test = x$Test,
+      rho = rho_value, r = r,
+      alpha = x$alpha, beta = beta,
+      Test = as.character(x$Test),
       nMC = ifelse("nMC" %in% names(x) && !is.na(x$nMC), x$nMC, 1000)
     )
   } else if (endpoint_type == "mixed_count_cont") {
@@ -541,7 +593,7 @@ calculate_sample_size_for_plot <- function(x, endpoint_type, rho_value) {
       nu = x$nu, t = x$t,
       mu1 = x$mu1, mu2 = x$mu2, sd = x$sd,
       rho1 = rho_value, rho2 = rho_value,
-      r = x$r, alpha = x$alpha, beta = x$beta
+      r = r, alpha = x$alpha, beta = beta
     )
   }
 }

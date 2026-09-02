@@ -46,9 +46,15 @@ calculation. Default is 0.2 (power = 0.8).}
 \item{endpoint_type}{Character string specifying endpoint type:
 "continuous", "binary", "mixed_cont_binary", or "mixed_count_cont".}
 
-\item{Test}{Test method for binary endpoints: "AN" (asymptotic normal),
-"ANc" (with continuity correction), "AS" (arcsine), or "ASc". Default is
-"AN". Only used for binary and mixed_cont_binary endpoints.}
+\item{Test}{Test method. For \code{endpoint_type = "binary"} the four
+asymptotic methods "AN" (asymptotic normal), "ANc" (with continuity
+correction), "AS" (arcsine) and "ASc" (arcsine with continuity
+correction) route to the approximate functions, while "Chisq", "Fisher",
+"Fisher-midP", "Z-pool" and "Boschloo" route to the exact functions and
+are substantially more expensive. For
+\code{endpoint_type = "mixed_cont_binary"} the four asymptotic methods
+and "Fisher" are available. Default is "AN". Not used for the continuous
+and mixed count-continuous endpoint types.}
 
 \item{known_var}{Logical indicating whether variance is known for continuous
 endpoints. Default is TRUE.}

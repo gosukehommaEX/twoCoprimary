@@ -3,7 +3,8 @@
 #' Calculates the required sample size for a two-arm superiority trial with a
 #' single binary endpoint using various statistical testing methods.
 #'
-#' @param p1 True probability of responders in group 1 (0 < p1 < 1)
+#' @param p1 True probability of responders in group 1 (0 < p1 < 1). Must be
+#'   greater than \code{p2}, since the design is a superiority trial
 #' @param p2 True probability of responders in group 2 (0 < p2 < 1)
 #' @param r Allocation ratio of group 1 to group 2 (group 1:group 2 = r:1, where r > 0)
 #' @param alpha One-sided significance level (typically 0.025)
@@ -43,6 +44,14 @@
 #' - theta1 = 1 - p1, theta2 = 1 - p2: non-response probabilities
 #' - delta = p1 - p2: treatment effect
 #'
+#' All four asymptotic methods return the smallest \eqn{n_2} whose realized
+#' group sizes reach the target power under \code{\link{power2BinaryApprox}}
+#' with both endpoints set to the same marginal. The closed forms below give the
+#' starting value of that search. They are not used as the answer, because they
+#' assume that \eqn{n_1} is exactly \eqn{r n_2}, whereas \eqn{n_1} is rounded
+#' up to an integer, and because for the two continuity corrected methods the
+#' correction depends on the sample size being solved for.
+#'
 #' **AN (Asymptotic Normal) Method:**
 #' Uses the standard normal approximation with pooled variance under H0:
 #' \deqn{n_2 = \left\lceil \frac{(1 + \kappa)}{(\pi_1 - \pi_2)^2}
@@ -51,24 +60,26 @@
 #' where \eqn{\bar{\pi} = (r\pi_1 + \pi_2)/(1 + r)} is the pooled proportion.
 #'
 #' **ANc Method:**
-#' Adds continuity correction to the AN method. Uses iterative calculation because
-#' the correction term depends on sample size. Converges when the difference between
-#' successive iterations is less than or equal to 1.
+#' Adds Yates's continuity correction to the AN method.
 #'
 #' **AS (Arcsine) Method:**
 #' Uses the variance-stabilizing arcsine transformation:
-#' \deqn{n_2 = \left\lceil \frac{(z_{1-\alpha} + z_{1-\beta})^2}{4(\sin^{-1}\sqrt{\pi_1} - \sin^{-1}\sqrt{\pi_2})^2} \times \frac{1 + \kappa}{\kappa} \right\rceil}
+#' \deqn{n_2 = \left\lceil \frac{(z_{1-\alpha} + z_{1-\beta})^2 (1 + \kappa)}{4(\sin^{-1}\sqrt{\pi_1} - \sin^{-1}\sqrt{\pi_2})^2} \right\rceil}
 #'
 #' **ASc Method:**
-#' Applies continuity correction to the arcsine method. Uses iterative procedure
-#' with convergence criterion.
+#' Applies continuity correction to the arcsine method. The correction moves the
+#' two arms toward each other, and the variance is adjusted for the corrected
+#' proportions following Sozu et al. (2010).
 #'
 #' **Fisher Method:**
 #' Fisher's exact test does not have a closed-form sample size formula. This method:
 #' 1. Starts with the AN method's sample size as initial value
 #' 2. Incrementally increases n2 by 1
-#' 3. Calculates exact power using hypergeometric distribution
+#' 3. Calculates exact power by summing the binomial probabilities over the
+#'    rejection region
 #' 4. Stops when power is greater than or equal to 1 - beta
+#' 5. Steps back down while the target is still met, so that a starting value
+#'    that already reached the target does not hide a smaller one
 #'
 #' Note: Due to the saw-tooth nature of exact power (power does not increase
 #' monotonically with sample size), a sequential search approach is used.
@@ -97,6 +108,7 @@
 #' ss1BinaryApprox(p1 = 0.6, p2 = 0.4, r = 2, alpha = 0.025, beta = 0.1, Test = "Fisher")
 #'
 #' @export
+#' @import fpCompare
 #' @importFrom stats qnorm dbinom pbinom
 ss1BinaryApprox <- function(p1, p2, r, alpha, beta, Test = "AN") {
 
@@ -141,67 +153,48 @@ ss1BinaryApprox <- function(p1, p2, r, alpha, beta, Test = "AN") {
     v0 <- sqrt(p_pooled * (1 - p_pooled))
     v1 <- sqrt((p1 * theta1 / r + p2 * theta2) / (1 + 1 / r))
 
-    # Initial sample size (AN method)
-    n2 <- ceiling((1 + 1 / r) / delta ^ 2 * (z_alpha * v0 + z_beta * v1) ^ 2)
-
-    if (Test == "ANc") {
-      # Iterative calculation for continuity correction
-      n2_prev <- 0
-
-      while (abs(n2 - n2_prev) > 1) {
-        n2_prev <- n2
-        n1 <- ceiling(r * n2)
-
-        # Continuity correction term
-        cc <- 1 / (2 * n1) + 1 / (2 * n2)
-
-        # Check if correction leads to valid values
-        if (delta - cc <= 0) {
-          # Correction leads to invalid values, use previous value
-          n2 <- n2_prev
-          break
-        }
-
-        # Adjusted treatment effect
-        delta_adj <- delta - cc
-
-        # Recalculate n2
-        n2 <- ceiling((1 + 1 / r) / delta_adj ^ 2 * (z_alpha * v0 + z_beta * v1) ^ 2)
-      }
-    }
+    # Closed form starting value (AN method). One subject is the floor: the
+    # closed form returns zero when the target power does not exceed the size
+    # of the test, and the search below evaluates the power at its start.
+    n2 <- max(1, ceiling((1 + 1 / r) / delta ^ 2 *
+                           (z_alpha * v0 + z_beta * v1) ^ 2))
 
   } else if (Test == "AS" | Test == "ASc") {
     # Arcsine transformation
     delta_as <- asin(sqrt(p1)) - asin(sqrt(p2))
 
-    # Initial sample size (AS method)
-    n2 <- ceiling((z_alpha + z_beta) ^ 2 / (4 * delta_as ^ 2) * (1 + kappa) / kappa)
+    # Closed form starting value (AS method), with the same floor of one
+    n2 <- max(1, ceiling((z_alpha + z_beta) ^ 2 / (4 * delta_as ^ 2) *
+                           (1 + kappa)))
+  }
 
-    if (Test == "ASc") {
-      # Iterative calculation for continuity correction
-      n2_prev <- 0
+  if (Test != "Fisher") {
+    # The closed forms above assume that n1 is exactly r n2 and, for the two
+    # continuity corrected methods, that the correction does not move with the
+    # sample size. Neither holds. The group 1 size is rounded up to an integer,
+    # so the realized allocation exceeds r whenever r n2 is not an integer, and
+    # the correction is a function of the very sample size being solved for.
+    # The size returned is therefore the smallest one whose realized (n1, n2)
+    # reaches the target power, which is Algorithm 1 of Homma and Yoshida (2025)
+    # applied to a single endpoint. The power is taken from
+    # power2BinaryApprox with both endpoints set to the same marginal, so that
+    # the size and the power of this package always refer to the same formula:
+    # for ASc in particular, Sozu et al. (2010) adjust the variance for the
+    # corrected proportions, which the closed form above does not do.
+    power1_at <- function(m) {
+      power2BinaryApprox(n1 = ceiling(r * m), n2 = m,
+                         p11 = p1, p12 = p1, p21 = p2, p22 = p2,
+                         rho1 = 0, rho2 = 0, alpha = alpha,
+                         Test = Test)[["power1"]]
+    }
 
-      while (abs(n2 - n2_prev) > 1) {
-        n2_prev <- n2
-        n1 <- ceiling(r * n2)
+    target_power <- 1 - beta
 
-        # Transformed proportions with continuity correction
-        p1_c <- (n1 * p1 + 0.5) / (n1 + 1)
-        p2_c <- (n2 * p2 - 0.5) / (n2 + 1)
-
-        # Check if correction leads to valid values
-        if (p1_c <= 0 || p1_c >= 1 || p2_c <= 0 || p2_c >= 1) {
-          # Correction leads to invalid values, use previous value
-          n2 <- n2_prev
-          break
-        }
-
-        # Adjusted transformed difference
-        delta_as_adj <- asin(sqrt(p1_c)) - asin(sqrt(p2_c))
-
-        # Recalculate n2
-        n2 <- ceiling((z_alpha + z_beta) ^ 2 / (4 * delta_as_adj ^ 2) * (1 + kappa) / kappa)
-      }
+    while (power1_at(n2) %<<% target_power) {
+      n2 <- n2 + 1
+    }
+    while (n2 > 1 && power1_at(n2 - 1) %>=% target_power) {
+      n2 <- n2 - 1
     }
 
   } else {  # Test == "Fisher"
@@ -210,7 +203,8 @@ ss1BinaryApprox <- function(p1, p2, r, alpha, beta, Test = "AN") {
     p_pooled <- (r * p1 + p2) / (1 + r)
     v0 <- sqrt(p_pooled * (1 - p_pooled))
     v1 <- sqrt((p1 * theta1 / r + p2 * theta2) / (1 + 1 / r))
-    n2_initial <- ceiling((1 + 1 / r) / delta ^ 2 * (z_alpha * v0 + z_beta * v1) ^ 2)
+    n2_initial <- max(1, ceiling((1 + 1 / r) / delta ^ 2 *
+                                   (z_alpha * v0 + z_beta * v1) ^ 2))
 
     # Initialize
     n2 <- n2_initial
@@ -233,6 +227,22 @@ ss1BinaryApprox <- function(p1, p2, r, alpha, beta, Test = "AN") {
         n2 <- n2 + 1
         n1 <- ceiling(r * n2)
       }
+    }
+
+    # The loop above only moves upward from the approximate starting value, so
+    # if that value already reached the target the smaller sizes were never
+    # examined. Step back down while the target is still met, which is Step 2a
+    # of the sequential search the two endpoint functions use.
+    while (n2 > 1) {
+      n2_try <- n2 - 1
+      n1_try <- ceiling(r * n2_try)
+      RR_try <- rr1Binary(n1_try, n2_try, alpha, Test = 'Fisher')
+      power_try <- sum(dbinom(0:n1_try, n1_try, p1) *
+                         pbinom(rowSums(RR_try) - 1, n2_try, p2))
+      if (power_try < 1 - beta) {
+        break
+      }
+      n2 <- n2_try
     }
   }
 

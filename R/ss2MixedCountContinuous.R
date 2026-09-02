@@ -52,7 +52,9 @@
 #' \strong{Negative Binomial Distribution:}
 #' The count endpoint follows a negative binomial distribution NB(lambda, nu) where:
 #' \itemize{
-#'   \item lambda = r * t is the mean count
+#'   \item lambda_j = r_j * t is the mean count in group j, where r_j is the
+#'     event rate per unit time and t the follow-up period. Note that r_j is
+#'     distinct from the allocation ratio r = n1/n2
 #'   \item nu is the dispersion parameter
 #'   \item Variance = lambda + lambda^2 / nu
 #' }
@@ -145,6 +147,16 @@ ss2MixedCountContinuous <- function(r1, r2, nu, t, mu1, mu2, sd, r, rho1, rho2, 
   if (beta <= 0 || beta >= 1) {
     stop("beta must be in (0, 1)")
   }
+  if (r1 >= r2) {
+    stop("r1 must be less than r2: treatment benefit on the count endpoint ",
+         "is a lower event rate, so the power decreases with sample size when ",
+         "r1 >= r2 and no sample size attains the target")
+  }
+  if (mu1 >= mu2) {
+    stop("mu1 must be less than mu2: treatment benefit on the continuous ",
+         "endpoint is a lower mean, so the power decreases with sample size ",
+         "when mu1 >= mu2 and no sample size attains the target")
+  }
 
   # Check correlation bounds for group 1
   lambda1 <- r1 * t
@@ -168,12 +180,18 @@ ss2MixedCountContinuous <- function(r1, r2, nu, t, mu1, mu2, sd, r, rho1, rho2, 
     ss1Continuous(abs(mu1 - mu2), sd, r, alpha, beta)[["n2"]]
   )
 
-  # Step 2: Sequential search to find minimum sample size
+  # Step 2: Sequential search to find minimum sample size. The search calls the
+  # computational core rather than power2MixedCountContinuous, because the two
+  # correlation bounds have just been validated above and their value does not
+  # depend on the sample size. Each bound costs a numerical integration over
+  # the support of the negative binomial distribution, and recomputing the pair
+  # at every candidate sample size accounted for essentially the whole running
+  # time of the search.
   result_ss <- .ss_sequential_search(
     initial_n2 = n2_initial,
     r = r,
     target_power = 1 - beta,
-    power_fun = power2MixedCountContinuous,
+    power_fun = .power2MixedCountContinuous_core,
     r1 = r1, r2 = r2, nu = nu, t = t,
     mu1 = mu1, mu2 = mu2, sd = sd,
     rho1 = rho1, rho2 = rho2, alpha = alpha

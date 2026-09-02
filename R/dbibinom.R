@@ -85,6 +85,15 @@ dbibinom <- function(N, y1, y2, p1, p2, rho) {
     (1 - rho * sqrt(p2 * (1 - p2) / (p1 * (1 - p1))))
   )
 
+  # At the upper Prentice bound with equal marginals the two outcomes coincide,
+  # the factor rho sqrt(p2 (1 - p2) / (p1 (1 - p1))) reaches one and gamma
+  # diverges. That is the only such point: the product of the bound and that
+  # factor is min((1 - p2) / (1 - p1), p2 / p1), which is one only when p1
+  # equals p2. The limiting distribution puts all of its mass on y2 = y1.
+  if (!is.finite(gamma)) {
+    return(dbinom(y1, N, p1) * as.numeric(y1 == y2))
+  }
+
   # Define xi (see Homma and Yoshida (2025))
   xi <- p2 + gamma * (p2 - p1)
 

@@ -77,7 +77,13 @@ distribution with correlation gamma (equation 11):
 \deqn{\gamma = \sum_{j=0,1} \frac{n_0 \rho_j \sqrt{1+\lambda_j/\nu}}
       {n_j \sqrt{\lambda_j V_a} \sqrt{(1+\kappa)/\kappa}}}
 
-where \eqn{\lambda_j = r_j \times t}.
+where \eqn{\lambda_j = r_j \times t} is the mean count in group j, and
+\eqn{r_j} is the event rate per unit time, which is distinct from the
+allocation ratio \code{r}. The formulas above are reproduced in the
+notation of the source article, which indexes the placebo group by 0 and
+writes \eqn{\kappa = n_1 / n_0}; in this package the same groups are
+\code{n1} (treatment) and \code{n2} (control) and \eqn{\kappa} equals
+the argument \code{r}.
 
 The correlation bounds are automatically checked using \code{\link{corrbound2MixedCountContinuous}}.
 }

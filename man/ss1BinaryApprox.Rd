@@ -7,7 +7,8 @@
 ss1BinaryApprox(p1, p2, r, alpha, beta, Test = "AN")
 }
 \arguments{
-\item{p1}{True probability of responders in group 1 (0 < p1 < 1)}
+\item{p1}{True probability of responders in group 1 (0 < p1 < 1). Must be
+greater than \code{p2}, since the design is a superiority trial}
 
 \item{p2}{True probability of responders in group 2 (0 < p2 < 1)}
 
@@ -59,6 +60,14 @@ methods) or \code{\link{ss2BinaryExact}} (for exact methods).
 \item delta = p1 - p2: treatment effect
 }
 
+All four asymptotic methods return the smallest \eqn{n_2} whose realized
+group sizes reach the target power under \code{\link{power2BinaryApprox}}
+with both endpoints set to the same marginal. The closed forms below give the
+starting value of that search. They are not used as the answer, because they
+assume that \eqn{n_1} is exactly \eqn{r n_2}, whereas \eqn{n_1} is rounded
+up to an integer, and because for the two continuity corrected methods the
+correction depends on the sample size being solved for.
+
 \strong{AN (Asymptotic Normal) Method:}
 Uses the standard normal approximation with pooled variance under H0:
 \deqn{n_2 = \left\lceil \frac{(1 + \kappa)}{(\pi_1 - \pi_2)^2}
@@ -67,25 +76,27 @@ Uses the standard normal approximation with pooled variance under H0:
 where \eqn{\bar{\pi} = (r\pi_1 + \pi_2)/(1 + r)} is the pooled proportion.
 
 \strong{ANc Method:}
-Adds continuity correction to the AN method. Uses iterative calculation because
-the correction term depends on sample size. Converges when the difference between
-successive iterations is less than or equal to 1.
+Adds Yates's continuity correction to the AN method.
 
 \strong{AS (Arcsine) Method:}
 Uses the variance-stabilizing arcsine transformation:
-\deqn{n_2 = \left\lceil \frac{(z_{1-\alpha} + z_{1-\beta})^2}{4(\sin^{-1}\sqrt{\pi_1} - \sin^{-1}\sqrt{\pi_2})^2} \times \frac{1 + \kappa}{\kappa} \right\rceil}
+\deqn{n_2 = \left\lceil \frac{(z_{1-\alpha} + z_{1-\beta})^2 (1 + \kappa)}{4(\sin^{-1}\sqrt{\pi_1} - \sin^{-1}\sqrt{\pi_2})^2} \right\rceil}
 
 \strong{ASc Method:}
-Applies continuity correction to the arcsine method. Uses iterative procedure
-with convergence criterion.
+Applies continuity correction to the arcsine method. The correction moves the
+two arms toward each other, and the variance is adjusted for the corrected
+proportions following Sozu et al. (2010).
 
 \strong{Fisher Method:}
 Fisher's exact test does not have a closed-form sample size formula. This method:
 \enumerate{
 \item Starts with the AN method's sample size as initial value
 \item Incrementally increases n2 by 1
-\item Calculates exact power using hypergeometric distribution
+\item Calculates exact power by summing the binomial probabilities over the
+rejection region
 \item Stops when power is greater than or equal to 1 - beta
+\item Steps back down while the target is still met, so that a starting value
+that already reached the target does not hide a smaller one
 }
 
 Note: Due to the saw-tooth nature of exact power (power does not increase

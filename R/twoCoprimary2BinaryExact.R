@@ -15,9 +15,10 @@
 #' @param power Target power (1 - beta). If NULL, will be calculated.
 #' @param r Allocation ratio (n1/n2). Required when calculating sample size.
 #' @param alpha One-sided significance level (typically 0.025 or 0.05)
-#' @param Test Test method: "Fisher" (Fisher's exact test), "Chisq"
-#'   (Chi-squared test), "Z-pooled" (Z-pooled exact unconditional test),
-#'   or "Boschloo" (Boschloo's exact unconditional test)
+#' @param Test Test method: "Chisq" (one-sided Pearson chi-squared test),
+#'   "Fisher" (Fisher's exact test), "Fisher-midP" (Fisher's mid-p test),
+#'   "Z-pool" (Z-pooled exact unconditional test), or "Boschloo" (Boschloo's
+#'   exact unconditional test)
 #'
 #' @param n_grid Number of grid points used to maximize the null tail probability
 #'   over the nuisance parameter in the two exact unconditional tests, that is

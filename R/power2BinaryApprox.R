@@ -120,6 +120,37 @@
 #' @importFrom stats qnorm
 power2BinaryApprox <- function(n1, n2, p11, p12, p21, p22, rho1, rho2, alpha, Test) {
 
+  # Input validation
+  if (length(n1) != 1 || length(n2) != 1) {
+    stop("n1 and n2 must be scalar values")
+  }
+  if (n1 <= 0 || n1 != round(n1)) {
+    stop("n1 must be a positive integer")
+  }
+  if (n2 <= 0 || n2 != round(n2)) {
+    stop("n2 must be a positive integer")
+  }
+  if (length(p11) != 1 || length(p12) != 1 || length(p21) != 1 ||
+      length(p22) != 1 || length(rho1) != 1 || length(rho2) != 1 ||
+      length(alpha) != 1) {
+    stop("All parameters must be scalar values")
+  }
+  if (p11 <= 0 || p11 >= 1 || p12 <= 0 || p12 >= 1 ||
+      p21 <= 0 || p21 >= 1 || p22 <= 0 || p22 >= 1) {
+    stop("All probabilities must be in (0, 1)")
+  }
+  if (alpha <= 0 || alpha >= 1) {
+    stop("alpha must be in (0, 1)")
+  }
+
+  # Validate the test method. Without this an unrecognized value falls through
+  # every branch below and the function fails with an internal error about a
+  # missing object rather than with a message the user can act on.
+  if (length(Test) != 1 || !(Test %in% c("AN", "ANc", "AS", "ASc"))) {
+    stop("Test must be one of: AN, ANc, AS, ASc. ",
+         "For the exact tests, use power2BinaryExact().")
+  }
+
   # Check that rho1 is within valid bounds
   bounds1 <- corrbound2Binary(p11, p12)
   if (rho1 < bounds1[1] | rho1 > bounds1[2]) {
@@ -203,6 +234,24 @@ power2BinaryApprox <- function(n1, n2, p11, p12, p21, p22, rho1, rho2, alpha, Te
       c1 <- -1 / (2 * n1)
       c2 <-  1 / (2 * n2)
 
+      # The correction moves each group by half of one subject, so at a small
+      # sample size it can carry a probability to or past 0 or 1, where the
+      # arcsine transformation is not defined and the corrected variance is
+      # zero. The corrected test does not exist there. Zero power is returned
+      # rather than NaN, or than the 0.5 that a zero variance would otherwise
+      # produce, so that the sequential searches calling this function stay
+      # well defined and no impossible power is ever reported.
+      p1_c <- c(p11, p12) + c1
+      p2_c <- c(p21, p22) + c2
+      if (any(p1_c <= 0 | p1_c >= 1 | p2_c <= 0 | p2_c >= 1)) {
+        result <- data.frame(
+          n1, n2, p11, p12, p21, p22, rho1, rho2, alpha, Test,
+          power1 = 0, power2 = 0, powerCoprimary = 0
+        )
+        class(result) <- c("twoCoprimary", "data.frame")
+        return(result)
+      }
+
       # Apply arcsine transformation with continuity correction
       delta_k <- '-'(
         asin(sqrt(c(p11, p12) + c1)),
@@ -232,8 +281,11 @@ power2BinaryApprox <- function(n1, n2, p11, p12, p21, p22, rho1, rho2, alpha, Te
   # Calculate power for individual endpoints
   power1and2 <- pnorm(c_val)
 
-  # Calculate power for co-primary endpoints
-  powerCoprimary <- pbivnorm(x = c_val[1], y = c_val[2], rho = rho)
+  # Calculate power for co-primary endpoints. With equal marginals on the two
+  # endpoints and a correlation at the Prentice bound the two test statistics
+  # coincide and the correlation between them reaches one, which pbivnorm does
+  # not evaluate. The limits there are the Frechet bounds of an intersection.
+  powerCoprimary <- .pbivnorm_safe(c_val[1], c_val[2], rho)
 
   # Return results as a data frame
   result <- data.frame(

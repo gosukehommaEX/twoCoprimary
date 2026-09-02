@@ -20,7 +20,9 @@
 #' Algorithm (Homma and Yoshida 2025, Algorithm 1):
 #' \itemize{
 #'   \item Step 1: Calculate power at initial sample size
-#'   \item Step 2a: If power >= target, decrease n2 until power < target, then add 1
+#'   \item Step 2a: If power >= target, decrease n2 until power < target, then
+#'     add 1. If the decrease reaches n2 = 1 with the power still at or above
+#'     target, n2 = 1 is returned
 #'   \item Step 2b: If power < target, increase n2 until power >= target
 #'   \item Step 3: Return final sample sizes
 #' }
@@ -51,8 +53,12 @@
       power <- power_fun(n1, n2, ...)[["powerCoprimary"]]
     }
 
-    # Add 1 back to get the minimum sample size that achieves target power
-    n2 <- n2 + 1
+    # Add 1 back to get the minimum sample size that achieves target power,
+    # unless the loop stopped at the floor of n2 = 1 with the power still at
+    # or above target, in which case n2 = 1 is already the minimum
+    if (power %<<% target_power) {
+      n2 <- n2 + 1
+    }
 
   } else {
 

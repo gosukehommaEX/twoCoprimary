@@ -67,8 +67,10 @@ ss1Continuous <- function(delta, sd, r, alpha, beta) {
   za <- qnorm(alpha)
   zb <- qnorm(beta)
 
-  # Calculate required sample size for group 2
-  n2 <- ceiling((1 + 1 / r) / delta ^ 2 * (za + zb) ^ 2 * sd ^ 2)
+  # Calculate required sample size for group 2. One subject is the floor: the
+  # closed form returns zero when the target power does not exceed the size of
+  # the test, and a design of no patients is not a sample size.
+  n2 <- max(1, ceiling((1 + 1 / r) / delta ^ 2 * (za + zb) ^ 2 * sd ^ 2))
 
   # Calculate sample size for group 1
   n1 <- ceiling(r * n2)

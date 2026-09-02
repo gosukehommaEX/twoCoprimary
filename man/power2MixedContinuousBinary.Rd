@@ -57,6 +57,7 @@ A data frame with the following columns:
 \item{rho}{Biserial correlation}
 \item{alpha}{One-sided significance level}
 \item{Test}{Testing method used for binary endpoint}
+\item{nMC}{Number of Monte Carlo replications (NA if Test != "Fisher")}
 \item{powerCont}{Power for the continuous endpoint alone}
 \item{powerBin}{Power for the binary endpoint alone}
 \item{powerCoprimary}{Power for both co-primary endpoints}

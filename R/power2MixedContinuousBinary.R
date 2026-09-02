@@ -33,6 +33,7 @@
 #'   \item{rho}{Biserial correlation}
 #'   \item{alpha}{One-sided significance level}
 #'   \item{Test}{Testing method used for binary endpoint}
+#'   \item{nMC}{Number of Monte Carlo replications (NA if Test != "Fisher")}
 #'   \item{powerCont}{Power for the continuous endpoint alone}
 #'   \item{powerBin}{Power for the binary endpoint alone}
 #'   \item{powerCoprimary}{Power for both co-primary endpoints}
@@ -142,6 +143,19 @@ power2MixedContinuousBinary <- function(n1, n2, delta, sd, p1, p2, rho, alpha, T
 
   # ===== FISHER'S EXACT TEST (MONTE CARLO SIMULATION) =====
   if (Test == "Fisher") {
+
+    # With fewer than three subjects in total the pooled variance of the
+    # continuous endpoint cannot be estimated, so the t test does not exist and
+    # the power is zero. Returning zero rather than failing keeps the
+    # sequential search well defined at its lower end, as in power2Continuous.
+    if (n1 + n2 - 2 < 1) {
+      result <- data.frame(
+        n1, n2, delta, sd, p1, p2, rho, alpha, Test, nMC,
+        powerCont = 0, powerBin = 0, powerCoprimary = 0
+      )
+      class(result) <- c("twoCoprimary", "data.frame")
+      return(result)
+    }
 
     # Following Sozu et al. (2012), the binary outcome is the dichotomization of
     # a standard normal latent variable at a threshold g_j that is specific to
@@ -287,6 +301,20 @@ power2MixedContinuousBinary <- function(n1, n2, delta, sd, p1, p2, rho, alpha, T
         p2C <- p2 + 1 / (2 * kappa * n1)
         thetacC <- thetaC - 1 / (2 * kappa * n1)
 
+        # The correction moves each group by half of one subject, so at a small
+        # sample size it can carry a probability to or past 0 or 1, where the
+        # arcsine transformation is not defined and the corrected variance is
+        # zero. The corrected test does not exist there, and zero power is
+        # returned rather than NaN, matching power2BinaryApprox.
+        if (p2T <= 0 || p2T >= 1 || p2C <= 0 || p2C >= 1) {
+          result <- data.frame(
+            n1, n2, delta, sd, p1, p2, rho, alpha, Test, nMC,
+            powerCont = powerCont, powerBin = 0, powerCoprimary = 0
+          )
+          class(result) <- c("twoCoprimary", "data.frame")
+          return(result)
+        }
+
         # Modified variance parameter (Table 1 in Supporting Info)
         vk_prime <- 0.5 * sqrt(
           '+'(
@@ -323,7 +351,7 @@ power2MixedContinuousBinary <- function(n1, n2, delta, sd, p1, p2, rho, alpha, T
 
     # ===== CO-PRIMARY POWER =====
     # Calculate power for co-primary endpoints using bivariate normal distribution
-    powerCoprimary <- pbivnorm(x = c_val_cont, y = c_val_binary, rho = gamma)
+    powerCoprimary <- .pbivnorm_safe(c_val_cont, c_val_binary, gamma)
 
   }
 

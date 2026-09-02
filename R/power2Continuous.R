@@ -102,8 +102,42 @@
 #' @export
 #' @importFrom pbivnorm pbivnorm
 #' @importFrom stats pnorm pt qt rWishart
+#' @importFrom mvtnorm rmvnorm
 power2Continuous <- function(n1, n2, delta1, delta2, sd1, sd2, rho, alpha,
                              known_var = TRUE, nMC = 1e+4) {
+
+  # Input validation, matching the other power functions of the package. Without
+  # it a negative standard deviation, a correlation outside (-1, 1) or a
+  # non-integer sample size are carried through the formula and returned as a
+  # number rather than refused.
+  if (length(n1) != 1 || length(n2) != 1) {
+    stop("n1 and n2 must be scalar values")
+  }
+  if (n1 <= 0 || n1 != round(n1)) {
+    stop("n1 must be a positive integer")
+  }
+  if (n2 <= 0 || n2 != round(n2)) {
+    stop("n2 must be a positive integer")
+  }
+  if (length(delta1) != 1 || length(delta2) != 1 || length(sd1) != 1 ||
+      length(sd2) != 1 || length(rho) != 1 || length(alpha) != 1) {
+    stop("All parameters must be scalar values")
+  }
+  if (sd1 <= 0 || sd2 <= 0) {
+    stop("sd1 and sd2 must be positive")
+  }
+  if (abs(rho) >= 1) {
+    stop("rho must be in (-1, 1)")
+  }
+  if (alpha <= 0 || alpha >= 1) {
+    stop("alpha must be in (0, 1)")
+  }
+  if (!is.logical(known_var) || length(known_var) != 1 || is.na(known_var)) {
+    stop("known_var must be logical (TRUE or FALSE)")
+  }
+  if (!known_var && (length(nMC) != 1 || !is.finite(nMC) || nMC < 1)) {
+    stop("nMC must be a single positive number")
+  }
 
   # Standard normal quantiles
   z_alpha <- qnorm(1 - alpha)
@@ -116,9 +150,6 @@ power2Continuous <- function(n1, n2, delta1, delta2, sd1, sd2, rho, alpha,
     # Set nMC to NA for known variance case
     nMC <- NA
 
-    # Standard normal quantiles
-    z_alpha <- qnorm(1 - alpha)
-
     # Critical values
     c_val <- -z_alpha + Z
 
@@ -126,12 +157,24 @@ power2Continuous <- function(n1, n2, delta1, delta2, sd1, sd2, rho, alpha,
     power1and2 <- pnorm(c_val)
 
     # Calculate power for co-primary endpoints using bivariate normal distribution
-    powerCoprimary <- pbivnorm(x = c_val[1], y = c_val[2], rho = rho)
+    powerCoprimary <- .pbivnorm_safe(c_val[1], c_val[2], rho)
 
   } else {
 
     # Calculate degrees of freedom for unknown variance case
     nu <- n1 + n2 - 2
+
+    # With fewer than three patients in total the variance cannot be estimated,
+    # so the t-test does not exist and the power is zero. Returning zero rather
+    # than failing keeps the sequential search well defined at its lower end.
+    if (nu < 1) {
+      result <- data.frame(
+        n1, n2, delta1, delta2, sd1, sd2, rho, alpha, known_var, nMC,
+        power1 = 0, power2 = 0, powerCoprimary = 0
+      )
+      class(result) <- c("twoCoprimary", "data.frame")
+      return(result)
+    }
 
     # Calculate power for individual endpoints using t-distribution
     power1and2 <- 1 - pt(qt(1 - alpha, nu), df = nu, ncp = Z)
@@ -144,12 +187,19 @@ power2Continuous <- function(n1, n2, delta1, delta2, sd1, sd2, rho, alpha,
     Sigma <- matrix(c(1, rho, rho, 1), nrow = 2)
 
     # Monte Carlo approach following Sozu et al. (2011) equation (6)
-    # Generate Wishart random matrices
-    Ws <- rWishart(nMC, df = nu, Sigma = Sigma)
-
-    # VECTORIZED: Extract diagonal elements efficiently
-    W11 <- Ws[1, 1, ]
-    W22 <- Ws[2, 2, ]
+    # Generate Wishart random matrices. Only the two diagonal entries are used
+    # below. rWishart refuses a single degree of freedom for a two by two scale
+    # matrix, although the Wishart matrix is defined there as the outer product
+    # of one normal draw, so that case is drawn directly.
+    if (nu >= 2) {
+      Ws <- rWishart(nMC, df = nu, Sigma = Sigma)
+      W11 <- Ws[1, 1, ]
+      W22 <- Ws[2, 2, ]
+    } else {
+      Zs <- rmvnorm(nMC, mean = c(0, 0), sigma = Sigma)
+      W11 <- Zs[, 1] ^ 2
+      W22 <- Zs[, 2] ^ 2
+    }
 
     # Pre-compute constants
     t_alpha <- qt(1 - alpha, df = nu)
@@ -160,10 +210,14 @@ power2Continuous <- function(n1, n2, delta1, delta2, sd1, sd2, rho, alpha,
     c_val2 <- -t_alpha * sqrt(W22) * sqrt_nu_inv + Z[2]
 
     # VECTORIZED: Use pbivnorm for all iterations at once
-    probs <- pbivnorm(x = c_val1, y = c_val2, rho = rho)
+    probs <- .pbivnorm_safe(c_val1, c_val2, rho)
 
-    # Average over all Monte Carlo iterations
-    powerCoprimary <- mean(probs)
+    # Average over all Monte Carlo iterations. The two marginal powers above are
+    # exact while this one is simulated, so at a small number of replications
+    # the simulated value can fall outside the interval the exact marginals
+    # allow. It is returned at the nearer end of that interval when it does.
+    powerCoprimary <- .clamp_coprimary(mean(probs), power1and2[1],
+                                       power1and2[2])
   }
 
   # Return results as a data frame

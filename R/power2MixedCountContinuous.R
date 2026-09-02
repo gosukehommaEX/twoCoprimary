@@ -45,7 +45,13 @@
 #' \deqn{\gamma = \sum_{j=0,1} \frac{n_0 \rho_j \sqrt{1+\lambda_j/\nu}}
 #'       {n_j \sqrt{\lambda_j V_a} \sqrt{(1+\kappa)/\kappa}}}
 #'
-#' where \eqn{\lambda_j = r_j \times t}.
+#' where \eqn{\lambda_j = r_j \times t} is the mean count in group j, and
+#' \eqn{r_j} is the event rate per unit time, which is distinct from the
+#' allocation ratio \code{r}. The formulas above are reproduced in the
+#' notation of the source article, which indexes the placebo group by 0 and
+#' writes \eqn{\kappa = n_1 / n_0}; in this package the same groups are
+#' \code{n1} (treatment) and \code{n2} (control) and \eqn{\kappa} equals
+#' the argument \code{r}.
 #'
 #' The correlation bounds are automatically checked using \code{\link{corrbound2MixedCountContinuous}}.
 #'
@@ -140,9 +146,6 @@ power2MixedCountContinuous <- function(n1, n2, r1, r2, nu, t, mu1, mu2, sd,
     stop("alpha must be in (0, 1)")
   }
 
-  # Calculate allocation ratio
-  kappa <- n1 / n2
-
   # Calculate lambda (expected number of events)
   lambda1 <- r1 * t
   lambda2 <- r2 * t
@@ -161,52 +164,11 @@ power2MixedCountContinuous <- function(n1, n2, r1, r2, nu, t, mu1, mu2, sd,
                 round(bounds2[2], 4), "]"))
   }
 
-  # Calculate variance components for count endpoint (equation 8)
-  Va <- (1 / t) * (1 / r2 + 1 / (kappa * r1)) + (1 + kappa) / (nu * kappa)
-  V0 <- Va  # Under H0
-
-  # Calculate treatment effects
-  delta <- mu1 - mu2
-  beta1 <- log(r1 / r2)  # Log rate ratio
-
-  # Standard normal quantiles
-  z_alpha <- qnorm(alpha)
-
-  # Calculate test statistics under alternative hypothesis
-  Z1 <- sqrt(n2 / V0) * beta1
-  Z2 <- delta / (sd * sqrt((1 + kappa) / (kappa * n2)))
-
-  # Critical values
-  c_val <- c(
-    z_alpha - sqrt(V0) * Z1 / sqrt(Va),
-    z_alpha - Z2
+  # The remaining computation is shared with the sequential search of
+  # ss2MixedCountContinuous, which validates the correlation bounds once and
+  # then calls the core directly at every candidate sample size.
+  .power2MixedCountContinuous_core(
+    n1 = n1, n2 = n2, r1 = r1, r2 = r2, nu = nu, t = t,
+    mu1 = mu1, mu2 = mu2, sd = sd, rho1 = rho1, rho2 = rho2, alpha = alpha
   )
-
-  # Calculate correlation between test statistics (equation 11)
-  gamma <- '+'(
-    '/'(
-      n2 * rho2 * sqrt(1 + lambda2 / nu),
-      n2 * sqrt(lambda2 * Va) * sqrt((1 + kappa) / kappa)
-    ),
-    '/'(
-      n2 * rho1 * sqrt(1 + lambda1 / nu),
-      n1 * sqrt(lambda1 * Va) * sqrt((1 + kappa) / kappa)
-    )
-  )
-
-  # Calculate power for individual endpoints
-  power1and2 <- pnorm(c_val)
-
-  # Calculate power for co-primary endpoints using bivariate normal distribution
-  # (equation 13 in Homma and Yoshida 2024)
-  powerCoprimary <- pbivnorm(x = c_val[1], y = c_val[2], rho = gamma)
-
-  # Return results as a data frame
-  result <- data.frame(
-    n1, n2, r1, r2, nu, t, mu1, mu2, sd, rho1, rho2, alpha,
-    powerCount = power1and2[1], powerCont = power1and2[2], powerCoprimary
-  )
-  class(result) <- c("twoCoprimary", "data.frame")
-
-  return(result)
 }

@@ -26,9 +26,15 @@
 #'   calculation. Default is 0.2 (power = 0.8).
 #' @param endpoint_type Character string specifying endpoint type:
 #'   "continuous", "binary", "mixed_cont_binary", or "mixed_count_cont".
-#' @param Test Test method for binary endpoints: "AN" (asymptotic normal),
-#'   "ANc" (with continuity correction), "AS" (arcsine), or "ASc". Default is
-#'   "AN". Only used for binary and mixed_cont_binary endpoints.
+#' @param Test Test method. For \code{endpoint_type = "binary"} the four
+#'   asymptotic methods "AN" (asymptotic normal), "ANc" (with continuity
+#'   correction), "AS" (arcsine) and "ASc" (arcsine with continuity
+#'   correction) route to the approximate functions, while "Chisq", "Fisher",
+#'   "Fisher-midP", "Z-pool" and "Boschloo" route to the exact functions and
+#'   are substantially more expensive. For
+#'   \code{endpoint_type = "mixed_cont_binary"} the four asymptotic methods
+#'   and "Fisher" are available. Default is "AN". Not used for the continuous
+#'   and mixed count-continuous endpoint types.
 #' @param known_var Logical indicating whether variance is known for continuous
 #'   endpoints. Default is TRUE.
 #' @param nMC Number of Monte Carlo simulations for certain calculations.
@@ -173,7 +179,7 @@ design_table <- function(param_grid,
     # Calculate for each row of param_grid
     col_values <- numeric(nrow(param_grid))
 
-    for (i in 1:nrow(param_grid)) {
+    for (i in seq_len(nrow(param_grid))) {
       params <- as.list(param_grid[i, ])
 
       # Check if rho is within valid bounds for this parameter combination
@@ -346,7 +352,7 @@ calculate_power_design_table <- function(params, rho, endpoint_type,
       delta = params$delta, sd = params$sd,
       p1 = params$p1, p2 = params$p2,
       rho = rho, alpha = alpha,
-      Test = Test
+      Test = Test, nMC = nMC
     )
 
   } else if (endpoint_type == "mixed_count_cont") {
@@ -405,7 +411,7 @@ calculate_ss_design_table <- function(params, rho, r, alpha, beta,
       p1 = params$p1, p2 = params$p2,
       rho = rho, r = r,
       alpha = alpha, beta = beta,
-      Test = Test
+      Test = Test, nMC = nMC
     )
 
   } else if (endpoint_type == "mixed_count_cont") {

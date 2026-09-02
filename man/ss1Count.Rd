@@ -7,7 +7,9 @@
 ss1Count(r1, r2, nu, t, r, alpha, beta)
 }
 \arguments{
-\item{r1}{Mean rate (events per unit time) for the treatment group}
+\item{r1}{Mean rate (events per unit time) for the treatment group, which
+must be less than \code{r2}, since a lower event rate is the treatment
+benefit of interest}
 
 \item{r2}{Mean rate (events per unit time) for the control group}
 

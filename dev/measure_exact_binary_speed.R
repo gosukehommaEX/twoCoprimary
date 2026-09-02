@@ -20,7 +20,7 @@
 # in O(n ^ 3) time and O(n ^ 2) memory.
 #
 # Run from the package root:
-#   source("dev/bench_exact_power.R")
+#   source("dev/measure_exact_binary_speed.R")
 #
 # Writes dev/out/exact_power_accuracy.csv, dev/out/exact_power_timing.csv and
 # dev/out/exact_power.log

@@ -1,3 +1,194 @@
+# twoCoprimary 1.1.1
+
+## Bug fixes
+
+* `plot()` no longer fails on a sample size object when `type = "power_curve"`
+  is requested. The reference-line block selected its branch on the presence of
+  an `n2` column, which both object shapes have, so a sample size object entered
+  the branch written for power objects and read a `powerCoprimary` column that
+  is not there. The branches now select on `powerCoprimary`, which distinguishes
+  the two shapes, and the branch already written for sample size objects is
+  reachable for the first time.
+
+* `plot()` no longer fails on a power object when `type = "sample_size_rho"` is
+  requested. A power object carries neither the allocation ratio `r`, the type
+  II error rate `beta` nor the total `N`. These are now derived from the columns
+  it does carry: the realized allocation `n1 / n2`, the achieved power as the
+  target, and the sum of the two group sizes.
+
+* `plot()` no longer fails on results from `ss2BinaryExact()` and
+  `power2BinaryExact()`. The plotting helpers passed the object's `Test` value
+  into the approximate binary functions, which do not accept the exact test
+  names, so the default call failed for every exact test. The helpers now route
+  exact test names to `power2BinaryExact()` and `ss2BinaryExact()`.
+
+* `power2BinaryApprox()` now validates `Test`. An unrecognized value previously
+  fell through every branch and the function failed with an internal error about
+  a missing object instead of a message naming the valid values.
+
+* `ss2MixedCountContinuous()` now requires `r1 < r2` and `mu1 < mu2`. Treatment
+  benefit on both endpoints is a lower value, so with the effects reversed the
+  power decreases as the sample size grows, no sample size attains the target,
+  and the sequential search did not terminate.
+
+* `power2Continuous()` with `known_var = FALSE` now returns zero power when
+  `n1 + n2 - 2 < 1` instead of failing inside `rWishart()`. The variance cannot
+  be estimated from fewer than three patients, so the t-test does not exist.
+  `ss2Continuous(known_var = FALSE)` previously failed for standardized effect
+  sizes above about 4 for this reason.
+
+* `plot()` on a result from `ss1Continuous()`, `ss1Count()` or
+  `ss1BinaryApprox()` now explains that the co-primary plot methods need a
+  two-endpoint result, rather than reporting that the endpoint type could not be
+  determined.
+
+* `ss1BinaryApprox()` returns the smallest sample size at which
+  `power2BinaryApprox()` attains the target power, for all four asymptotic
+  methods. The closed-form expression is kept only as the starting value of the
+  sequential search, so the size returned and the power reported by the package
+  can no longer disagree. Four faults are removed by the change. The arcsine
+  multiplier was `(1 + kappa) / kappa`, the form written for `kappa = n1 / n2`,
+  while the function defines `kappa = n2 / n1`, so at `r = 2` the function
+  returned roughly twice the required sample size. The `"ASc"` continuity
+  correction moved the two groups apart rather than toward each other, so it
+  reduced the sample size below the uncorrected value. The corrected methods
+  `"ANc"` and `"ASc"` solved their fixed point by an iteration that stopped once
+  two successive values differed by one, which can return a size that does not
+  satisfy its own correction and can cycle without terminating, for instance at
+  `p1` = 0.95, `p2` = 0.05 and `r` = 5. And the `"ASc"` variance was `1 / (4 n)`
+  rather than the corrected-proportion form of Sozu et al. (2012), Supporting
+  Information Table 1, which the power function uses; the two disagreed for
+  about half of the designs of that table. The twelve published `"ANc"` and
+  `"ASc"` single-endpoint sizes of Table S5 are now reproduced exactly.
+
+* `ss1BinaryApprox(Test = "Fisher")` steps back down after its upward search, so
+  the size returned is the smallest one attaining the target power rather than
+  the first one reached from the starting value.
+
+* `power2BinaryApprox(Test = "ASc")` returns zero power where the continuity
+  correction carries a probability out of `(0, 1)`, which happens at the
+  smallest sample sizes. The corrected variance then vanished or was negative,
+  and the reported power was one half or `NaN`.
+
+* `power2BinaryApprox()` evaluates the co-primary power at the Frechet bounds of
+  its two marginals when the correlation between the test statistics reaches
+  plus or minus one, rather than calling the bivariate normal distribution
+  function at a correlation it does not accept. The power is the smaller
+  marginal at plus one and the Bonferroni bound at minus one.
+
+* `power2MixedContinuousBinary(Test = "ASc")` gains the same guard on the
+  corrected proportions, and its `"Fisher"` branch returns zero power when
+  `n1 + n2 - 2 < 1` rather than dividing by zero degrees of freedom.
+
+* `power2Continuous()` validates its arguments. It previously accepted a
+  negative standard deviation, a group size of zero and a non-integer group
+  size, and returned a number for each.
+
+* `dbibinom()` returns the comonotone limit at the upper Prentice bound when the
+  two marginal probabilities are equal. The dependence parameter of the
+  bivariate binomial distribution diverges there and the returned masses were
+  `NaN`.
+
+* `ss1Count()` requires `r1 < r2`. With the two rates reversed the power
+  decreases as the sample size grows, so no sample size attains the target.
+
+* `rr1Binary(Test = "Z-pool")` and `rr1Binary(Test = "Boschloo")` build the
+  rejection region when a group has a single subject. Only one distinct value of
+  the ordering statistic is then ordered, and the grid of null probabilities was
+  simplified from a matrix to a vector, so the function failed with an error
+  about an incorrect number of dimensions.
+
+* `plot(type = "effect_contour")` grids standardized effect sizes, which is what
+  its axis labels state. It previously used a grid of mean differences and
+  labeled them as standardized, so the contours were misplaced for any standard
+  deviation other than one. The marked point is now on the same scale.
+
+* `plot(type = "power_curve")` no longer inverts its default window for a design
+  of fewer than twenty per group. The lower end of the window was a fixed floor
+  of ten, above the upper end for a small design.
+
+* `design_table()` now forwards `nMC` to the mixed continuous-binary functions.
+  The argument was documented and honored for continuous endpoints but silently
+  ignored on that path, which ran at the default of 10000 in the function it
+  calls.
+
+* The sequential search no longer adds one back to `n2` when the downward search
+  stops at `n2 = 1` with the power still at or above target.
+
+* `design_table()` uses `seq_len()` over the parameter grid, so a zero-row grid
+  no longer iterates.
+
+* `power2BinaryApprox()` now validates `n1`, `n2`, the four probabilities and
+  `alpha`, as `power2BinaryExact()` already did. A group size of zero or a
+  probability outside the unit interval previously returned a number rather
+  than a message.
+
+* `corrbound2MixedCountContinuous()` no longer depends on `mu` or `sd`. The
+  bounds are a correlation, which is invariant to the location and the scale of
+  the continuous endpoint, but they were computed by a quadrature over the whole
+  real line in the untransformed variable. That quadrature returns zero when the
+  mean lies far from the origin relative to the standard deviation: at `mu` of
+  -50 and `sd` of 0.5 both bounds collapsed to zero, and
+  `power2MixedCountContinuous()` and `ss2MixedCountContinuous()` then refused
+  every correlation, zero included. The integrals are taken in the standardized
+  variable instead.
+
+* `power2Continuous(known_var = FALSE)` returns a power for a design of three
+  patients in total. `rWishart()` requires as many degrees of freedom as the
+  dimension of its scale matrix, so `n1 + n2 - 2 = 1` failed inside it. The
+  Wishart matrix is the outer product of a single normal draw there, and only
+  its diagonal enters the calculation, so that case is drawn directly.
+
+* The bivariate normal distribution function is no longer evaluated at
+  arguments it cannot handle. A standardized effect of several hundred, which a
+  small standard deviation produces, sends an argument far enough into a tail
+  that `pbivnorm()` returns `NaN`, and the reported co-primary power was not a
+  number. The arguments are held at eight standard deviations, beyond which the
+  normal distribution function is zero or one to within 1e-15.
+
+* The co-primary power is held inside the interval that its two marginal powers
+  allow, in every power function that evaluates a bivariate normal distribution
+  function. Rounding could otherwise return a value a few times 1e-19 below
+  zero, and in `power2Continuous(known_var = FALSE)`, where the marginals are
+  exact and the joint probability is simulated, a small `nMC` could put the
+  simulated value above the smaller marginal.
+
+* `ss1Continuous()`, `ss1Count()` and `ss1BinaryApprox()` return at least one
+  subject per group. Their closed forms give zero when the target power does not
+  exceed the size of the test, at `alpha` of 0.1 and `beta` of 0.9 for instance,
+  and `ss1BinaryApprox()` then evaluated its power at a group of no patients.
+
+The two-endpoint sample size functions are unaffected by the `ss1BinaryApprox()`
+corrections, because they use it only as the starting value for a sequential
+search that converges to the minimum sample size from any starting point.
+
+## Performance
+
+* `ss2MixedCountContinuous()` evaluates the correlation bounds once instead of
+  twice at every step of its sequential search. The bounds are a quadrature over
+  the support of the negative binomial distribution and depend only on the
+  parameters held fixed by the search. A search at the default settings takes
+  about 0.2 seconds rather than about 2.7.
+
+## Documentation
+
+* `twoCoprimary2BinaryExact()` documented `Test = "Z-pooled"`, which the code
+  rejects, and omitted `"Fisher-midP"`, which it accepts.
+* `design_table()` now documents the five exact test methods it dispatches on.
+* `power2MixedContinuousBinary()` documents the `nMC` column it returns.
+* `power2MixedCountContinuous()` states that its formulas are reproduced in the
+  notation of the source article, and that the event rates `r1` and `r2` are
+  distinct from the allocation ratio `r`.
+* `ss2MixedCountContinuous()` writes the mean count as `lambda_j = r_j * t`.
+* `ss1BinaryApprox()` documents the requirement that `p1` exceed `p2`, and no
+  longer describes a binomial calculation as hypergeometric. Its arcsine
+  formula matches the implementation.
+* `plot()` documents the endpoint-specific default for `rho_range` and the cost
+  of `n_points` for exact and Monte Carlo based objects.
+* `ss1Count()` documents that `r1` must be less than `r2`.
+* `plot()` documents that the `"effect_contour"` axes are standardized effect
+  sizes.
+
 # twoCoprimary 1.1.0
 
 ## Bug fixes

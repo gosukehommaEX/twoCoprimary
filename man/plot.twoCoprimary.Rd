@@ -29,17 +29,24 @@ calculation functions}
 power calculation results)}
 \item{"sample_size_rho"}{Sample size as a function of correlation
 (default for sample size calculation results)}
-\item{"effect_contour"}{Contour plot showing combinations of effect
-sizes achieving target power}
+\item{"effect_contour"}{Contour plot showing combinations of
+standardized effect sizes achieving target power. The two axes, and
+the two columns of the returned data, are \eqn{\delta_k / \sigma_k}}
 }}
 
-\item{n_points}{Number of points to compute for the curve. Default is 50.}
+\item{n_points}{Number of points to compute for the curve. Default is 50.
+Each point runs a full calculation, so a smaller value is advisable for
+objects produced with an exact binary test or with Monte Carlo
+integration.}
 
 \item{n_range}{Sample size range for power_curve plot. If NULL, automatically
 determined from the object.}
 
-\item{rho_range}{Correlation range for sample_size_rho plot. Default is
-seq(0, 0.9, length.out = n_points).}
+\item{rho_range}{Correlation range for sample_size_rho plot. If NULL, the
+range is seq(0, 0.9, length.out = n_points) for continuous and mixed
+continuous-binary endpoints, and is derived from the Frechet-Hoeffding
+bounds of the supplied marginal parameters for binary and mixed
+count-continuous endpoints.}
 
 \item{col}{Line color. Default is "steelblue".}
 

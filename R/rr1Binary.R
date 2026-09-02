@@ -112,6 +112,20 @@ rr1Binary <- function(n1, n2, alpha, Test, n_grid = 100) {
          "the nuisance parameter and return an anti-conservative p-value")
   }
 
+  # Null cell probabilities of a set of outcome counts over the nuisance grid,
+  # as a matrix with one row per distinct count. sapply() simplifies to a plain
+  # vector when there is only one distinct count, which happens whenever a
+  # group has a single subject, and the row indexing below then fails, so the
+  # shape is fixed here rather than left to simplification.
+  .null_grid <- function(counts, n, n_grid) {
+    matrix(
+      vapply(seq(0, 1, length.out = n_grid),
+             function(theta) dbinom(counts, n, theta),
+             numeric(length(counts))),
+      nrow = length(counts), ncol = n_grid
+    )
+  }
+
   if ((Test == 'Chisq') | (Test == 'Z-pool')) {
 
     # Calculate test statistics for chi-squared test over all combinations
@@ -142,12 +156,13 @@ rr1Binary <- function(n1, n2, alpha, Test, n_grid = 100) {
       # Calculate P_H0(X1 = i, X2 = j | theta) for theta in [0, 1]
       # This is the probability under the null hypothesis as a function of theta
       uniq_i <- sort(unique(i))
-      dbinom_i <- sapply(seq(0, 1, l = n_grid), function(theta) dbinom(uniq_i, n1, theta))
+      dbinom_i <- .null_grid(uniq_i, n1, n_grid)
       uniq_j <- sort(unique(j))
-      dbinom_j <- sapply(seq(0, 1, l = n_grid), function(theta) dbinom(uniq_j, n2, theta))
+      dbinom_j <- .null_grid(uniq_j, n2, n_grid)
 
       # Joint probability for each (i, j) pair across all theta values
-      P_H0 <- dbinom_i[match(i, uniq_i), ] * dbinom_j[match(j, uniq_j), ]
+      P_H0 <- dbinom_i[match(i, uniq_i), , drop = FALSE] *
+        dbinom_j[match(j, uniq_j), , drop = FALSE]
 
       # Position of the last member of the tie group of each ordered outcome.
       # Outcomes sharing the same test statistic must receive the same tail
@@ -202,13 +217,15 @@ rr1Binary <- function(n1, n2, alpha, Test, n_grid = 100) {
 
       # Calculate P_H0(X1 = i, X2 = j | theta) for theta in [0, 1]
       uniq_i <- sort(unique(i))
-      dbinom_i <- sapply(seq(0, 1, l = n_grid), function(theta) dbinom(uniq_i, n1, theta))
+      dbinom_i <- .null_grid(uniq_i, n1, n_grid)
       uniq_j <- sort(unique(j))
-      dbinom_j <- sapply(seq(0, 1, l = n_grid), function(theta) dbinom(uniq_j, n2, theta))
+      dbinom_j <- .null_grid(uniq_j, n2, n_grid)
 
-      # Joint probability for each (i, j) pair
-      P_H0 <- dbinom_i[match(i, uniq_i) - min(match(i, uniq_i)) + 1, ] *
-        dbinom_j[match(j, uniq_j), ]
+      # Joint probability for each (i, j) pair. Every element of i appears in
+      # uniq_i, so match() already returns 1 for the smallest of them and no
+      # further shift is needed.
+      P_H0 <- dbinom_i[match(i, uniq_i), , drop = FALSE] *
+        dbinom_j[match(j, uniq_j), , drop = FALSE]
 
       # Position of the last member of the tie group of each ordered outcome
       idx_last <- .tie_last(p_fisher_posi[order_p_fisher_posi])
