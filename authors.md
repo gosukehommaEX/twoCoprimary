@@ -11,13 +11,13 @@ Source:
 [`DESCRIPTION`](https://github.com/gosukehommaEX/twoCoprimary/blob/main/DESCRIPTION)
 
 Homma G (2026). *twoCoprimary: Sample Size and Power Calculation for Two
-Co-Primary Endpoints*. R package version 1.1.0,
+Co-Primary Endpoints*. R package version 1.1.1,
 <https://gosukehommaex.github.io/twoCoprimary/>.
 
     @Manual{,
       title = {twoCoprimary: Sample Size and Power Calculation for Two Co-Primary Endpoints},
       author = {Gosuke Homma},
       year = {2026},
-      note = {R package version 1.1.0},
+      note = {R package version 1.1.1},
       url = {https://gosukehommaex.github.io/twoCoprimary/},
     }

@@ -135,7 +135,9 @@ where:
 
 - $`\hat{\beta}_{1} = \log(\bar{X}_{1,1}) - \log(\bar{X}_{2,1})`$ is the
   log rate ratio
-- $`\text{Var}(\hat{\beta}_{1}) = \frac{1}{n_{2}}\left[\frac{1}{t}\left(\frac{1}{\lambda_{2}} + \frac{1}{r\lambda_{1}}\right) + \frac{1+r}{\nu r}\right] = \frac{V_{a}}{n_{2}}`$
+- $`\text{Var}(\hat{\beta}_{1}) = \frac{1}{n_{2}}\left[\frac{1}{t}\left(\frac{1}{r_{2}} + \frac{1}{r r_{1}}\right) + \frac{1+r}{\nu r}\right] = \frac{V_{a}}{n_{2}}`$,
+  where $`r_{1}`$ and $`r_{2}`$ are the event rates and
+  $`r = n_{1}/n_{2}`$ is the allocation ratio
 
 **Continuous endpoint**:
 
@@ -181,7 +183,7 @@ For **balanced design** ($`r = 1`$) with **common correlation**
 The overall power is (Equation 10 in Homma and Yoshida, 2024):
 
 ``` math
-1 - \beta = \text{P}(Z_{1} < z_{\alpha} \cap Z_{2} < z_{\alpha} \mid \text{H}_{1})
+1 - \beta = \Pr(Z_{1} < z_{\alpha} \cap Z_{2} < z_{\alpha} \mid \text{H}_{1})
 ```
 
 Using the bivariate normal CDF $`\Phi_{2}`$:
@@ -251,8 +253,8 @@ $`\nu = 3`$ and $`\nu = 5`$.
 
 **Design parameters for Case B**:
 
-- Count rates: $`r_{2} = 1`$, $`r_{1} = 2`$, $`t = 1`$ →
-  $`\lambda_{2} = 1`$, $`\lambda_{1} = 2`$
+- Count rates: $`r_{1} = 1`$, $`r_{2} = 2`$, $`t = 1`$ →
+  $`\lambda_{1} = 1`$, $`\lambda_{2} = 2`$
 - Dispersion: $`\nu = 3`$ and $`5`$
 - Continuous means: $`\mu_{2} = 0`$, $`\mu_{1} = -50`$ (negative
   indicates less decline)

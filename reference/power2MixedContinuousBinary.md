@@ -117,6 +117,10 @@ A data frame with the following columns:
 
   Testing method used for binary endpoint
 
+- nMC:
+
+  Number of Monte Carlo replications (NA if Test != "Fisher")
+
 - powerCont:
 
   Power for the continuous endpoint alone

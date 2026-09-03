@@ -66,7 +66,7 @@ for endpoint $`k`$, and 0 otherwise.
 
 **True response probabilities**:
 ``` math
-p_{j,k} = \text{P}(X_{i,j,k} = 1)
+p_{j,k} = \Pr(X_{i,j,k} = 1)
 ```
 
 where $`0 < p_{j,k} < 1`$ for each $`j`$ and $`k`$.
@@ -85,14 +85,14 @@ outcomes:
 - $`p_{j}^{(0,0)} = 1 - p_{j,1} - p_{j,2} + \phi_{j}`$: Both endpoints
   unsuccessful
 
-where $`\phi_{j} = \text{P}(X_{i,j,1} = 1, X_{i,j,2} = 1)`$.
+where $`\phi_{j} = \Pr(X_{i,j,1} = 1, X_{i,j,2} = 1)`$.
 
-Let $`Z_{j}^{(\ell,m)}`$ denote the random variable representing the
+Let $`N_{j}^{(\ell,m)}`$ denote the random variable representing the
 number of times $`\{(X_{i,j,1}, X_{i,j,2}) : i = 1, \ldots, n_{j}\}`$
 takes the value $`(\ell, m)`$ for $`\ell, m \in \{0, 1\}`$. Then:
 
 ``` math
-(Z_{j}^{(0,0)}, Z_{j}^{(1,0)}, Z_{j}^{(0,1)}, Z_{j}^{(1,1)}) \sim \text{Multinomial}(n_{j}; p_{j}^{(0,0)}, p_{j}^{(1,0)}, p_{j}^{(0,1)}, p_{j}^{(1,1)})
+(N_{j}^{(0,0)}, N_{j}^{(1,0)}, N_{j}^{(0,1)}, N_{j}^{(1,1)}) \sim \text{Multinomial}(n_{j}; p_{j}^{(0,0)}, p_{j}^{(1,0)}, p_{j}^{(0,1)}, p_{j}^{(1,1)})
 ```
 
 ### Number of Responders
@@ -100,8 +100,8 @@ takes the value $`(\ell, m)`$ for $`\ell, m \in \{0, 1\}`$. Then:
 Let $`Y_{j,k} = \sum_{i=1}^{n_{j}} X_{i,j,k}`$ represent the number of
 responders in group $`j`$ for endpoint $`k`$. Then:
 
-- $`Y_{j,1} = Z_{j}^{(1,1)} + Z_{j}^{(1,0)}`$
-- $`Y_{j,2} = Z_{j}^{(1,1)} + Z_{j}^{(0,1)}`$
+- $`Y_{j,1} = N_{j}^{(1,1)} + N_{j}^{(1,0)}`$
+- $`Y_{j,2} = N_{j}^{(1,1)} + N_{j}^{(0,1)}`$
 
 ### Bivariate Binomial Distribution
 
@@ -113,13 +113,17 @@ distribution**:
 (Y_{j,1}, Y_{j,2}) \sim \text{BiBin}(n_{j}, p_{j,1}, p_{j,2}, \gamma_{j})
 ```
 
-where $`\gamma_{j}`$ is a dependence parameter related to the
-correlation $`\rho_{j}`$ between $`X_{i,j,1}`$ and $`X_{i,j,2}`$.
+where $`\gamma_{j}`$ is the dependence parameter of the bivariate
+binomial distribution, related to the correlation $`\rho_{j}`$ between
+$`X_{i,j,1}`$ and $`X_{i,j,2}`$ as given below. It is not the
+correlation between test statistics that appears in the vignettes for
+the asymptotic methods, since the exact tests do not pass through a
+bivariate normal approximation.
 
 **Probability mass function** (Equation 3 in Homma and Yoshida, 2025):
 
 ``` math
-\text{P}(Y_{j,1} = y_{j,1}, Y_{j,2} = y_{j,2} \mid n_{j}, p_{j,1}, p_{j,2}, \gamma_{j}) = f(y_{j,1} \mid n_{j}, p_{j,1}) \times g(y_{j,2} \mid y_{j,1}, n_{j}, p_{j,1}, p_{j,2}, \gamma_{j})
+\Pr(Y_{j,1} = y_{j,1}, Y_{j,2} = y_{j,2} \mid n_{j}, p_{j,1}, p_{j,2}, \gamma_{j}) = f(y_{j,1} \mid n_{j}, p_{j,1}) \times g(y_{j,2} \mid y_{j,1}, n_{j}, p_{j,1}, p_{j,2}, \gamma_{j})
 ```
 For more details, please see Homma and Yoshida (2025).
 
@@ -179,12 +183,12 @@ test:
 
 **For endpoint 1**:
 ``` math
-\text{H}_{0}^{(1)}: p_{1,1} \leq p_{2,1} \text{ vs. } \text{H}_{1}^{(1)}: p_{1,1} > p_{2,1}
+\text{H}_{01}: p_{1,1} \leq p_{2,1} \text{ vs. } \text{H}_{11}: p_{1,1} > p_{2,1}
 ```
 
 **For endpoint 2**:
 ``` math
-\text{H}_{0}^{(2)}: p_{1,2} \leq p_{2,2} \text{ vs. } \text{H}_{1}^{(2)}: p_{1,2} > p_{2,2}
+\text{H}_{02}: p_{1,2} \leq p_{2,2} \text{ vs. } \text{H}_{12}: p_{1,2} > p_{2,2}
 ```
 
 ### Co-Primary Endpoints (Intersection-Union Test)
@@ -192,17 +196,16 @@ test:
 The trial succeeds only if superiority is demonstrated for **both**
 endpoints simultaneously:
 
-**Null hypothesis**:
-$`\text{H}_{0} = \text{H}_{0}^{(1)} \cup \text{H}_{0}^{(2)}`$ (at least
-one null is true)
+**Null hypothesis**: $`\text{H}_{0} = \text{H}_{01} \cup \text{H}_{02}`$
+(at least one null is true)
 
 **Alternative hypothesis**:
-$`\text{H}_{1} = \text{H}_{1}^{(1)} \cap \text{H}_{1}^{(2)}`$ (both
-alternatives are true)
+$`\text{H}_{1} = \text{H}_{11} \cap \text{H}_{12}`$ (both alternatives
+are true)
 
 **Decision rule**: Reject $`\text{H}_{0}`$ at level $`\alpha`$ if and
-only if **both** $`\text{H}_{0}^{(1)}`$ and $`\text{H}_{0}^{(2)}`$ are
-rejected at level $`\alpha`$ without multiplicity adjustment.
+only if **both** $`\text{H}_{01}`$ and $`\text{H}_{02}`$ are rejected at
+level $`\alpha`$ without multiplicity adjustment.
 
 ## Statistical Tests
 
@@ -222,7 +225,7 @@ where:
 - $`\hat{p}_{k} = \frac{n_{1} \hat{p}_{1,k} + n_{2} \hat{p}_{2,k}}{n_{1} + n_{2}}`$
   is the pooled proportion
 
-Reject $`\text{H}_{0}^{(k)}`$ if $`Z(y_{1,k}, y_{2,k}) > z_{1-\alpha}`$,
+Reject $`\text{H}_{0k}`$ if $`Z(y_{1,k}, y_{2,k}) > z_{1-\alpha}`$,
 where $`z_{1-\alpha}`$ is the $`(1-\alpha)`$-quantile of the standard
 normal distribution.
 
@@ -231,7 +234,7 @@ normal distribution.
 **Conditional test**: Conditions on the total number of successes
 $`y_{1,k} + y_{2,k}`$.
 
-Under $`\text{H}_{0}^{(k)}`$, $`Y_{1,k}`$ follows a hypergeometric
+Under $`\text{H}_{0k}`$, $`Y_{1,k}`$ follows a hypergeometric
 distribution given $`Y_{1,k} + Y_{2,k} = y_{k}`$.
 
 **One-sided p-value**:
@@ -240,7 +243,7 @@ distribution given $`Y_{1,k} + Y_{2,k} = y_{k}`$.
 p_{k}^{\text{Fisher}} = \sum_{y=y_{1,k}}^{\min(n_{1}, y_{k})} \frac{\binom{n_{1}}{y} \binom{n_{2}}{y_{k} - y}}{\binom{n_{1} + n_{2}}{y_{k}}}
 ```
 
-Reject $`\text{H}_{0}^{(k)}`$ if $`p_{k}^{\text{Fisher}} < \alpha`$.
+Reject $`\text{H}_{0k}`$ if $`p_{k}^{\text{Fisher}} < \alpha`$.
 
 ### Method 3: Fisher’s Mid-P Test (Fisher-midP)
 
@@ -288,8 +291,9 @@ $`p`$-value. Accumulating the null probabilities along an ordering of
 the outcomes without grouping the ties would give the earlier members of
 a tie group a smaller $`p`$-value than the later ones, and which member
 comes first would depend on an arbitrary sort order. Ties are common: at
-$`n_{1} = n_{2} = 40`$ roughly half of the outcomes with a positive
-$`Z`$ statistic share their value with another outcome.
+$`n_{1} = n_{2} = 40`$ the 820 outcomes with a positive $`Z`$ statistic
+take only 404 distinct values, so all but 18 of them share their value
+with at least one other outcome.
 
 ### The nuisance parameter grid
 
@@ -307,9 +311,10 @@ A coarse grid can only understate the maximum, so it can only make the
 $`p`$-value smaller and the rejection region larger. In practice the
 default is ample: for $`n_{1} = n_{2} = 20`$ and $`40`$ at
 $`\alpha = 0.025`$, the rejection regions of both unconditional tests
-are identical for every grid size from 25 to 4000 points. Cost grows
-roughly in proportion to `n_grid`, so a finer grid is inexpensive to try
-when a design sits close to a decision boundary.
+are identical at 25, 50, 100, 200, 400 and 800 points and at a reference
+grid of 4000. Cost grows roughly in proportion to `n_grid`, so a finer
+grid is inexpensive to try when a design sits close to a decision
+boundary.
 
 ``` r
 
@@ -329,7 +334,7 @@ The exact power for test method $`A`$ is (Equation 9 in Homma and
 Yoshida, 2025):
 
 ``` math
-\text{power}_{A}(\boldsymbol{\theta}) = \text{P}\left[\bigcap_{k=1}^{2} \{p_{A}(y_{1,k}, y_{2,k}) < \alpha\} \mid \text{H}_{1}\right]
+\text{power}_{A}(\boldsymbol{\theta}) = \Pr\left[\bigcap_{k=1}^{2} \{p_{A}(y_{1,k}, y_{2,k}) < \alpha\} \mid \text{H}_{1}\right]
 ```
 
 ``` math

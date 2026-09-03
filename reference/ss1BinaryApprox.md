@@ -13,7 +13,8 @@ ss1BinaryApprox(p1, p2, r, alpha, beta, Test = "AN")
 
 - p1:
 
-  True probability of responders in group 1 (0 \< p1 \< 1)
+  True probability of responders in group 1 (0 \< p1 \< 1). Must be
+  greater than `p2`, since the design is a superiority trial
 
 - p2:
 
@@ -112,6 +113,16 @@ endpoint**. For co-primary endpoints, use
 
 - delta = p1 - p2: treatment effect
 
+All four asymptotic methods return the smallest \\n_2\\ whose realized
+group sizes reach the target power under
+[`power2BinaryApprox`](https://gosukehommaex.github.io/twoCoprimary/reference/power2BinaryApprox.md)
+with both endpoints set to the same marginal. The closed forms below
+give the starting value of that search. They are not used as the answer,
+because they assume that \\n_1\\ is exactly \\r n_2\\, whereas \\n_1\\
+is rounded up to an integer, and because for the two continuity
+corrected methods the correction depends on the sample size being solved
+for.
+
 **AN (Asymptotic Normal) Method:** Uses the standard normal
 approximation with pooled variance under H0: \$\$n_2 = \left\lceil
 \frac{(1 + \kappa)}{(\pi_1 - \pi_2)^2} \left(z\_{1-\alpha}
@@ -119,18 +130,16 @@ approximation with pooled variance under H0: \$\$n_2 = \left\lceil
 \pi_2\theta_2}\right)^2 / \kappa \right\rceil\$\$ where \\\bar{\pi} =
 (r\pi_1 + \pi_2)/(1 + r)\\ is the pooled proportion.
 
-**ANc Method:** Adds continuity correction to the AN method. Uses
-iterative calculation because the correction term depends on sample
-size. Converges when the difference between successive iterations is
-less than or equal to 1.
+**ANc Method:** Adds Yates's continuity correction to the AN method.
 
 **AS (Arcsine) Method:** Uses the variance-stabilizing arcsine
 transformation: \$\$n_2 = \left\lceil \frac{(z\_{1-\alpha} +
-z\_{1-\beta})^2}{4(\sin^{-1}\sqrt{\pi_1} - \sin^{-1}\sqrt{\pi_2})^2}
-\times \frac{1 + \kappa}{\kappa} \right\rceil\$\$
+z\_{1-\beta})^2 (1 + \kappa)}{4(\sin^{-1}\sqrt{\pi_1} -
+\sin^{-1}\sqrt{\pi_2})^2} \right\rceil\$\$
 
-**ASc Method:** Applies continuity correction to the arcsine method.
-Uses iterative procedure with convergence criterion.
+**ASc Method:** Applies continuity correction to the arcsine method. The
+correction moves the two arms toward each other, and the variance is
+adjusted for the corrected proportions following Sozu et al. (2010).
 
 **Fisher Method:** Fisher's exact test does not have a closed-form
 sample size formula. This method:
@@ -139,9 +148,13 @@ sample size formula. This method:
 
 2.  Incrementally increases n2 by 1
 
-3.  Calculates exact power using hypergeometric distribution
+3.  Calculates exact power by summing the binomial probabilities over
+    the rejection region
 
 4.  Stops when power is greater than or equal to 1 - beta
+
+5.  Steps back down while the target is still met, so that a starting
+    value that already reached the target does not hide a smaller one
 
 Note: Due to the saw-tooth nature of exact power (power does not
 increase monotonically with sample size), a sequential search approach
@@ -207,9 +220,9 @@ ss1BinaryApprox(p1 = 0.65, p2 = 0.45, r = 1, alpha = 0.025, beta = 0.1, Test = "
 #> 
 #> Sample size calculation for single binary endpoint
 #> 
-#>              n1 = 121
-#>              n2 = 121
-#>               N = 242
+#>              n1 = 139
+#>              n2 = 139
+#>               N = 278
 #>               p = 0.65, 0.45
 #>      allocation = 1
 #>           alpha = 0.025

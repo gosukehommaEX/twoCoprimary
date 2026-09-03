@@ -107,12 +107,12 @@ For each endpoint $`k`$, the test statistic is:
 
 **Known variance case**:
 ``` math
-Z_{k} = \frac{\bar{X}_{1k} - \bar{X}_{2k}}{\sigma_{k}\sqrt{\frac{1}{n_{1}} + \frac{1}{n_{2}}}}
+Z_{k} = \frac{\bar{X}_{1,k} - \bar{X}_{2,k}}{\sigma_{k}\sqrt{\frac{1}{n_{1}} + \frac{1}{n_{2}}}}
 ```
 
 **Unknown variance case**:
 ``` math
-T_{k} = \frac{\bar{X}_{1k} - \bar{X}_{2k}}{s_{k}\sqrt{\frac{1}{n_{1}} + \frac{1}{n_{2}}}}
+T_{k} = \frac{\bar{X}_{1,k} - \bar{X}_{2,k}}{s_{k}\sqrt{\frac{1}{n_{1}} + \frac{1}{n_{2}}}}
 ```
 
 where $`s_{k}`$ is the pooled sample standard deviation for endpoint
@@ -129,7 +129,7 @@ asymptotically follows a bivariate normal distribution:
 
 where:
 
-- $`\omega_{k} = \delta_{k}\sqrt{\frac{r n_{2}}{1 + r}}`$ is the
+- $`\omega_{k} = \delta_{k}^{\ast}\sqrt{\frac{r n_{2}}{1 + r}}`$ is the
   non-centrality parameter for endpoint $`k`$
 - $`\gamma = \rho`$ is the correlation between test statistics
 
@@ -318,7 +318,9 @@ Table 1: Sample Sizes Per Group (Sozu et al. 2011, alpha = 0.025, power
   ($`\delta_{1}^{\ast}, \delta_{2}^{\ast}`$)
 - Columns show sample size per group for different correlations
   ($`\rho = 0, 0.3, 0.5, 0.8`$)
-- Higher correlation leads to smaller required sample sizes
+- Higher correlation leads to smaller required sample sizes, except
+  where one endpoint needs so many more patients than the other that it
+  alone fixes the size
 - When $`\delta_{1} = \delta_{2}`$ (equal effect sizes), the benefit of
   correlation is more pronounced
 

@@ -152,7 +152,9 @@ used:
 **Negative Binomial Distribution:** The count endpoint follows a
 negative binomial distribution NB(lambda, nu) where:
 
-- lambda = r \* t is the mean count
+- lambda_j = r_j \* t is the mean count in group j, where r_j is the
+  event rate per unit time and t the follow-up period. Note that r_j is
+  distinct from the allocation ratio r = n1/n2
 
 - nu is the dispersion parameter
 

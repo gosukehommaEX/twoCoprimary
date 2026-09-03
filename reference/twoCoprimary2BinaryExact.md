@@ -73,9 +73,10 @@ twoCoprimary2BinaryExact(
 
 - Test:
 
-  Test method: "Fisher" (Fisher's exact test), "Chisq" (Chi-squared
-  test), "Z-pooled" (Z-pooled exact unconditional test), or "Boschloo"
-  (Boschloo's exact unconditional test)
+  Test method: "Chisq" (one-sided Pearson chi-squared test), "Fisher"
+  (Fisher's exact test), "Fisher-midP" (Fisher's mid-p test), "Z-pool"
+  (Z-pooled exact unconditional test), or "Boschloo" (Boschloo's exact
+  unconditional test)
 
 - n_grid:
 

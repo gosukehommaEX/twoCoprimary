@@ -25,7 +25,7 @@ as described in Homma and Yoshida (2024)."><meta property="og:image" content="ht
 
     <a class="navbar-brand me-2" href="../index.html">twoCoprimary</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -76,7 +76,9 @@ as described in Homma and Yoshida (2024).</p>
 
 
 <dl><dt id="arg-r-">r1<a class="anchor" aria-label="anchor" href="#arg-r-"></a></dt>
-<dd><p>Mean rate (events per unit time) for the treatment group</p></dd>
+<dd><p>Mean rate (events per unit time) for the treatment group, which
+must be less than <code>r2</code>, since a lower event rate is the treatment
+benefit of interest</p></dd>
 
 
 <dt id="arg-r-">r2<a class="anchor" aria-label="anchor" href="#arg-r-"></a></dt>

@@ -23,7 +23,7 @@ single binary endpoint using various statistical testing methods."><meta propert
 
     <a class="navbar-brand me-2" href="../index.html">twoCoprimary</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -73,7 +73,8 @@ single binary endpoint using various statistical testing methods.</p>
 
 
 <dl><dt id="arg-p-">p1<a class="anchor" aria-label="anchor" href="#arg-p-"></a></dt>
-<dd><p>True probability of responders in group 1 (0 &lt; p1 &lt; 1)</p></dd>
+<dd><p>True probability of responders in group 1 (0 &lt; p1 &lt; 1). Must be
+greater than <code>p2</code>, since the design is a superiority trial</p></dd>
 
 
 <dt id="arg-p-">p2<a class="anchor" aria-label="anchor" href="#arg-p-"></a></dt>
@@ -144,27 +145,36 @@ methods) or <code><a href="ss2BinaryExact.html">ss2BinaryExact</a></code> (for e
 <li><p>p1, p2: response probabilities</p></li>
 <li><p>theta1 = 1 - p1, theta2 = 1 - p2: non-response probabilities</p></li>
 <li><p>delta = p1 - p2: treatment effect</p></li>
-</ul><p><strong>AN (Asymptotic Normal) Method:</strong>
+</ul><p>All four asymptotic methods return the smallest \(n_2\) whose realized
+group sizes reach the target power under <code><a href="power2BinaryApprox.html">power2BinaryApprox</a></code>
+with both endpoints set to the same marginal. The closed forms below give the
+starting value of that search. They are not used as the answer, because they
+assume that \(n_1\) is exactly \(r n_2\), whereas \(n_1\) is rounded
+up to an integer, and because for the two continuity corrected methods the
+correction depends on the sample size being solved for.</p>
+<p><strong>AN (Asymptotic Normal) Method:</strong>
 Uses the standard normal approximation with pooled variance under H0:
 $$n_2 = \left\lceil \frac{(1 + \kappa)}{(\pi_1 - \pi_2)^2}
       \left(z_{1-\alpha} \sqrt{\bar{\pi}(1-\bar{\pi})} +
       z_{1-\beta} \sqrt{\kappa\pi_1\theta_1 + \pi_2\theta_2}\right)^2 / \kappa \right\rceil$$
 where \(\bar{\pi} = (r\pi_1 + \pi_2)/(1 + r)\) is the pooled proportion.</p>
 <p><strong>ANc Method:</strong>
-Adds continuity correction to the AN method. Uses iterative calculation because
-the correction term depends on sample size. Converges when the difference between
-successive iterations is less than or equal to 1.</p>
+Adds Yates's continuity correction to the AN method.</p>
 <p><strong>AS (Arcsine) Method:</strong>
 Uses the variance-stabilizing arcsine transformation:
-$$n_2 = \left\lceil \frac{(z_{1-\alpha} + z_{1-\beta})^2}{4(\sin^{-1}\sqrt{\pi_1} - \sin^{-1}\sqrt{\pi_2})^2} \times \frac{1 + \kappa}{\kappa} \right\rceil$$</p>
+$$n_2 = \left\lceil \frac{(z_{1-\alpha} + z_{1-\beta})^2 (1 + \kappa)}{4(\sin^{-1}\sqrt{\pi_1} - \sin^{-1}\sqrt{\pi_2})^2} \right\rceil$$</p>
 <p><strong>ASc Method:</strong>
-Applies continuity correction to the arcsine method. Uses iterative procedure
-with convergence criterion.</p>
+Applies continuity correction to the arcsine method. The correction moves the
+two arms toward each other, and the variance is adjusted for the corrected
+proportions following Sozu et al. (2010).</p>
 <p><strong>Fisher Method:</strong>
 Fisher's exact test does not have a closed-form sample size formula. This method:</p><ol><li><p>Starts with the AN method's sample size as initial value</p></li>
 <li><p>Incrementally increases n2 by 1</p></li>
-<li><p>Calculates exact power using hypergeometric distribution</p></li>
+<li><p>Calculates exact power by summing the binomial probabilities over the
+rejection region</p></li>
 <li><p>Stops when power is greater than or equal to 1 - beta</p></li>
+<li><p>Steps back down while the target is still met, so that a starting value
+that already reached the target does not hide a smaller one</p></li>
 </ol><p>Note: Due to the saw-tooth nature of exact power (power does not increase
 monotonically with sample size), a sequential search approach is used.
 The incremental approach ensures the minimum sample size that achieves the
@@ -229,9 +239,9 @@ Medicine</em>, 29(21), 2169-2179.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Sample size calculation for single binary endpoint</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              n1 = 121</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              n2 = 121</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>               N = 242</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>              n1 = 139</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>              n2 = 139</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>               N = 278</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>               p = 0.65, 0.45</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      allocation = 1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>           alpha = 0.025</span>

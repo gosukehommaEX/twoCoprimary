@@ -71,7 +71,7 @@ corrbound2MixedCountContinuous(lambda = 1.25, nu = 0.8, mu = 0, sd = 250)
 # Higher dispersion parameter
 corrbound2MixedCountContinuous(lambda = 2.0, nu = 2.0, mu = 50, sd = 200)
 #>    L_bound    U_bound 
-#> -0.9209669  0.9209671 
+#> -0.9209669  0.9209669 
 
 # Different follow-up time
 corrbound2MixedCountContinuous(lambda = 1.0 * 2, nu = 1.0, mu = 0, sd = 300)

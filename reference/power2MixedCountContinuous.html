@@ -25,7 +25,7 @@ in Homma and Yoshida (2024)."><meta property="og:image" content="https://gosukeh
 
     <a class="navbar-brand me-2" href="../index.html">twoCoprimary</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -187,14 +187,22 @@ in Homma and Yoshida (2024).</p>
 </dl></div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>The test statistics are (equation 7 in Homma and Yoshida 2024):
+    <p>The formulas below are those of Homma and Yoshida (2024), written in the
+indexing used throughout this package: group 1 is the treatment group and
+group 2 is the control group, and \(\kappa = n_1 / n_2\) is the argument
+<code>r</code>. The source article indexes the control group by 0 instead.</p>
+<p>The test statistics are (equation 7 in Homma and Yoshida 2024):
 $$Z_1 = \frac{\hat{\beta}_1}{\sqrt{Var(\hat{\beta}_1)}}, \quad
-      Z_2 = \frac{\hat{\delta}}{\sigma\sqrt{(1+\kappa)/(\kappa n_0)}}$$</p>
+      Z_2 = \frac{\hat{\delta}}{\sigma\sqrt{(1+\kappa)/(\kappa n_2)}}$$</p>
 <p>The joint distribution of (Z1, Z2) follows an asymptotic bivariate normal
 distribution with correlation gamma (equation 11):
-$$\gamma = \sum_{j=0,1} \frac{n_0 \rho_j \sqrt{1+\lambda_j/\nu}}
+$$\gamma = \sum_{j=1}^{2} \frac{n_2 \rho_j \sqrt{1+\lambda_j/\nu}}
       {n_j \sqrt{\lambda_j V_a} \sqrt{(1+\kappa)/\kappa}}$$</p>
-<p>where \(\lambda_j = r_j \times t\).</p>
+<p>where \(\lambda_j = r_j \times t\) is the mean count in group j,
+\(r_j\) is the event rate per unit time, which is distinct from the
+allocation ratio <code>r</code>, and \(V_a\) is the variance component of
+equation 8, \((1/t)(1/r_2 + 1/(\kappa r_1)) + (1+\kappa)/(\nu \kappa)\),
+so that \(Var(\hat{\beta}_1) = V_a / n_2\).</p>
 <p>The correlation bounds are automatically checked using <code><a href="corrbound2MixedCountContinuous.html">corrbound2MixedCountContinuous</a></code>.</p>
     </div>
     <div class="section level2">

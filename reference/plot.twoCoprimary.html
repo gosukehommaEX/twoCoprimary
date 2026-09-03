@@ -25,7 +25,7 @@ the input object."><meta property="og:image" content="https://gosukehommaex.gith
 
     <a class="navbar-brand me-2" href="../index.html">twoCoprimary</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -104,15 +104,19 @@ power calculation results)</p></dd>
 (default for sample size calculation results)</p></dd>
 
 <dt>"effect_contour"</dt>
-<dd><p>Contour plot showing combinations of effect
-sizes achieving target power</p></dd>
+<dd><p>Contour plot showing combinations of
+standardized effect sizes achieving target power. The two axes, and
+the two columns of the returned data, are \(\delta_k / \sigma_k\)</p></dd>
 
 
 </dl></dd>
 
 
 <dt id="arg-n-points">n_points<a class="anchor" aria-label="anchor" href="#arg-n-points"></a></dt>
-<dd><p>Number of points to compute for the curve. Default is 50.</p></dd>
+<dd><p>Number of points to compute for the curve. Default is 50.
+Each point runs a full calculation, so a smaller value is advisable for
+objects produced with an exact binary test or with Monte Carlo
+integration.</p></dd>
 
 
 <dt id="arg-n-range">n_range<a class="anchor" aria-label="anchor" href="#arg-n-range"></a></dt>
@@ -121,8 +125,11 @@ determined from the object.</p></dd>
 
 
 <dt id="arg-rho-range">rho_range<a class="anchor" aria-label="anchor" href="#arg-rho-range"></a></dt>
-<dd><p>Correlation range for sample_size_rho plot. Default is
-seq(0, 0.9, length.out = n_points).</p></dd>
+<dd><p>Correlation range for sample_size_rho plot. If NULL, the
+range is seq(0, 0.9, length.out = n_points) for continuous and mixed
+continuous-binary endpoints, and is derived from the Frechet-Hoeffding
+bounds of the supplied marginal parameters for binary and mixed
+count-continuous endpoints.</p></dd>
 
 
 <dt id="arg-col">col<a class="anchor" aria-label="anchor" href="#arg-col"></a></dt>

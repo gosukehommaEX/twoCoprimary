@@ -25,7 +25,7 @@ to achieve a specified power at a given significance level."><meta property="og:
 
     <a class="navbar-brand me-2" href="../index.html">twoCoprimary</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -188,7 +188,9 @@ co-primary endpoints following the methodology in Homma and Yoshida (2024).</p>
 <li><p>If power &lt; target: increase n2 until power &gt;= target</p></li>
 </ul><p><strong>Step 3:</strong> Return final sample sizes.</p>
 <p><strong>Negative Binomial Distribution:</strong>
-The count endpoint follows a negative binomial distribution NB(lambda, nu) where:</p><ul><li><p>lambda = r * t is the mean count</p></li>
+The count endpoint follows a negative binomial distribution NB(lambda, nu) where:</p><ul><li><p>lambda_j = r_j * t is the mean count in group j, where r_j is the
+event rate per unit time and t the follow-up period. Note that r_j is
+distinct from the allocation ratio r = n1/n2</p></li>
 <li><p>nu is the dispersion parameter</p></li>
 <li><p>Variance = lambda + lambda^2 / nu</p></li>
 </ul><p><strong>Correlation:</strong>

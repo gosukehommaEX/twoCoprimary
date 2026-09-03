@@ -39,7 +39,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">twoCoprimary</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -175,7 +175,7 @@ denote the success probability for outcome
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math>
 in group
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>j</mi><annotation encoding="application/x-tex">j</annotation></semantics></math>:</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mi>k</mi></mrow></msub><mo>=</mo><mtext mathvariant="normal">P</mtext><mo stretchy="false" form="prefix">(</mo><msub><mi>X</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mi>k</mi></mrow></msub><mo>=</mo><mn>1</mn><mo stretchy="false" form="postfix">)</mo><mo>,</mo><mspace width="1.0em"></mspace><mi>k</mi><mo>=</mo><mn>1</mn><mo>,</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">p_{j,k} = \text{P}(X_{i,j,k} = 1), \quad k = 1, 2</annotation></semantics></math></p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mi>k</mi></mrow></msub><mo>=</mo><mrow><mi mathvariant="normal">Pr</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><msub><mi>X</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mi>k</mi></mrow></msub><mo>=</mo><mn>1</mn><mo stretchy="false" form="postfix">)</mo><mo>,</mo><mspace width="1.0em"></mspace><mi>k</mi><mo>=</mo><mn>1</mn><mo>,</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">p_{j,k} = \Pr(X_{i,j,k} = 1), \quad k = 1, 2</annotation></semantics></math></p>
 <p>For details on the joint distribution of
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><msub><mi>X</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mn>1</mn></mrow></msub><mo>,</mo><msub><mi>X</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mn>2</mn></mrow></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(X_{i,j,1}, X_{i,j,2})</annotation></semantics></math>,
 see Homma and Yoshida (2025) Section 2.1 or Sozu et al. (2010).</p>
@@ -190,7 +190,7 @@ between the two binary outcomes in group
 is defined as (Homma and Yoshida, 2025):</p>
 <p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>ρ</mi><mi>j</mi></msub><mo>=</mo><mtext mathvariant="normal">Cor</mtext><mo stretchy="false" form="prefix">(</mo><msub><mi>X</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mn>1</mn></mrow></msub><mo>,</mo><msub><mi>X</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mn>2</mn></mrow></msub><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mfrac><mrow><msub><mi>ϕ</mi><mi>j</mi></msub><mo>−</mo><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mn>1</mn></mrow></msub><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mn>2</mn></mrow></msub></mrow><msqrt><mrow><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mn>1</mn></mrow></msub><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mn>1</mn></mrow></msub><mo stretchy="false" form="postfix">)</mo><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mn>2</mn></mrow></msub><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mi>p</mi><mrow><mi>j</mi><mo>,</mo><mn>2</mn></mrow></msub><mo stretchy="false" form="postfix">)</mo></mrow></msqrt></mfrac></mrow><annotation encoding="application/x-tex">\rho_j = \text{Cor}(X_{i,j,1}, X_{i,j,2}) = \frac{\phi_j - p_{j,1}p_{j,2}}{\sqrt{p_{j,1}(1-p_{j,1})p_{j,2}(1-p_{j,2})}}</annotation></semantics></math></p>
 <p>where
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>ϕ</mi><mi>j</mi></msub><mo>=</mo><mtext mathvariant="normal">P</mtext><mo stretchy="false" form="prefix">(</mo><msub><mi>X</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mn>1</mn></mrow></msub><mo>=</mo><mn>1</mn><mo>,</mo><msub><mi>X</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mn>2</mn></mrow></msub><mo>=</mo><mn>1</mn><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\phi_j = \text{P}(X_{i,j,1} = 1, X_{i,j,2} = 1)</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>ϕ</mi><mi>j</mi></msub><mo>=</mo><mrow><mi mathvariant="normal">Pr</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><msub><mi>X</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mn>1</mn></mrow></msub><mo>=</mo><mn>1</mn><mo>,</mo><msub><mi>X</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mn>2</mn></mrow></msub><mo>=</mo><mn>1</mn><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\phi_j = \Pr(X_{i,j,1} = 1, X_{i,j,2} = 1)</annotation></semantics></math>
 is the joint probability that both outcomes are successful.</p>
 <p><strong>Practical interpretation</strong>:
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>ρ</mi><mi>j</mi></msub><mo>&gt;</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">\rho_{j} &gt; 0</annotation></semantics></math>
@@ -314,9 +314,9 @@ is applied <strong>(Equation 5 in Sozu et al., 2010)</strong>:</p>
 <math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>s</mi><mi>e</mi><mo>=</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><msqrt><mrow><mfrac><mn>1</mn><msub><mi>n</mi><mn>1</mn></msub></mfrac><mo>+</mo><mfrac><mn>1</mn><msub><mi>n</mi><mn>2</mn></msub></mfrac></mrow></msqrt></mrow><annotation encoding="application/x-tex">se = \frac{1}{2}\sqrt{\frac{1}{n_1} + \frac{1}{n_2}}</annotation></semantics></math></p>
 <p><strong>Power formula</strong>:</p>
 <p>Let
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>δ</mi><mi>k</mi><mtext mathvariant="normal">AS</mtext></msubsup><mo>=</mo><mrow><mi mathvariant="normal">arcsin</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><msqrt><msub><mi>p</mi><mrow><mn>1</mn><mi>k</mi></mrow></msub></msqrt><mo stretchy="false" form="postfix">)</mo><mo>−</mo><mrow><mi mathvariant="normal">arcsin</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><msqrt><msub><mi>p</mi><mrow><mn>2</mn><mi>k</mi></mrow></msub></msqrt><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\delta_k^\text{AS} = \arcsin(\sqrt{p_{1k}}) - \arcsin(\sqrt{p_{2k}})</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>δ</mi><mi>k</mi><mtext mathvariant="normal">AS</mtext></msubsup><mo>=</mo><mrow><mi mathvariant="normal">arcsin</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><msqrt><msub><mi>p</mi><mrow><mn>1</mn><mo>,</mo><mi>k</mi></mrow></msub></msqrt><mo stretchy="false" form="postfix">)</mo><mo>−</mo><mrow><mi mathvariant="normal">arcsin</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><msqrt><msub><mi>p</mi><mrow><mn>2</mn><mo>,</mo><mi>k</mi></mrow></msub></msqrt><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\delta_{k}^{\text{AS}} = \arcsin(\sqrt{p_{1,k}}) - \arcsin(\sqrt{p_{2,k}})</annotation></semantics></math>,
 then:</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mtext mathvariant="normal">Power</mtext><mi>k</mi></msub><mo>=</mo><mi mathvariant="normal">Φ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mfrac><msubsup><mi>δ</mi><mi>k</mi><mtext mathvariant="normal">AS</mtext></msubsup><mrow><mi>s</mi><mi>e</mi></mrow></mfrac><mo>−</mo><msub><mi>z</mi><mrow><mn>1</mn><mo>−</mo><mi>α</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\text{Power}_k = \Phi\left(\frac{\delta_k^\text{AS}}{se} - z_{1-\alpha}\right)</annotation></semantics></math></p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mtext mathvariant="normal">Power</mtext><mi>k</mi></msub><mo>=</mo><mi mathvariant="normal">Φ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mfrac><msubsup><mi>δ</mi><mi>k</mi><mtext mathvariant="normal">AS</mtext></msubsup><mrow><mi>s</mi><mi>e</mi></mrow></mfrac><mo>−</mo><msub><mi>z</mi><mrow><mn>1</mn><mo>−</mo><mi>α</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\text{Power}_{k} = \Phi\left(\frac{\delta_{k}^{\text{AS}}}{se} - z_{1-\alpha}\right)</annotation></semantics></math></p>
 </div>
 <div class="section level4">
 <h4 id="method-4-arcsine-transformation-with-continuity-correction-asc">Method 4: Arcsine Transformation with Continuity Correction
@@ -361,7 +361,7 @@ approximation formulas, see Sozu et al. (2010) and Homma and Yoshida
 </h3>
 <p>The overall power (probability of rejecting both null hypotheses)
 is:</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>−</mo><mi>β</mi><mo>=</mo><mtext mathvariant="normal">P</mtext><mo stretchy="false" form="prefix">(</mo><msub><mi>Z</mi><mn>1</mn></msub><mo>&gt;</mo><msub><mi>z</mi><mrow><mn>1</mn><mo>−</mo><mi>α</mi></mrow></msub><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> and </mtext><mspace width="0.333em"></mspace></mrow><msub><mi>Z</mi><mn>2</mn></msub><mo>&gt;</mo><msub><mi>z</mi><mrow><mn>1</mn><mo>−</mo><mi>α</mi></mrow></msub><mo>∣</mo><msub><mtext mathvariant="normal">H</mtext><mn>1</mn></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">1 - \beta = \text{P}(Z_1 &gt; z_{1-\alpha} \text{ and } Z_2 &gt; z_{1-\alpha} \mid \text{H}_1)</annotation></semantics></math></p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>−</mo><mi>β</mi><mo>=</mo><mrow><mi mathvariant="normal">Pr</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><msub><mi>Z</mi><mn>1</mn></msub><mo>&gt;</mo><msub><mi>z</mi><mrow><mn>1</mn><mo>−</mo><mi>α</mi></mrow></msub><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> and </mtext><mspace width="0.333em"></mspace></mrow><msub><mi>Z</mi><mn>2</mn></msub><mo>&gt;</mo><msub><mi>z</mi><mrow><mn>1</mn><mo>−</mo><mi>α</mi></mrow></msub><mo>∣</mo><msub><mtext mathvariant="normal">H</mtext><mn>1</mn></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">1 - \beta = \Pr(Z_1 &gt; z_{1-\alpha} \text{ and } Z_2 &gt; z_{1-\alpha} \mid \text{H}_1)</annotation></semantics></math></p>
 <p>Using the bivariate normal distribution:</p>
 <p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>−</mo><mi>β</mi><mo>=</mo><msub><mi mathvariant="normal">Φ</mi><mn>2</mn></msub><mo stretchy="false" form="prefix">(</mo><mi>−</mi><msub><mi>z</mi><mrow><mn>1</mn><mo>−</mo><mi>α</mi></mrow></msub><mo>+</mo><msub><mi>ω</mi><mn>1</mn></msub><mo>,</mo><mi>−</mi><msub><mi>z</mi><mrow><mn>1</mn><mo>−</mo><mi>α</mi></mrow></msub><mo>+</mo><msub><mi>ω</mi><mn>2</mn></msub><mo>∣</mo><mi>γ</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">1 - \beta = \Phi_2(-z_{1-\alpha} + \omega_1, -z_{1-\alpha} + \omega_2 \mid \gamma)</annotation></semantics></math></p>
 <p>where
@@ -646,11 +646,15 @@ Endpoints (α = 0.025, 1-β = 0.80)<sup>a,b</sup>
 correction; ANc: Asymptotic normal test with continuity correction; AS:
 Arcsine transformation without continuity correction; ASc: Arcsine
 transformation with continuity correction.</p>
-<p><sup>b</sup> Some values may differ by 1-2 subjects from Sozu et
-al. (2010) Table III due to numerical differences in computing the
-bivariate normal cumulative distribution function between SAS and R
-implementations. Power calculations at the reported sample sizes confirm
-the accuracy of the values presented here.</p>
+<p><sup>b</sup> The twelve values in the block printed at
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>p</mi><mrow><mn>1</mn><mo>,</mo><mn>1</mn></mrow></msub><mo>=</mo><mn>0.87</mn></mrow><annotation encoding="application/x-tex">p_{1,1} = 0.87</annotation></semantics></math>
+fall one subject (AN) or two subjects (ANc, AS and ASc) below Sozu et
+al. (2010) Table III. Every other value in the table reproduces that
+table exactly. Recomputing the block at
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>p</mi><mrow><mn>1</mn><mo>,</mo><mn>1</mn></mrow></msub><mo>=</mo><mn>0.868</mn></mrow><annotation encoding="application/x-tex">p_{1,1} = 0.868</annotation></semantics></math>
+reproduces all twelve published values with no deviation, so the article
+evidently computed it at a value near 0.868 and printed it rounded to
+two decimals.</p>
 <div class="section level3">
 <h3 id="key-findings">Key Findings<a class="anchor" aria-label="anchor" href="#key-findings"></a>
 </h3>
@@ -681,8 +685,8 @@ slightly larger when the probabilities are close to one</li>
 <strong>ASc</strong>: Larger than AS by the continuity
 correction</li>
 <li>
-<strong>ANc</strong>: Largest sample size of the four, and the most
-conservative</li>
+<strong>ANc</strong>: Largest sample size of the four, or equal to
+ASc, and the most conservative</li>
 </ul>
 </div>
 </div>

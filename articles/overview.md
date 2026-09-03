@@ -88,23 +88,35 @@ Under the alternative hypothesis $`\text{H}_{1}`$, the overall power is:
 ```
 
 When $`(Z_{1}, Z_{2})`$ follow a bivariate normal distribution with
-correlation $`\rho`$:
+correlation $`\gamma`$:
 
 ``` math
-1 - \beta = \Phi_{2}(-z_{1-\alpha} + \omega_{1}, -z_{1-\alpha} + \omega_{2} \mid \rho)
+1 - \beta = \Phi_{2}(-z_{1-\alpha} + \omega_{1}, -z_{1-\alpha} + \omega_{2} \mid \gamma)
 ```
 
 where:
 
-- $`\Phi_{2}(\cdot, \cdot \mid \rho)`$ is the bivariate normal
-  cumulative distribution function with correlation $`\rho`$
+- $`\Phi_{2}(\cdot, \cdot \mid \gamma)`$ is the bivariate normal
+  cumulative distribution function with correlation $`\gamma`$
 - $`\omega_{1}`$ and $`\omega_{2}`$ are the non-centrality parameters
   under $`\text{H}_{1}`$
 
+### Two Correlations
+
+Two correlations must be kept apart. The patient-level correlation
+$`\rho`$ describes the association between the raw outcomes measured on
+the same patient, and it is the quantity supplied through the `rho`
+argument. The test-statistic-level correlation $`\gamma`$ is what enters
+the power formula above. The two coincide only for two continuous
+endpoints under a common correlation assumption across groups, where
+$`\gamma = \rho`$. For the remaining four combinations $`\gamma`$ is a
+function of $`\rho`$ and of the marginal parameters, and the package
+carries out the mapping internally.
+
 ### Impact of Correlation
 
-The correlation $`\rho`$ between test statistics affects the overall
-power:
+The patient-level correlation $`\rho`$ affects the overall power through
+$`\gamma`$:
 
 - **Positive correlation** ($`\rho > 0`$): Increases power and reduces
   required sample size
@@ -115,9 +127,11 @@ power:
 **Key insight**: Accounting for positive correlation between endpoints
 reduces the required sample size compared to assuming independence. How
 much depends on the endpoint types and on how similar the individual
-powers are: across the scenarios in these vignettes the reduction ranges
-from about 2% to about 11% as $`\rho`$ moves from 0 to 0.8, and it is
-largest when the two endpoints carry comparable effect sizes.
+powers are: across the tables in these vignettes the reduction as
+$`\rho`$ moves from 0 to 0.8 reaches about 11% where the two endpoints
+carry comparable effect sizes, is a few per cent where they do not, and
+disappears once one endpoint needs so many more patients than the other
+that it alone fixes the sample size.
 
 ## Supported Endpoint Types
 
@@ -451,18 +465,18 @@ statistics. When endpoints are positively correlated:
 1.  **Test statistics tend to move together**: If $`Z_{1}`$ is large,
     $`Z_{2}`$ is also likely to be large
 2.  **Higher probability of rejecting both nulls**:
-    $`\Pr(Z_{1} > c, Z_{2} > c)`$ increases with $`\rho`$
+    $`\Pr(Z_{1} > c, Z_{2} > c)`$ increases with $`\gamma`$
 3.  **Sample size reduction**: Fewer subjects needed to achieve target
     power
 
 Mathematically, for bivariate normal $`(Z_{1}, Z_{2})`$ with correlation
-$`\rho`$:
+$`\gamma`$:
 
 ``` math
-\Pr(Z_{1} > c, Z_{2} > c \mid \rho) > \Pr(Z_{1} > c, Z_{2} > c \mid \rho = 0)
+\Pr(Z_{1} > c, Z_{2} > c \mid \gamma) > \Pr(Z_{1} > c, Z_{2} > c \mid \gamma = 0)
 ```
 
-when $`\rho > 0`$ and both endpoints have positive treatment effects.
+when $`\gamma > 0`$ and both endpoints have positive treatment effects.
 
 ## Choosing the Right Method
 

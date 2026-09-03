@@ -39,7 +39,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">twoCoprimary</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -191,15 +191,15 @@ the overall power is:</p>
 <p>When
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><msub><mi>Z</mi><mn>1</mn></msub><mo>,</mo><msub><mi>Z</mi><mn>2</mn></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(Z_{1}, Z_{2})</annotation></semantics></math>
 follow a bivariate normal distribution with correlation
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>ρ</mi><annotation encoding="application/x-tex">\rho</annotation></semantics></math>:</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>−</mo><mi>β</mi><mo>=</mo><msub><mi mathvariant="normal">Φ</mi><mn>2</mn></msub><mo stretchy="false" form="prefix">(</mo><mi>−</mi><msub><mi>z</mi><mrow><mn>1</mn><mo>−</mo><mi>α</mi></mrow></msub><mo>+</mo><msub><mi>ω</mi><mn>1</mn></msub><mo>,</mo><mi>−</mi><msub><mi>z</mi><mrow><mn>1</mn><mo>−</mo><mi>α</mi></mrow></msub><mo>+</mo><msub><mi>ω</mi><mn>2</mn></msub><mo>∣</mo><mi>ρ</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">1 - \beta = \Phi_{2}(-z_{1-\alpha} + \omega_{1}, -z_{1-\alpha} + \omega_{2} \mid \rho)</annotation></semantics></math></p>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>γ</mi><annotation encoding="application/x-tex">\gamma</annotation></semantics></math>:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>−</mo><mi>β</mi><mo>=</mo><msub><mi mathvariant="normal">Φ</mi><mn>2</mn></msub><mo stretchy="false" form="prefix">(</mo><mi>−</mi><msub><mi>z</mi><mrow><mn>1</mn><mo>−</mo><mi>α</mi></mrow></msub><mo>+</mo><msub><mi>ω</mi><mn>1</mn></msub><mo>,</mo><mi>−</mi><msub><mi>z</mi><mrow><mn>1</mn><mo>−</mo><mi>α</mi></mrow></msub><mo>+</mo><msub><mi>ω</mi><mn>2</mn></msub><mo>∣</mo><mi>γ</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">1 - \beta = \Phi_{2}(-z_{1-\alpha} + \omega_{1}, -z_{1-\alpha} + \omega_{2} \mid \gamma)</annotation></semantics></math></p>
 <p>where:</p>
 <ul>
 <li>
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi mathvariant="normal">Φ</mi><mn>2</mn></msub><mo stretchy="false" form="prefix">(</mo><mi>⋅</mi><mo>,</mo><mi>⋅</mi><mo>∣</mo><mi>ρ</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\Phi_{2}(\cdot, \cdot \mid \rho)</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi mathvariant="normal">Φ</mi><mn>2</mn></msub><mo stretchy="false" form="prefix">(</mo><mi>⋅</mi><mo>,</mo><mi>⋅</mi><mo>∣</mo><mi>γ</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\Phi_{2}(\cdot, \cdot \mid \gamma)</annotation></semantics></math>
 is the bivariate normal cumulative distribution function with
 correlation
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>ρ</mi><annotation encoding="application/x-tex">\rho</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>γ</mi><annotation encoding="application/x-tex">\gamma</annotation></semantics></math>
 </li>
 <li>
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>ω</mi><mn>1</mn></msub><annotation encoding="application/x-tex">\omega_{1}</annotation></semantics></math>
@@ -211,11 +211,32 @@ are the non-centrality parameters under
 </ul>
 </div>
 <div class="section level3">
+<h3 id="two-correlations">Two Correlations<a class="anchor" aria-label="anchor" href="#two-correlations"></a>
+</h3>
+<p>Two correlations must be kept apart. The patient-level correlation
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>ρ</mi><annotation encoding="application/x-tex">\rho</annotation></semantics></math>
+describes the association between the raw outcomes measured on the same
+patient, and it is the quantity supplied through the <code>rho</code>
+argument. The test-statistic-level correlation
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>γ</mi><annotation encoding="application/x-tex">\gamma</annotation></semantics></math>
+is what enters the power formula above. The two coincide only for two
+continuous endpoints under a common correlation assumption across
+groups, where
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>γ</mi><mo>=</mo><mi>ρ</mi></mrow><annotation encoding="application/x-tex">\gamma = \rho</annotation></semantics></math>.
+For the remaining four combinations
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>γ</mi><annotation encoding="application/x-tex">\gamma</annotation></semantics></math>
+is a function of
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>ρ</mi><annotation encoding="application/x-tex">\rho</annotation></semantics></math>
+and of the marginal parameters, and the package carries out the mapping
+internally.</p>
+</div>
+<div class="section level3">
 <h3 id="impact-of-correlation">Impact of Correlation<a class="anchor" aria-label="anchor" href="#impact-of-correlation"></a>
 </h3>
-<p>The correlation
+<p>The patient-level correlation
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>ρ</mi><annotation encoding="application/x-tex">\rho</annotation></semantics></math>
-between test statistics affects the overall power:</p>
+affects the overall power through
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>γ</mi><annotation encoding="application/x-tex">\gamma</annotation></semantics></math>:</p>
 <ul>
 <li>
 <strong>Positive correlation</strong>
@@ -233,11 +254,13 @@ Decreases power and increases required sample size</li>
 <p><strong>Key insight</strong>: Accounting for positive correlation
 between endpoints reduces the required sample size compared to assuming
 independence. How much depends on the endpoint types and on how similar
-the individual powers are: across the scenarios in these vignettes the
-reduction ranges from about 2% to about 11% as
+the individual powers are: across the tables in these vignettes the
+reduction as
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>ρ</mi><annotation encoding="application/x-tex">\rho</annotation></semantics></math>
-moves from 0 to 0.8, and it is largest when the two endpoints carry
-comparable effect sizes.</p>
+moves from 0 to 0.8 reaches about 11% where the two endpoints carry
+comparable effect sizes, is a few per cent where they do not, and
+disappears once one endpoint needs so many more patients than the other
+that it alone fixes the sample size.</p>
 </div>
 </div>
 <div class="section level2">
@@ -577,7 +600,7 @@ is also likely to be large</li>
 <strong>Higher probability of rejecting both nulls</strong>:
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">Pr</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><msub><mi>Z</mi><mn>1</mn></msub><mo>&gt;</mo><mi>c</mi><mo>,</mo><msub><mi>Z</mi><mn>2</mn></msub><mo>&gt;</mo><mi>c</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\Pr(Z_{1} &gt; c, Z_{2} &gt; c)</annotation></semantics></math>
 increases with
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>ρ</mi><annotation encoding="application/x-tex">\rho</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>γ</mi><annotation encoding="application/x-tex">\gamma</annotation></semantics></math>
 </li>
 <li>
 <strong>Sample size reduction</strong>: Fewer subjects needed to
@@ -586,10 +609,10 @@ achieve target power</li>
 <p>Mathematically, for bivariate normal
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><msub><mi>Z</mi><mn>1</mn></msub><mo>,</mo><msub><mi>Z</mi><mn>2</mn></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(Z_{1}, Z_{2})</annotation></semantics></math>
 with correlation
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>ρ</mi><annotation encoding="application/x-tex">\rho</annotation></semantics></math>:</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">Pr</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><msub><mi>Z</mi><mn>1</mn></msub><mo>&gt;</mo><mi>c</mi><mo>,</mo><msub><mi>Z</mi><mn>2</mn></msub><mo>&gt;</mo><mi>c</mi><mo>∣</mo><mi>ρ</mi><mo stretchy="false" form="postfix">)</mo><mo>&gt;</mo><mrow><mi mathvariant="normal">Pr</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><msub><mi>Z</mi><mn>1</mn></msub><mo>&gt;</mo><mi>c</mi><mo>,</mo><msub><mi>Z</mi><mn>2</mn></msub><mo>&gt;</mo><mi>c</mi><mo>∣</mo><mi>ρ</mi><mo>=</mo><mn>0</mn><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\Pr(Z_{1} &gt; c, Z_{2} &gt; c \mid \rho) &gt; \Pr(Z_{1} &gt; c, Z_{2} &gt; c \mid \rho = 0)</annotation></semantics></math></p>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>γ</mi><annotation encoding="application/x-tex">\gamma</annotation></semantics></math>:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">Pr</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><msub><mi>Z</mi><mn>1</mn></msub><mo>&gt;</mo><mi>c</mi><mo>,</mo><msub><mi>Z</mi><mn>2</mn></msub><mo>&gt;</mo><mi>c</mi><mo>∣</mo><mi>γ</mi><mo stretchy="false" form="postfix">)</mo><mo>&gt;</mo><mrow><mi mathvariant="normal">Pr</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><msub><mi>Z</mi><mn>1</mn></msub><mo>&gt;</mo><mi>c</mi><mo>,</mo><msub><mi>Z</mi><mn>2</mn></msub><mo>&gt;</mo><mi>c</mi><mo>∣</mo><mi>γ</mi><mo>=</mo><mn>0</mn><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\Pr(Z_{1} &gt; c, Z_{2} &gt; c \mid \gamma) &gt; \Pr(Z_{1} &gt; c, Z_{2} &gt; c \mid \gamma = 0)</annotation></semantics></math></p>
 <p>when
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ρ</mi><mo>&gt;</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">\rho &gt; 0</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>γ</mi><mo>&gt;</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">\gamma &gt; 0</annotation></semantics></math>
 and both endpoints have positive treatment effects.</p>
 </div>
 </div>

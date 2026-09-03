@@ -69,7 +69,7 @@ indicates failure for outcome $`k`$.
 probability for outcome $`k`$ in group $`j`$:
 
 ``` math
-p_{j,k} = \text{P}(X_{i,j,k} = 1), \quad k = 1, 2
+p_{j,k} = \Pr(X_{i,j,k} = 1), \quad k = 1, 2
 ```
 
 For details on the joint distribution of $`(X_{i,j,1}, X_{i,j,2})`$, see
@@ -84,7 +84,7 @@ $`j`$ is defined as (Homma and Yoshida, 2025):
 \rho_j = \text{Cor}(X_{i,j,1}, X_{i,j,2}) = \frac{\phi_j - p_{j,1}p_{j,2}}{\sqrt{p_{j,1}(1-p_{j,1})p_{j,2}(1-p_{j,2})}}
 ```
 
-where $`\phi_j = \text{P}(X_{i,j,1} = 1, X_{i,j,2} = 1)`$ is the joint
+where $`\phi_j = \Pr(X_{i,j,1} = 1, X_{i,j,2} = 1)`$ is the joint
 probability that both outcomes are successful.
 
 **Practical interpretation**: $`\rho_{j} > 0`$ means subjects who
@@ -218,11 +218,11 @@ se = \frac{1}{2}\sqrt{\frac{1}{n_1} + \frac{1}{n_2}}
 **Power formula**:
 
 Let
-$`\delta_k^\text{AS} = \arcsin(\sqrt{p_{1k}}) - \arcsin(\sqrt{p_{2k}})`$,
+$`\delta_{k}^{\text{AS}} = \arcsin(\sqrt{p_{1,k}}) - \arcsin(\sqrt{p_{2,k}})`$,
 then:
 
 ``` math
-\text{Power}_k = \Phi\left(\frac{\delta_k^\text{AS}}{se} - z_{1-\alpha}\right)
+\text{Power}_{k} = \Phi\left(\frac{\delta_{k}^{\text{AS}}}{se} - z_{1-\alpha}\right)
 ```
 
 #### Method 4: Arcsine Transformation with Continuity Correction (ASc)
@@ -276,7 +276,7 @@ package functions.
 The overall power (probability of rejecting both null hypotheses) is:
 
 ``` math
-1 - \beta = \text{P}(Z_1 > z_{1-\alpha} \text{ and } Z_2 > z_{1-\alpha} \mid \text{H}_1)
+1 - \beta = \Pr(Z_1 > z_{1-\alpha} \text{ and } Z_2 > z_{1-\alpha} \mid \text{H}_1)
 ```
 
 Using the bivariate normal distribution:
@@ -385,11 +385,13 @@ Asymptotic normal test with continuity correction; AS: Arcsine
 transformation without continuity correction; ASc: Arcsine
 transformation with continuity correction.
 
-^(b) Some values may differ by 1-2 subjects from Sozu et al. (2010)
-Table III due to numerical differences in computing the bivariate normal
-cumulative distribution function between SAS and R implementations.
-Power calculations at the reported sample sizes confirm the accuracy of
-the values presented here.
+^(b) The twelve values in the block printed at $`p_{1,1} = 0.87`$ fall
+one subject (AN) or two subjects (ANc, AS and ASc) below Sozu et
+al. (2010) Table III. Every other value in the table reproduces that
+table exactly. Recomputing the block at $`p_{1,1} = 0.868`$ reproduces
+all twelve published values with no deviation, so the article evidently
+computed it at a value near 0.868 and printed it rounded to two
+decimals.
 
 ### Key Findings
 
@@ -405,7 +407,8 @@ the values presented here.
 - **AN**: Equal to AS for moderate probabilities, slightly larger when
   the probabilities are close to one
 - **ASc**: Larger than AS by the continuity correction
-- **ANc**: Largest sample size of the four, and the most conservative
+- **ANc**: Largest sample size of the four, or equal to ASc, and the
+  most conservative
 
 ## Basic Usage Examples
 

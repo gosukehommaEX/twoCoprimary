@@ -39,7 +39,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">twoCoprimary</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -158,8 +158,10 @@ easier to communicate to patients</li>
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>n</mi><mn>1</mn></msub><annotation encoding="application/x-tex">n_{1}</annotation></semantics></math>
 (treatment) and
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>n</mi><mn>2</mn></msub><annotation encoding="application/x-tex">n_{2}</annotation></semantics></math>
-(control), with allocation ratio
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>κ</mi><mo>=</mo><msub><mi>n</mi><mn>2</mn></msub><mi>/</mi><msub><mi>n</mi><mn>1</mn></msub></mrow><annotation encoding="application/x-tex">\kappa = n_{2}/n_{1}</annotation></semantics></math>.</p>
+(control). The allocation ratio supplied to the package is
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>r</mi><mo>=</mo><msub><mi>n</mi><mn>1</mn></msub><mi>/</mi><msub><mi>n</mi><mn>2</mn></msub></mrow><annotation encoding="application/x-tex">r = n_{1}/n_{2}</annotation></semantics></math>,
+and, as noted above, the formulas below are written in terms of
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>κ</mi><mo>=</mo><msub><mi>n</mi><mn>2</mn></msub><mi>/</mi><msub><mi>n</mi><mn>1</mn></msub><mo>=</mo><mn>1</mn><mi>/</mi><mi>r</mi></mrow><annotation encoding="application/x-tex">\kappa = n_{2}/n_{1} = 1/r</annotation></semantics></math>.</p>
 <p>For subject
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math>
 in group
@@ -205,7 +207,7 @@ that both outcomes have latent bivariate normal distributions.</p>
 is assumed to arise from dichotomizing a latent continuous variable
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>X</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mn>2</mn></mrow><mo>*</mo></msubsup><annotation encoding="application/x-tex">X_{i,j,2}^{*}</annotation></semantics></math>
 (i.e.,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>X</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mn>2</mn></mrow><mo>*</mo></msubsup><mo>∼</mo><mtext mathvariant="normal">N</mtext><mo stretchy="false" form="prefix">(</mo><msubsup><mi>μ</mi><mi>j</mi><mo>*</mo></msubsup><mo>,</mo><msup><mi>σ</mi><mrow><mn>2</mn><mo>*</mo></mrow></msup></mrow><annotation encoding="application/x-tex">X_{i,j,2}^{*}\sim\text{N}(\mu_{j}^{\ast},\sigma^{2\ast}</annotation></semantics></math>):</p>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>X</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mn>2</mn></mrow><mo>*</mo></msubsup><mo>∼</mo><mtext mathvariant="normal">N</mtext><mo stretchy="false" form="prefix">(</mo><msubsup><mi>μ</mi><mi>j</mi><mo>*</mo></msubsup><mo>,</mo><msup><mi>σ</mi><mrow><mn>2</mn><mo>*</mo></mrow></msup><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">X_{i,j,2}^{*} \sim \text{N}(\mu_{j}^{\ast}, \sigma^{2\ast})</annotation></semantics></math>):</p>
 <p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>X</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mn>2</mn></mrow></msub><mo>=</mo><mrow><mo stretchy="true" form="prefix">{</mo><mtable><mtr><mtd columnalign="left" style="text-align: left"><mn>1</mn></mtd><mtd columnalign="left" style="text-align: left"><mrow><mtext mathvariant="normal">if </mtext><mspace width="0.333em"></mspace></mrow><msubsup><mi>X</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mn>2</mn></mrow><mo>*</mo></msubsup><mo>≥</mo><msub><mi>g</mi><mi>j</mi></msub></mtd></mtr><mtr><mtd columnalign="left" style="text-align: left"><mn>0</mn></mtd><mtd columnalign="left" style="text-align: left"><mrow><mtext mathvariant="normal">if </mtext><mspace width="0.333em"></mspace></mrow><msubsup><mi>X</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mn>2</mn></mrow><mo>*</mo></msubsup><mo>&lt;</mo><msub><mi>g</mi><mi>j</mi></msub></mtd></mtr></mtable></mrow></mrow><annotation encoding="application/x-tex">X_{i,j,2} = \begin{cases} 
 1 &amp; \text{if } X_{i,j,2}^* \geq g_{j} \\
 0 &amp; \text{if } X_{i,j,2}^* &lt; g_{j}
@@ -213,7 +215,7 @@ is assumed to arise from dichotomizing a latent continuous variable
 <p>where
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>g</mi><mi>j</mi></msub><annotation encoding="application/x-tex">g_{j}</annotation></semantics></math>
 is a threshold (cut-off point) such that
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">P</mtext><mo stretchy="false" form="prefix">(</mo><msub><mi>X</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mn>2</mn></mrow></msub><mo>=</mo><mn>1</mn><mo stretchy="false" form="postfix">)</mo><mo>=</mo><msub><mi>p</mi><mi>j</mi></msub><mo>=</mo><mtext mathvariant="normal">P</mtext><mo stretchy="false" form="prefix">(</mo><msubsup><mi>X</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mn>2</mn></mrow><mo>*</mo></msubsup><mo>≥</mo><msub><mi>g</mi><mi>j</mi></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\text{P}(X_{i,j,2} = 1) = p_{j} = \text{P}(X_{i,j,2}^{*} \geq g_{j})</annotation></semantics></math>.</p>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">Pr</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><msub><mi>X</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mn>2</mn></mrow></msub><mo>=</mo><mn>1</mn><mo stretchy="false" form="postfix">)</mo><mo>=</mo><msub><mi>p</mi><mi>j</mi></msub><mo>=</mo><mrow><mi mathvariant="normal">Pr</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><msubsup><mi>X</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mn>2</mn></mrow><mo>*</mo></msubsup><mo>≥</mo><msub><mi>g</mi><mi>j</mi></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\Pr(X_{i,j,2} = 1) = p_{j} = \Pr(X_{i,j,2}^{*} \geq g_{j})</annotation></semantics></math>.</p>
 <p><strong>Biserial correlation</strong>: Assuming that
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><msub><mi>X</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mn>1</mn></mrow></msub><mo>,</mo><msubsup><mi>X</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mn>2</mn></mrow><mo>*</mo></msubsup><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(X_{i,j,1}, X_{i,j,2}^{*})</annotation></semantics></math>
 follow a bivariate normal distribution, the <strong>biserial
@@ -316,22 +318,31 @@ the test statistics
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><msub><mi>Z</mi><mn>1</mn></msub><mo>,</mo><msub><mi>Z</mi><mn>2</mn></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(Z_{1}, Z_{2})</annotation></semantics></math>
 asymptotically follow a bivariate normal distribution. The overall power
 is given by (Equation 4 in Sozu et al., 2012):</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>−</mo><mi>β</mi><mo>=</mo><mtext mathvariant="normal">P</mtext><mrow><mo stretchy="true" form="prefix">[</mo><munderover><mo>⋂</mo><mrow><mi>k</mi><mo>=</mo><mn>1</mn></mrow><mn>2</mn></munderover><mo stretchy="false" form="prefix">{</mo><msub><mi>Z</mi><mi>k</mi></msub><mo>&gt;</mo><msub><mi>z</mi><mi>α</mi></msub><mo stretchy="false" form="postfix">}</mo><mo stretchy="true" form="postfix">]</mo></mrow><mo>≈</mo><mtext mathvariant="normal">P</mtext><mrow><mo stretchy="true" form="prefix">[</mo><munderover><mo>⋂</mo><mrow><mi>k</mi><mo>=</mo><mn>1</mn></mrow><mn>2</mn></munderover><mrow><mo stretchy="true" form="prefix">{</mo><msubsup><mi>Z</mi><mi>k</mi><mo>*</mo></msubsup><mo>&gt;</mo><msubsup><mi>c</mi><mi>k</mi><mo>*</mo></msubsup><mo stretchy="true" form="postfix">}</mo></mrow><mo stretchy="true" form="postfix">]</mo></mrow></mrow><annotation encoding="application/x-tex">1 - \beta = \text{P}\left[\bigcap_{k=1}^{2} \{Z_{k} &gt; z_{\alpha}\}\right] \approx \text{P}\left[\bigcap_{k=1}^{2} \left\{Z_{k}^{*} &gt; c_{k}^{*}\right\}\right]</annotation></semantics></math></p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>−</mo><mi>β</mi><mo>=</mo><mrow><mi mathvariant="normal">Pr</mi><mo>⁡</mo></mrow><mrow><mo stretchy="true" form="prefix">[</mo><munderover><mo>⋂</mo><mrow><mi>k</mi><mo>=</mo><mn>1</mn></mrow><mn>2</mn></munderover><mo stretchy="false" form="prefix">{</mo><msub><mi>Z</mi><mi>k</mi></msub><mo>&gt;</mo><msub><mi>z</mi><mrow><mn>1</mn><mo>−</mo><mi>α</mi></mrow></msub><mo stretchy="false" form="postfix">}</mo><mo stretchy="true" form="postfix">]</mo></mrow><mo>≈</mo><mrow><mi mathvariant="normal">Pr</mi><mo>⁡</mo></mrow><mrow><mo stretchy="true" form="prefix">[</mo><munderover><mo>⋂</mo><mrow><mi>k</mi><mo>=</mo><mn>1</mn></mrow><mn>2</mn></munderover><mrow><mo stretchy="true" form="prefix">{</mo><msubsup><mi>Z</mi><mi>k</mi><mo>*</mo></msubsup><mo>&gt;</mo><msubsup><mi>c</mi><mi>k</mi><mo>*</mo></msubsup><mo stretchy="true" form="postfix">}</mo></mrow><mo stretchy="true" form="postfix">]</mo></mrow></mrow><annotation encoding="application/x-tex">1 - \beta = \Pr\left[\bigcap_{k=1}^{2} \{Z_{k} &gt; z_{1-\alpha}\}\right] \approx \Pr\left[\bigcap_{k=1}^{2} \left\{Z_{k}^{*} &gt; c_{k}^{*}\right\}\right]</annotation></semantics></math></p>
 <p>where
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>Z</mi><mi>k</mi><mo>*</mo></msubsup><mo>=</mo><mfrac><mrow><msub><mover><mi>p</mi><mo accent="true">̂</mo></mover><mn>1</mn></msub><mo>−</mo><msub><mover><mi>p</mi><mo accent="true">̂</mo></mover><mn>2</mn></msub><mo>−</mo><msub><mi mathvariant="normal">Δ</mi><mi>k</mi></msub></mrow><mrow><mi>s</mi><msub><mi>e</mi><mi>k</mi></msub></mrow></mfrac></mrow><annotation encoding="application/x-tex">Z_{k}^{*} = \frac{\hat{p}_{1} - \hat{p}_{2} - \Delta_{k}}{se_{k}}</annotation></semantics></math>
-with
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi mathvariant="normal">Δ</mi><mi>k</mi></msub><annotation encoding="application/x-tex">\Delta_{k}</annotation></semantics></math>
-being the treatment effect, and:</p>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>Z</mi><mi>k</mi><mo>*</mo></msubsup><annotation encoding="application/x-tex">Z_{k}^{*}</annotation></semantics></math>
+is
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>Z</mi><mi>k</mi></msub><annotation encoding="application/x-tex">Z_{k}</annotation></semantics></math>
+centered at its mean under the alternative and scaled to unit variance,
+so that it is standard normal, and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>c</mi><mi>k</mi><mo>*</mo></msubsup><annotation encoding="application/x-tex">c_{k}^{*}</annotation></semantics></math>
+is
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>z</mi><mrow><mn>1</mn><mo>−</mo><mi>α</mi></mrow></msub><annotation encoding="application/x-tex">z_{1-\alpha}</annotation></semantics></math>
+carried through the same centering and scaling. The two endpoints are
+standardized by their own quantities, the mean difference for
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>k</mi><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">k = 1</annotation></semantics></math>
+and the risk difference for
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>k</mi><mo>=</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">k = 2</annotation></semantics></math>:</p>
 <p><strong>For continuous endpoint</strong>
 (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>k</mi><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">k = 1</annotation></semantics></math>):
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>c</mi><mn>1</mn><mo>*</mo></msubsup><mo>=</mo><msub><mi>z</mi><mi>α</mi></msub><mo>−</mo><mfrac><msub><mi>δ</mi><mn>1</mn></msub><mi>σ</mi></mfrac><msqrt><mfrac><mrow><mi>κ</mi><msub><mi>n</mi><mn>1</mn></msub></mrow><mrow><mn>1</mn><mo>+</mo><mi>κ</mi></mrow></mfrac></msqrt></mrow><annotation encoding="application/x-tex">c_{1}^{*} = z_{\alpha} - \frac{\delta_{1}}{\sigma} \sqrt{\frac{\kappa n_{1}}{1+\kappa}}</annotation></semantics></math></p>
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>c</mi><mn>1</mn><mo>*</mo></msubsup><mo>=</mo><msub><mi>z</mi><mrow><mn>1</mn><mo>−</mo><mi>α</mi></mrow></msub><mo>−</mo><mfrac><msub><mi>δ</mi><mn>1</mn></msub><mi>σ</mi></mfrac><msqrt><mfrac><mrow><mi>κ</mi><msub><mi>n</mi><mn>1</mn></msub></mrow><mrow><mn>1</mn><mo>+</mo><mi>κ</mi></mrow></mfrac></msqrt></mrow><annotation encoding="application/x-tex">c_{1}^{*} = z_{1-\alpha} - \frac{\delta_{1}}{\sigma} \sqrt{\frac{\kappa n_{1}}{1+\kappa}}</annotation></semantics></math></p>
 <p>where
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>δ</mi><mn>1</mn></msub><mo>=</mo><msub><mi>μ</mi><mn>1</mn></msub><mo>−</mo><msub><mi>μ</mi><mn>2</mn></msub></mrow><annotation encoding="application/x-tex">\delta_{1} = \mu_{1} - \mu_{2}</annotation></semantics></math>
 is the effect size for the endpoint 1.</p>
 <p><strong>For binary endpoint</strong>
 (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>k</mi><mo>=</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">k = 2</annotation></semantics></math>,
 AN method) (Equation 5 in Sozu et al., 2012):
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>c</mi><mn>2</mn><mo>*</mo></msubsup><mo>=</mo><mfrac><mrow><msqrt><mfrac><mrow><mo stretchy="false" form="prefix">(</mo><msub><mi>p</mi><mn>1</mn></msub><mo>+</mo><mi>κ</mi><msub><mi>p</mi><mn>2</mn></msub><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="prefix">{</mo><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mi>p</mi><mn>1</mn></msub><mo stretchy="false" form="postfix">)</mo><mo>+</mo><mi>κ</mi><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mi>p</mi><mn>2</mn></msub><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">}</mo></mrow><mrow><mn>1</mn><mo>+</mo><mi>κ</mi></mrow></mfrac></msqrt><msub><mi>z</mi><mi>α</mi></msub><mo>−</mo><msqrt><mrow><mi>κ</mi><msub><mi>n</mi><mn>1</mn></msub></mrow></msqrt><mo stretchy="false" form="prefix">(</mo><msub><mi>p</mi><mn>1</mn></msub><mo>−</mo><msub><mi>p</mi><mn>2</mn></msub><mo stretchy="false" form="postfix">)</mo></mrow><msqrt><mrow><mi>κ</mi><msub><mi>p</mi><mn>1</mn></msub><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mi>p</mi><mn>1</mn></msub><mo stretchy="false" form="postfix">)</mo><mo>+</mo><msub><mi>p</mi><mn>2</mn></msub><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mi>p</mi><mn>2</mn></msub><mo stretchy="false" form="postfix">)</mo></mrow></msqrt></mfrac></mrow><annotation encoding="application/x-tex">c_{2}^{*} = \frac{\sqrt{\frac{(p_{1}+\kappa p_{2})\{(1-p_{1})+\kappa(1-p_{2})\}}{1+\kappa}} z_{\alpha} - \sqrt{\kappa n_{1}}(p_{1}-p_{2})}{\sqrt{\kappa p_{1}(1-p_{1})+p_{2}(1-p_{2})}}</annotation></semantics></math></p>
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>c</mi><mn>2</mn><mo>*</mo></msubsup><mo>=</mo><mfrac><mrow><msqrt><mfrac><mrow><mo stretchy="false" form="prefix">(</mo><msub><mi>p</mi><mn>1</mn></msub><mo>+</mo><mi>κ</mi><msub><mi>p</mi><mn>2</mn></msub><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="prefix">{</mo><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mi>p</mi><mn>1</mn></msub><mo stretchy="false" form="postfix">)</mo><mo>+</mo><mi>κ</mi><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mi>p</mi><mn>2</mn></msub><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">}</mo></mrow><mrow><mn>1</mn><mo>+</mo><mi>κ</mi></mrow></mfrac></msqrt><msub><mi>z</mi><mrow><mn>1</mn><mo>−</mo><mi>α</mi></mrow></msub><mo>−</mo><msqrt><mrow><mi>κ</mi><msub><mi>n</mi><mn>1</mn></msub></mrow></msqrt><mo stretchy="false" form="prefix">(</mo><msub><mi>p</mi><mn>1</mn></msub><mo>−</mo><msub><mi>p</mi><mn>2</mn></msub><mo stretchy="false" form="postfix">)</mo></mrow><msqrt><mrow><mi>κ</mi><msub><mi>p</mi><mn>1</mn></msub><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mi>p</mi><mn>1</mn></msub><mo stretchy="false" form="postfix">)</mo><mo>+</mo><msub><mi>p</mi><mn>2</mn></msub><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mi>p</mi><mn>2</mn></msub><mo stretchy="false" form="postfix">)</mo></mrow></msqrt></mfrac></mrow><annotation encoding="application/x-tex">c_{2}^{*} = \frac{\sqrt{\frac{(p_{1}+\kappa p_{2})\{(1-p_{1})+\kappa(1-p_{2})\}}{1+\kappa}} z_{1-\alpha} - \sqrt{\kappa n_{1}}(p_{1}-p_{2})}{\sqrt{\kappa p_{1}(1-p_{1})+p_{2}(1-p_{2})}}</annotation></semantics></math></p>
 <p>The vector
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><msubsup><mi>Z</mi><mn>1</mn><mo>*</mo></msubsup><mo>,</mo><msubsup><mi>Z</mi><mn>2</mn><mo>*</mo></msubsup><msup><mo stretchy="false" form="postfix">)</mo><mtext mathvariant="normal">T</mtext></msup></mrow><annotation encoding="application/x-tex">(Z_{1}^{*}, Z_{2}^{*})^\text{T}</annotation></semantics></math>
 is approximately distributed as a standardized bivariate normal
@@ -697,10 +708,13 @@ Continuity Correction (ASc) (σ = 1, α = 0.025, 1-β =
 </tr>
 </tbody>
 </table>
-<p><sup>a</sup> Some values may differ slightly from the Supporting
-Information Table 5 in Sozu et al. (2012) due to numerical differences
-in computing the bivariate normal cumulative distribution function
-between SAS and R implementations.</p>
+<p><sup>a</sup> Four of the forty-eight values differ from Supporting
+Information Table 5 of Sozu et al. (2012) by one subject. The
+standardized effect size of the continuous endpoint is printed there to
+three decimal places, and for each of the four a value inside the
+rounding window of the printed figure returns the published sample size,
+so the difference is what the third decimal place is worth rather than a
+difference in the calculation.</p>
 <div class="section level3">
 <h3 id="part-c-fishers-exact-test">Part C: Fisher’s exact test<a class="anchor" aria-label="anchor" href="#part-c-fishers-exact-test"></a>
 </h3>
@@ -708,8 +722,9 @@ between SAS and R implementations.</p>
 test. The row with the largest standardized effect is reproduced here;
 the remaining rows behave the same way but need sample sizes up to 584
 per group, which makes a simulated search slow enough to be unsuitable
-for a vignette. The package’s test suite checks the achieved power at
-all 24 published Fisher sample sizes.</p>
+for a vignette. The test suite checks the achieved power at two of the
+published Fisher sample sizes, and the verification scripts kept in the
+package’s repository check all 24.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">20260829</span><span class="op">)</span></span>
 <span></span>

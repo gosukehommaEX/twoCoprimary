@@ -27,7 +27,7 @@ statistical properties."><meta property="og:image" content="https://gosukehommae
 
     <a class="navbar-brand me-2" href="../index.html">twoCoprimary</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -128,9 +128,15 @@ calculation. Default is 0.2 (power = 0.8).</p></dd>
 
 
 <dt id="arg-test">Test<a class="anchor" aria-label="anchor" href="#arg-test"></a></dt>
-<dd><p>Test method for binary endpoints: "AN" (asymptotic normal),
-"ANc" (with continuity correction), "AS" (arcsine), or "ASc". Default is
-"AN". Only used for binary and mixed_cont_binary endpoints.</p></dd>
+<dd><p>Test method. For <code>endpoint_type = "binary"</code> the four
+asymptotic methods "AN" (asymptotic normal), "ANc" (with continuity
+correction), "AS" (arcsine) and "ASc" (arcsine with continuity
+correction) route to the approximate functions, while "Chisq", "Fisher",
+"Fisher-midP", "Z-pool" and "Boschloo" route to the exact functions and
+are substantially more expensive. For
+<code>endpoint_type = "mixed_cont_binary"</code> the four asymptotic methods
+and "Fisher" are available. Default is "AN". Not used for the continuous
+and mixed count-continuous endpoint types.</p></dd>
 
 
 <dt id="arg-known-var">known_var<a class="anchor" aria-label="anchor" href="#arg-known-var"></a></dt>

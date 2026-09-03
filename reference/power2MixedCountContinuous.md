@@ -142,16 +142,25 @@ A data frame with the following columns:
 
 ## Details
 
+The formulas below are those of Homma and Yoshida (2024), written in the
+indexing used throughout this package: group 1 is the treatment group
+and group 2 is the control group, and \\\kappa = n_1 / n_2\\ is the
+argument `r`. The source article indexes the control group by 0 instead.
+
 The test statistics are (equation 7 in Homma and Yoshida 2024): \$\$Z_1
 = \frac{\hat{\beta}\_1}{\sqrt{Var(\hat{\beta}\_1)}}, \quad Z_2 =
-\frac{\hat{\delta}}{\sigma\sqrt{(1+\kappa)/(\kappa n_0)}}\$\$
+\frac{\hat{\delta}}{\sigma\sqrt{(1+\kappa)/(\kappa n_2)}}\$\$
 
 The joint distribution of (Z1, Z2) follows an asymptotic bivariate
 normal distribution with correlation gamma (equation 11): \$\$\gamma =
-\sum\_{j=0,1} \frac{n_0 \rho_j \sqrt{1+\lambda_j/\nu}} {n_j
+\sum\_{j=1}^{2} \frac{n_2 \rho_j \sqrt{1+\lambda_j/\nu}} {n_j
 \sqrt{\lambda_j V_a} \sqrt{(1+\kappa)/\kappa}}\$\$
 
-where \\\lambda_j = r_j \times t\\.
+where \\\lambda_j = r_j \times t\\ is the mean count in group j, \\r_j\\
+is the event rate per unit time, which is distinct from the allocation
+ratio `r`, and \\V_a\\ is the variance component of equation 8,
+\\(1/t)(1/r_2 + 1/(\kappa r_1)) + (1+\kappa)/(\nu \kappa)\\, so that
+\\Var(\hat{\beta}\_1) = V_a / n_2\\.
 
 The correlation bounds are automatically checked using
 [`corrbound2MixedCountContinuous`](https://gosukehommaex.github.io/twoCoprimary/reference/corrbound2MixedCountContinuous.md).
