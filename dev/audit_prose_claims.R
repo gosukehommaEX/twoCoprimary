@@ -69,6 +69,14 @@ strip_code <- function(txt) {
 say("==============================================================================")
 say("Claims made by the prose of this project")
 say("==============================================================================")
+# Part E of release_checklist.R reads a "twoCoprimary version" line from the
+# first eight lines of every log in dev/out/ and names any log that has none, so
+# that a stale result cannot be quoted. This script deliberately runs without an
+# installed build, so the version comes from DESCRIPTION rather than from the
+# library.
+say("twoCoprimary version: ",
+    as.character(read.dcf("DESCRIPTION", fields = "Version")[1, 1]),
+    "  (from DESCRIPTION; this script reads the sources, not an installed build)")
 say("run at : ", format(Sys.time(), "%Y-%m-%d %H:%M:%S"))
 say("files  : ", length(prose_files))
 if (!file.exists(manuscript)) say("note   : manuscript not found, its checks are skipped")
