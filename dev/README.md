@@ -26,11 +26,15 @@ The prefix says what kind of script it is.
 
 There is one script outside that scheme. `audit_prose_claims.R` checks the
 English rather than the code: the paths, function names and counts that the
-vignettes, `NEWS.md`, `README.md`, `cran-comments.md`, the manuscript and the
-response letter state, and it lists the sentences shared between two files and
-the sentences carrying a number or a quantifier. It exists because the code was
-swept exhaustively while the prose never was, which is how a claim corrected in
-the manuscript stayed wrong in a vignette.
+vignettes, `NEWS.md`, `README.md`, `cran-comments.md`, the manuscript, the
+response letter and the motivating letter state; it lists the sentences shared
+between two files and the sentences carrying a number or a quantifier; and its
+last part checks what is settled at the submission, that every package the
+article names with `\CRANpkg{}` appears in `_Rpackages.txt` and that the
+article's version string and the response letter's mention of 1.1.1 have been
+updated together. It exists because the code was swept exhaustively while the
+prose never was, which is how a claim corrected in the manuscript stayed wrong
+in a vignette.
 
 ## Order to run before a release
 
@@ -43,6 +47,9 @@ the manuscript stayed wrong in a vignette.
 5. `audit_prose_claims.R` — does every statement the prose makes about paths,
    names and counts still hold, and has every shared sentence been corrected in
    every copy? Run it after the `reproduce_*` scripts, whose CSV files it reads.
+   Its last part fails on purpose while the response letter names version 1.1.1
+   and the article still reports 1.1.0; that failure clears when CRAN accepts
+   1.1.1 and the article's version string is updated with it.
 6. `release_spelling.R` and `release_checklist.R` last, because Parts D and E of
    the checklist inspect what the earlier scripts left in `dev/out/`
 
