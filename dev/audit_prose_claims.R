@@ -320,10 +320,11 @@ for (f in prose_files) {
 
 # -------------------------------------------- Part F: release readiness ----
 
-say("--- Part F: the three things that are settled last ---")
-say("  Each of these is decided at the final knit and is therefore the class of")
-say("  item that gets discovered at the last minute. The first is checked here;")
-say("  the other two are printed every run so that they cannot be forgotten.")
+say("--- Part F: what is settled last ---")
+say("  These are decided at the submission and at the final knit, and are")
+say("  therefore the class of item that gets discovered at the last minute. The")
+say("  package list and the version interlock fail here; the two dates are")
+say("  printed on every run so that they cannot be forgotten.")
 say("")
 
 rpkg_file <- file.path(repo_root, "04_Manuscript", "_Rpackages.txt")
@@ -354,6 +355,23 @@ if (file.exists(manuscript)) {
       "   (set this to the resubmission date at the final knit)")
   say("  version string in the text: ", if (length(v)) v else "not found",
       "   (change to 1.1.1 only after CRAN accepts it)")
+
+  # The article's version string and the response letter's claim that 1.1.1 is
+  # on CRAN become true at the same moment. If one has been updated and the
+  # other has not, one of the two documents is saying something false.
+  if (file.exists(response)) {
+    rl <- read_prose(response)
+    claims_cran <- grepl("version 1\\.1\\.1, which is on CRAN", rl)
+    if (claims_cran && length(v) && v != "1.1.1") {
+      fail("the response letter says 1.1.1 is on CRAN while the article still ",
+           "reports version ", v, ". This is expected until CRAN accepts 1.1.1; ",
+           "it clears when the article's version string is updated, and it is ",
+           "here so that the two cannot be submitted out of step.")
+    }
+    rd <- regmatches(rl, regexpr("(?<=\\\\hfill )[0-9]+ [A-Za-z]+ [0-9]{4}", rl, perl = TRUE))
+    say("  response letter date     : ", if (length(rd)) rd else "not found",
+        "   (set this to the resubmission date)")
+  }
 }
 say("")
 
