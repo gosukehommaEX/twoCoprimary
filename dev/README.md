@@ -24,6 +24,14 @@ The prefix says what kind of script it is.
 | `article_` | produces the numbers the R Journal article quotes |
 | `release_` | the checks to run immediately before a submission |
 
+There is one script outside that scheme. `audit_prose_claims.R` checks the
+English rather than the code: the paths, function names and counts that the
+vignettes, `NEWS.md`, `README.md`, `cran-comments.md`, the manuscript and the
+response letter state, and it lists the sentences shared between two files and
+the sentences carrying a number or a quantifier. It exists because the code was
+swept exhaustively while the prose never was, which is how a claim corrected in
+the manuscript stayed wrong in a vignette.
+
 ## Order to run before a release
 
 1. `fuzz_all_functions.R` — does anything error, warn or return nonsense
@@ -32,7 +40,10 @@ The prefix says what kind of script it is.
 3. the five `reproduce_*.R` scripts — does the package still return what the
    articles it implements printed?
 4. the `verify_*.R` scripts for anything that changed in this release
-5. `release_spelling.R` and `release_checklist.R` last, because Parts D and E of
+5. `audit_prose_claims.R` — does every statement the prose makes about paths,
+   names and counts still hold, and has every shared sentence been corrected in
+   every copy? Run it after the `reproduce_*` scripts, whose CSV files it reads.
+6. `release_spelling.R` and `release_checklist.R` last, because Parts D and E of
    the checklist inspect what the earlier scripts left in `dev/out/`
 
 ## The scripts

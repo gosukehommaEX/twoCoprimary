@@ -41,7 +41,7 @@ unconditional tests agree with those of the
 [Exact](https://CRAN.R-project.org/package=Exact) package.
 
 See [NEWS](https://gosukehommaEX.github.io/twoCoprimary/news/index.html) for
-what changed in version 1.1.0.
+what changed in each version.
 
 ## Installation
 

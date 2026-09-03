@@ -81,7 +81,7 @@ test_that("the treatment effect points in the right direction", {
 test_that("Fisher reproduces Table S5 of Sozu et al. (2012)", {
   # Supporting Information Section C, Table 5: sample size per group and the
   # empirical overall power achieved there, alpha = 0.025, target 0.8, sd = 1.
-  # The two cheapest cells are used; dev/check_mixed_fisher_fix.R covers all 24.
+  # The two cheapest cells are used; dev/verify_mixed_fisher_option.R covers all 24.
   cells <- data.frame(
     delta = c(0.521, 0.521),
     p1 = c(0.99, 0.99),

@@ -2,40 +2,63 @@
 
 0 errors | 0 warnings | 0 notes
 
+The incoming checks will report a NOTE on the number of days since the last
+update. The reason for submitting this soon is given below.
+
 ## Submission
 
-This is a minor release. It fixes three defects, improves the performance of the
-exact methods for binary endpoints, and adds one argument.
+This is a patch release. It fixes 27 defects. Twenty-two were found by a
+systematic audit of the package and by reproducing the tables of the five
+articles the methods come from. The remaining five were found by an exhaustive
+sweep of the argument space of every exported function, written after version
+1.1.0 was published and kept in the package's public repository rather than in
+the sources submitted here.
 
-* `rr1Binary()` now assigns the same p-value to outcomes that share the same
-  value of the ordering statistic in the two exact unconditional tests. The
-  resulting rejection regions agree with those implied by the `Exact` package.
+Version 1.1.0 reached CRAN on 2026-08-29, so this submission comes sooner after
+the previous one than the convention on update frequency allows. We would not
+normally submit this soon. Three classes of defect led us to judge that an early
+fix was warranted, and we followed the guidance to submit a corrected version
+and to explain the reason here.
 
-* `power2Continuous()` with `known_var = FALSE` now draws the Wishart matrix
-  from the correlation matrix of the standardized endpoints, so power is
-  invariant to a common rescaling of the effects and the standard deviations.
+* Several documented calls to `plot()` failed with an error rather than
+  producing a figure. A sample size object with `type = "power_curve"`, a power
+  object with `type = "sample_size_rho"` and any object returned by the exact
+  binary functions each entered a branch written for a different object shape.
 
-* `power2MixedContinuousBinary()` with `Test = "Fisher"` now returns the
-  simulated result and uses a group specific threshold for the latent binary
-  variable. It reproduces Table S5 of the Supporting Information of
-  Sozu et al. (2012).
+* Two functions returned incorrect numbers. `ss1BinaryApprox()` used the arcsine
+  multiplier written for the reciprocal of its own allocation ratio, so at an
+  allocation of two to one it returned about twice the required sample size, and
+  its `"ASc"` continuity correction moved the two groups apart rather than
+  toward each other. `corrbound2MixedCountContinuous()` computed the correlation
+  bounds by a quadrature in the untransformed continuous endpoint, so the bounds
+  collapsed to zero when the mean lay far from the origin relative to the
+  standard deviation, and the two functions that use them then rejected every
+  admissible correlation.
 
-* The package now contains compiled code. `Rcpp` was added to `Imports` and
-  `LinkingTo`, and `src/twoCoprimary.cpp` holds a single function that evaluates
-  the conditional probability of the bivariate binomial distribution.
-  `NeedsCompilation` therefore changes from no to yes.
+* `rr1Binary()` failed with an error about an incorrect number of dimensions
+  when either group held a single subject, and `power2Continuous()` accepted a
+  negative standard deviation, a group size of zero and a non-integer group size
+  and returned a number for each.
 
-* `n_grid` was added to the functions for the exact binary methods, exposing the
-  number of nuisance parameter grid points that was previously fixed at 100
-  internally. The default reproduces the results of version 1.0.0.
+The four asymptotic methods of `ss1BinaryApprox()` are now a sequential search
+against `power2BinaryApprox()`, so the sample size returned and the power
+reported by the package refer to the same expression. The twelve published
+single-endpoint sizes of Table S5 of the Supporting Information of Sozu et al.
+(2012) are reproduced exactly. The two-endpoint sample size functions use
+`ss1BinaryApprox()` only as the starting value of a search that converges to the
+minimum sample size from any starting point, so their results are unchanged.
+
+`ss2MixedCountContinuous()` evaluates the correlation bounds once instead of at
+every step of its search, which takes a call at the default settings from about
+2.7 seconds to about 0.2.
+
+`NeedsCompilation` remains yes, as in 1.1.0. There are no user visible interface
+changes and no new dependencies.
+
+## Reverse dependencies
+
+There are currently no downstream dependencies for this package.
 
 ## Test environments
 
-* local Windows 11 install, R 4.6.0
-* win-builder: R-devel (2026-08-27 r90452), R-release (4.6.1)
-* GitHub Actions: ubuntu-latest (R-devel, R-release, R-oldrel-1),
-  windows-latest (R-release), macos-latest (R-release)
-
-## Downstream dependencies
-
-There are currently no downstream dependencies for this package.
+* local Windows 11 x64 install, R 4.6.0

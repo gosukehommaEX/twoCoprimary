@@ -176,9 +176,11 @@ search that converges to the minimum sample size from any starting point.
   rejects, and omitted `"Fisher-midP"`, which it accepts.
 * `design_table()` now documents the five exact test methods it dispatches on.
 * `power2MixedContinuousBinary()` documents the `nMC` column it returns.
-* `power2MixedCountContinuous()` states that its formulas are reproduced in the
-  notation of the source article, and that the event rates `r1` and `r2` are
-  distinct from the allocation ratio `r`.
+* `power2MixedCountContinuous()` writes the test statistics and the correlation
+  between them in the indexing used by the package, group 1 for treatment and
+  group 2 for control, rather than the indexing of the source article, and
+  states that the event rates `r1` and `r2` are distinct from the allocation
+  ratio `r`. The variance component `V_a` is now defined where it is used.
 * `ss2MixedCountContinuous()` writes the mean count as `lambda_j = r_j * t`.
 * `ss1BinaryApprox()` documents the requirement that `p1` exceed `p2`, and no
   longer describes a binomial calculation as hypergeometric. Its arcsine
@@ -188,6 +190,37 @@ search that converges to the minimum sample size from any starting point.
 * `ss1Count()` documents that `r1` must be less than `r2`.
 * `plot()` documents that the `"effect_contour"` axes are standardized effect
   sizes.
+* The vignettes carry the notation of the articles they follow. The variance of
+  the log rate ratio in `mixed-count-continuous` is written with the event
+  rates rather than the mean counts, which is the form of equation 8 of Homma
+  and Yoshida (2024) and the form the code uses; its Case B design parameters
+  name the treatment and control rates in the order the code passes them. The
+  non-centrality parameter in `two-continuous-endpoints` is written with the
+  standardized effect size. `mixed-continuous-binary` states the allocation
+  ratio `r` of the package alongside the `kappa` of Sozu et al. (2012), uses
+  the upper-tail quantile in the power formula and its two critical values,
+  closes the parenthesis in the latent normal distribution, and no longer
+  writes the standardized statistic of the continuous endpoint in terms of
+  proportions. `overview` separates the patient-level correlation the user
+  supplies from the correlation between test statistics that enters the power
+  formula. `two-binary-endpoints-exact` writes the null and alternative
+  hypotheses with the subscripts used by the other vignettes, and denotes the
+  multinomial cell counts by `N` rather than by `Z`, which is the test
+  statistic elsewhere.
+* The vignettes state what their reproductions of the published tables actually
+  show. Two footnotes attributed the differences to the bivariate normal
+  distribution function of SAS differing from that of R, which is not the
+  reason. In Sozu et al. (2010) Table III the twelve values of the block
+  printed at a first probability of 0.87 are the only ones that do not
+  reproduce, and recomputing that block at 0.868 reproduces all twelve
+  exactly. In Table 5 of the Supporting Information of Sozu et al. (2012) four
+  of the forty-eight values differ by one subject, and for each of the four a
+  standardized effect size inside the rounding window of the printed three
+  decimal places returns the published size. Three further statements are
+  corrected: the number of ties at forty subjects per group in
+  `two-binary-endpoints-exact`, the grid sizes at which the rejection regions
+  were compared in the same vignette, and how many of the published Fisher
+  sample sizes the test suite checks.
 
 # twoCoprimary 1.1.0
 
@@ -206,7 +239,7 @@ search that converges to the minimum sample size from any starting point.
 
   This changes one entry of Table 4 of Homma and Yoshida (2025): for the
   Z-pooled test with `alpha` = 0.05, `r` = 2 and `rho` = 0.3 the required total
-  sample size is 147 rather than the published 144. The remaining 47 entries of
+  sample size is 147 rather than the published 144. The remaining 95 entries of
   that table, and every design behind its Figures 1 to 3 but one, are unchanged.
 
 * `power2Continuous()` with `known_var = FALSE` now draws the Wishart matrix

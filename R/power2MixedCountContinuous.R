@@ -36,22 +36,25 @@
 #'   \item{powerCoprimary}{Power for both co-primary endpoints}
 #'
 #' @details
+#' The formulas below are those of Homma and Yoshida (2024), written in the
+#' indexing used throughout this package: group 1 is the treatment group and
+#' group 2 is the control group, and \eqn{\kappa = n_1 / n_2} is the argument
+#' \code{r}. The source article indexes the control group by 0 instead.
+#'
 #' The test statistics are (equation 7 in Homma and Yoshida 2024):
 #' \deqn{Z_1 = \frac{\hat{\beta}_1}{\sqrt{Var(\hat{\beta}_1)}}, \quad
-#'       Z_2 = \frac{\hat{\delta}}{\sigma\sqrt{(1+\kappa)/(\kappa n_0)}}}
+#'       Z_2 = \frac{\hat{\delta}}{\sigma\sqrt{(1+\kappa)/(\kappa n_2)}}}
 #'
 #' The joint distribution of (Z1, Z2) follows an asymptotic bivariate normal
 #' distribution with correlation gamma (equation 11):
-#' \deqn{\gamma = \sum_{j=0,1} \frac{n_0 \rho_j \sqrt{1+\lambda_j/\nu}}
+#' \deqn{\gamma = \sum_{j=1}^{2} \frac{n_2 \rho_j \sqrt{1+\lambda_j/\nu}}
 #'       {n_j \sqrt{\lambda_j V_a} \sqrt{(1+\kappa)/\kappa}}}
 #'
-#' where \eqn{\lambda_j = r_j \times t} is the mean count in group j, and
+#' where \eqn{\lambda_j = r_j \times t} is the mean count in group j,
 #' \eqn{r_j} is the event rate per unit time, which is distinct from the
-#' allocation ratio \code{r}. The formulas above are reproduced in the
-#' notation of the source article, which indexes the placebo group by 0 and
-#' writes \eqn{\kappa = n_1 / n_0}; in this package the same groups are
-#' \code{n1} (treatment) and \code{n2} (control) and \eqn{\kappa} equals
-#' the argument \code{r}.
+#' allocation ratio \code{r}, and \eqn{V_a} is the variance component of
+#' equation 8, \eqn{(1/t)(1/r_2 + 1/(\kappa r_1)) + (1+\kappa)/(\nu \kappa)},
+#' so that \eqn{Var(\hat{\beta}_1) = V_a / n_2}.
 #'
 #' The correlation bounds are automatically checked using \code{\link{corrbound2MixedCountContinuous}}.
 #'

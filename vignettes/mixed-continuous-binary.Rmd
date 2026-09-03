@@ -50,7 +50,7 @@ Combining continuous and binary endpoints provides:
 
 ### Model and Assumptions
 
-Consider a two-arm superiority trial with sample sizes $n_{1}$ (treatment) and $n_{2}$ (control), with allocation ratio $\kappa = n_{2}/n_{1}$.
+Consider a two-arm superiority trial with sample sizes $n_{1}$ (treatment) and $n_{2}$ (control). The allocation ratio supplied to the package is $r = n_{1}/n_{2}$, and, as noted above, the formulas below are written in terms of $\kappa = n_{2}/n_{1} = 1/r$.
 
 For subject $i$ in group $j$ ($j = 1$: treatment, $j = 2$: control), we observe two **outcomes**:
 
@@ -68,14 +68,14 @@ where $X_{i,j,2} = 1$ if subject $i$ in group $j$ responds successfully, and 0 o
 
 The correlation between a continuous outcome and a binary outcome requires special consideration. Following Sozu et al. (2012), we assume that both outcomes have latent bivariate normal distributions.
 
-**Key concept**: The binary outcome $X_{i,j,2}$ is assumed to arise from dichotomizing a latent continuous variable $X_{i,j,2}^{*}$ (i.e., $X_{i,j,2}^{*}\sim\text{N}(\mu_{j}^{\ast},\sigma^{2\ast}$):
+**Key concept**: The binary outcome $X_{i,j,2}$ is assumed to arise from dichotomizing a latent continuous variable $X_{i,j,2}^{*}$ (i.e., $X_{i,j,2}^{*} \sim \text{N}(\mu_{j}^{\ast}, \sigma^{2\ast})$):
 
 $$X_{i,j,2} = \begin{cases} 
 1 & \text{if } X_{i,j,2}^* \geq g_{j} \\
 0 & \text{if } X_{i,j,2}^* < g_{j}
 \end{cases}$$
 
-where $g_{j}$ is a threshold (cut-off point) such that $\text{P}(X_{i,j,2} = 1) = p_{j} = \text{P}(X_{i,j,2}^{*} \geq g_{j})$.
+where $g_{j}$ is a threshold (cut-off point) such that $\Pr(X_{i,j,2} = 1) = p_{j} = \Pr(X_{i,j,2}^{*} \geq g_{j})$.
 
 **Biserial correlation**: Assuming that $(X_{i,j,1}, X_{i,j,2}^{*})$ follow a bivariate normal distribution, the **biserial correlation** $\rho$ measures the correlation between the continuous outcome and the latent continuous variable underlying the binary outcome.
 
@@ -128,17 +128,17 @@ Fisher's exact test is different in kind from the other four. Under the null hyp
 
 Under $\text{H}_{1}$, the test statistics $(Z_{1}, Z_{2})$ asymptotically follow a bivariate normal distribution. The overall power is given by (Equation 4 in Sozu et al., 2012):
 
-$$1 - \beta = \text{P}\left[\bigcap_{k=1}^{2} \{Z_{k} > z_{\alpha}\}\right] \approx \text{P}\left[\bigcap_{k=1}^{2} \left\{Z_{k}^{*} > c_{k}^{*}\right\}\right]$$
+$$1 - \beta = \Pr\left[\bigcap_{k=1}^{2} \{Z_{k} > z_{1-\alpha}\}\right] \approx \Pr\left[\bigcap_{k=1}^{2} \left\{Z_{k}^{*} > c_{k}^{*}\right\}\right]$$
 
-where $Z_{k}^{*} = \frac{\hat{p}_{1} - \hat{p}_{2} - \Delta_{k}}{se_{k}}$ with $\Delta_{k}$ being the treatment effect, and:
+where $Z_{k}^{*}$ is $Z_{k}$ centered at its mean under the alternative and scaled to unit variance, so that it is standard normal, and $c_{k}^{*}$ is $z_{1-\alpha}$ carried through the same centering and scaling. The two endpoints are standardized by their own quantities, the mean difference for $k = 1$ and the risk difference for $k = 2$:
 
 **For continuous endpoint** ($k = 1$):
-$$c_{1}^{*} = z_{\alpha} - \frac{\delta_{1}}{\sigma} \sqrt{\frac{\kappa n_{1}}{1+\kappa}}$$
+$$c_{1}^{*} = z_{1-\alpha} - \frac{\delta_{1}}{\sigma} \sqrt{\frac{\kappa n_{1}}{1+\kappa}}$$
 
 where $\delta_{1} = \mu_{1} - \mu_{2}$ is the effect size for the endpoint 1.
 
 **For binary endpoint** ($k = 2$, AN method) (Equation 5 in Sozu et al., 2012):
-$$c_{2}^{*} = \frac{\sqrt{\frac{(p_{1}+\kappa p_{2})\{(1-p_{1})+\kappa(1-p_{2})\}}{1+\kappa}} z_{\alpha} - \sqrt{\kappa n_{1}}(p_{1}-p_{2})}{\sqrt{\kappa p_{1}(1-p_{1})+p_{2}(1-p_{2})}}$$
+$$c_{2}^{*} = \frac{\sqrt{\frac{(p_{1}+\kappa p_{2})\{(1-p_{1})+\kappa(1-p_{2})\}}{1+\kappa}} z_{1-\alpha} - \sqrt{\kappa n_{1}}(p_{1}-p_{2})}{\sqrt{\kappa p_{1}(1-p_{1})+p_{2}(1-p_{2})}}$$
 
 The vector $(Z_{1}^{*}, Z_{2}^{*})^\text{T}$ is approximately distributed as a standardized bivariate normal distribution $\text{N}_{2}(\mathbf{0}, \gamma)$, where $\gamma$ is the correlation between the test statistics.
 
@@ -249,11 +249,11 @@ kable(result_asc,
       col.names = c("delta", "σ", "p1", "p2", "ρ=0.0", "ρ=0.3", "ρ=0.5", "ρ=0.8"))
 ```
 
-^a^ Some values may differ slightly from the Supporting Information Table 5 in Sozu et al. (2012) due to numerical differences in computing the bivariate normal cumulative distribution function between SAS and R implementations.
+^a^ Four of the forty-eight values differ from Supporting Information Table 5 of Sozu et al. (2012) by one subject. The standardized effect size of the continuous endpoint is printed there to three decimal places, and for each of the four a value inside the rounding window of the printed figure returns the published sample size, so the difference is what the third decimal place is worth rather than a difference in the calculation.
 
 ### Part C: Fisher's exact test
 
-Table 5 of the Supporting Information also reports Fisher's exact test. The row with the largest standardized effect is reproduced here; the remaining rows behave the same way but need sample sizes up to 584 per group, which makes a simulated search slow enough to be unsuitable for a vignette. The package's test suite checks the achieved power at all 24 published Fisher sample sizes.
+Table 5 of the Supporting Information also reports Fisher's exact test. The row with the largest standardized effect is reproduced here; the remaining rows behave the same way but need sample sizes up to 584 per group, which makes a simulated search slow enough to be unsuitable for a vignette. The test suite checks the achieved power at two of the published Fisher sample sizes, and the verification scripts kept in the package's repository check all 24.
 
 ```{r table5_fisher}
 set.seed(20260829)
