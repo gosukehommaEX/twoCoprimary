@@ -42,12 +42,14 @@ fail <- function(...) {
 repo_root <- normalizePath("../..", mustWork = FALSE)
 manuscript <- file.path(repo_root, "04_Manuscript", "twoCoprimary.Rmd")
 response <- file.path(repo_root, "05_Response", "response-to-reviewers.tex")
+motivation <- file.path(repo_root, "04_Manuscript", "motivation-letter",
+                        "motivation-letter.md")
 
 prose_files <- c(
   list.files("vignettes", "\\.Rmd$", full.names = TRUE),
   list.files("man", "\\.Rd$", full.names = TRUE),
   "NEWS.md", "README.md", "cran-comments.md", "DESCRIPTION",
-  manuscript, response
+  manuscript, response, motivation
 )
 prose_files <- prose_files[file.exists(prose_files)]
 
@@ -71,6 +73,7 @@ say("run at : ", format(Sys.time(), "%Y-%m-%d %H:%M:%S"))
 say("files  : ", length(prose_files))
 if (!file.exists(manuscript)) say("note   : manuscript not found, its checks are skipped")
 if (!file.exists(response)) say("note   : response letter not found, its checks are skipped")
+if (!file.exists(motivation)) say("note   : motivating letter not found, its checks are skipped")
 say("")
 
 # ------------------------------------------------- Part A: paths named ----
