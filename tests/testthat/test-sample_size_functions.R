@@ -248,6 +248,30 @@ test_that("twoCoprimary2MixedCountContinuous sample size calculation mode works"
   expect_true(result$n2 > 0)
 })
 
+test_that("twoCoprimary2BinaryExact sample size calculation mode works", {
+  result <- twoCoprimary2BinaryExact(
+    p11 = 0.54, p12 = 0.54,
+    p21 = 0.25, p22 = 0.25,
+    rho1 = 0.3, rho2 = 0.3,
+    power = 0.9, r = 1,
+    alpha = 0.025, Test = "Fisher"
+  )
+
+  expect_s3_class(result, "twoCoprimary")
+  expect_true(all(c("n1", "n2", "N") %in% names(result)))
+  expect_true(result$n1 > 0)
+  expect_true(result$n2 > 0)
+
+  # The unified interface must return what the dedicated function returns
+  direct <- ss2BinaryExact(
+    p11 = 0.54, p12 = 0.54,
+    p21 = 0.25, p22 = 0.25,
+    rho1 = 0.3, rho2 = 0.3,
+    r = 1, alpha = 0.025, beta = 0.1, Test = "Fisher"
+  )
+  expect_equal(result$N, direct$N)
+})
+
 # ==============================================================================
 # Validation tests
 # ==============================================================================

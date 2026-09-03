@@ -230,6 +230,44 @@ test_that("twoCoprimary2MixedCountContinuous power calculation mode works", {
   expect_true(result$powerCoprimary >= 0 && result$powerCoprimary <= 1)
 })
 
+test_that("twoCoprimary2BinaryExact power calculation mode works", {
+  result <- twoCoprimary2BinaryExact(
+    n1 = 40, n2 = 40,
+    p11 = 0.54, p12 = 0.54,
+    p21 = 0.25, p22 = 0.25,
+    rho1 = 0.3, rho2 = 0.3,
+    alpha = 0.025, Test = "Fisher"
+  )
+
+  expect_s3_class(result, "twoCoprimary")
+  expect_true("powerCoprimary" %in% names(result))
+  expect_true(result$powerCoprimary >= 0 && result$powerCoprimary <= 1)
+
+  # The unified interface must return what the dedicated function returns
+  direct <- power2BinaryExact(
+    n1 = 40, n2 = 40,
+    p11 = 0.54, p12 = 0.54,
+    p21 = 0.25, p22 = 0.25,
+    rho1 = 0.3, rho2 = 0.3,
+    alpha = 0.025, Test = "Fisher"
+  )
+  expect_equal(result$powerCoprimary, direct$powerCoprimary)
+})
+
+test_that("twoCoprimary2BinaryExact refuses an ambiguous parameter combination", {
+  expect_error(
+    twoCoprimary2BinaryExact(
+      n1 = 40, n2 = 40,
+      p11 = 0.54, p12 = 0.54,
+      p21 = 0.25, p22 = 0.25,
+      rho1 = 0.3, rho2 = 0.3,
+      power = 0.9, r = 1,
+      alpha = 0.025, Test = "Fisher"
+    ),
+    "Exactly one of"
+  )
+})
+
 # ==============================================================================
 # Validation tests
 # ==============================================================================
