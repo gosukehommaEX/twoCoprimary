@@ -356,14 +356,17 @@ if (file.exists(manuscript)) {
   say("  version string in the text: ", if (length(v)) v else "not found",
       "   (change to 1.1.1 only after CRAN accepts it)")
 
-  # The article's version string and the response letter's claim that 1.1.1 is
-  # on CRAN become true at the same moment. If one has been updated and the
-  # other has not, one of the two documents is saying something false.
+  # The article's version string and the response letter's mention of 1.1.1
+  # become true at the same moment, when CRAN accepts it. If one document has
+  # been updated and the other has not, one of them is saying something false.
+  # The test is deliberately on the version number alone and not on a sentence:
+  # an earlier form of this check matched an exact phrase and was broken within
+  # the hour by rewording the sentence it watched.
   if (file.exists(response)) {
     rl <- read_prose(response)
-    claims_cran <- grepl("version 1\\.1\\.1, which is on CRAN", rl)
+    claims_cran <- grepl("1\\.1\\.1", rl)
     if (claims_cran && length(v) && v != "1.1.1") {
-      fail("the response letter says 1.1.1 is on CRAN while the article still ",
+      fail("the response letter names 1.1.1 while the article still ",
            "reports version ", v, ". This is expected until CRAN accepts 1.1.1; ",
            "it clears when the article's version string is updated, and it is ",
            "here so that the two cannot be submitted out of step.")
