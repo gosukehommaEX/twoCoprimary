@@ -10,6 +10,10 @@
 # them once per group on every evaluation, and the sequential search calls
 # the power function many times.
 #
+# Section 1 measures the exported function as it stands. Section 4 calls the
+# exported power function from inside the search on purpose, so it measures the
+# unhoisted path that 1.1.1 replaced; the two together give the size of the fix.
+#
 # Run with:  source("dev/measure_countcont_speed.R")
 
 library(twoCoprimary)
@@ -113,13 +117,18 @@ write.csv(data.frame(
 ), file.path(out_dir, "countcont_cost.csv"), row.names = FALSE)
 
 say("=== conclusion ===")
-if (share > 80) {
-  say("The correlation bounds account for most of the run time, and they are")
-  say("invariant to the sample size, so the cost is avoidable.")
+say("Section 1 measures the search as it now runs, section 4 the unhoisted path.")
+say(sprintf("  hoisted search   : %6.3f s", t_ss))
+say(sprintf("  unhoisted search : %6.3f s", t_cnt))
+# The per-call bounds timings are quantised by the system clock, so the share
+# printed above is noisy at these magnitudes; the ratio of the two searches is
+# the stable quantity and is what decides the verdict.
+if (t_cnt > 3 * t_ss) {
+  say("Hoisting the bounds out of the search accounts for the difference, and")
+  say("the bounds are invariant to the sample size, so the cost was avoidable.")
 } else {
-  say("The bounds do NOT account for most of the run time. The diagnosis is")
-  say("wrong and the cost is elsewhere; do not write the explanation into the")
-  say("article until it has been located.")
+  say("The unhoisted path is not materially slower here. Do not write the")
+  say("explanation into the article until the cost has been located again.")
 }
 
 cat("\nDone. See", log_path, "\n")
