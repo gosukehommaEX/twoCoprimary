@@ -1,9 +1,11 @@
 ## R CMD check results
 
-0 errors | 0 warnings | 0 notes
+0 errors | 0 warnings | 0 notes on a local Windows install and on the five
+GitHub Actions configurations listed below.
 
-The incoming checks will report a NOTE on the number of days since the last
-update. The reason for submitting this soon is given below.
+win-builder reports one NOTE, on the number of days since the last update,
+version 1.1.0 having reached CRAN on 2026-08-29. The reason for submitting this
+soon is given below.
 
 ## Submission
 
@@ -62,3 +64,6 @@ There are currently no downstream dependencies for this package.
 ## Test environments
 
 * local Windows 11 x64 install, R 4.6.0
+* win-builder: R-devel (2026-08-31 r90457), R-release (4.6.1)
+* GitHub Actions: ubuntu-latest (R-devel, R-release, R-oldrel-1),
+  windows-latest (R-release), macos-latest (R-release)
