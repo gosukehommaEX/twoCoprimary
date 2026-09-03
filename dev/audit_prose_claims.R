@@ -318,6 +318,45 @@ for (f in prose_files) {
   say("")
 }
 
+# -------------------------------------------- Part F: release readiness ----
+
+say("--- Part F: the three things that are settled last ---")
+say("  Each of these is decided at the final knit and is therefore the class of")
+say("  item that gets discovered at the last minute. The first is checked here;")
+say("  the other two are printed every run so that they cannot be forgotten.")
+say("")
+
+rpkg_file <- file.path(repo_root, "04_Manuscript", "_Rpackages.txt")
+if (file.exists(manuscript) && file.exists(rpkg_file)) {
+  named <- unique(regmatches(
+    read_prose(manuscript),
+    gregexpr("(?<=CRANpkg\\{)[A-Za-z0-9.]+(?=\\})", read_prose(manuscript), perl = TRUE)
+  )[[1]])
+  listed <- trimws(readLines(rpkg_file, warn = FALSE))
+  listed <- listed[nzchar(listed)]
+  missing <- setdiff(named, listed)
+  if (length(missing)) {
+    fail("_Rpackages.txt omits ", paste(missing, collapse = ", "),
+         ", which the article names with \\CRANpkg{}")
+  } else {
+    say("  all ", length(named), " packages the article names are listed in _Rpackages.txt")
+  }
+} else {
+  say("  note  manuscript or _Rpackages.txt not found, package listing not checked")
+}
+
+if (file.exists(manuscript)) {
+  m <- read_prose(manuscript)
+  d <- regmatches(m, regexpr('(?m)^date:\\s*"[^"]+', m, perl = TRUE))
+  d <- sub('^date:\\s*"', "", d)
+  v <- regmatches(m, regexpr("(?<=\\(version )[0-9.]+", m, perl = TRUE))
+  say("  manuscript date field    : ", if (length(d)) d else "not found",
+      "   (set this to the resubmission date at the final knit)")
+  say("  version string in the text: ", if (length(v)) v else "not found",
+      "   (change to 1.1.1 only after CRAN accepts it)")
+}
+say("")
+
 say("==============================================================================")
 say("Summary")
 say("==============================================================================")
